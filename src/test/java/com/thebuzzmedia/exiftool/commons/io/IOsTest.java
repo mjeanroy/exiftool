@@ -31,10 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import static com.thebuzzmedia.exiftool.tests.TestConstants.BR;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

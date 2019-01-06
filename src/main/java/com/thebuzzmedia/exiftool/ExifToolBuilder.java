@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.thebuzzmedia.exiftool.core.schedulers.SchedulerDuration.millis;
 import static com.thebuzzmedia.exiftool.process.executor.CommandExecutors.newExecutor;
 
 /**
@@ -195,7 +196,7 @@ public class ExifToolBuilder {
 	 * @return Current builder.
 	 */
 	public ExifToolBuilder withPath(String path) {
-		log.debug("Set path: %s", path);
+		log.debug("Set path: {}", path);
 		this.path = path;
 		return this;
 	}
@@ -215,10 +216,10 @@ public class ExifToolBuilder {
 	 * @return Current builder.
 	 */
 	public ExifToolBuilder withPath(File path) {
-		log.debug("Set path: %s", path);
+		log.debug("Set path: {}", path);
 
 		if (!path.canExecute()) {
-			log.warn("Executable %s is not executable, exiftool may fail later", path);
+			log.warn("Executable {} is not executable, exiftool may fail later", path);
 		}
 
 		this.path = path.getAbsolutePath();
@@ -232,7 +233,7 @@ public class ExifToolBuilder {
 	 * @return Current builder.
 	 */
 	public ExifToolBuilder withExecutor(CommandExecutor executor) {
-		log.debug("Set withExecutor: %s", executor);
+		log.debug("Set withExecutor: {}", executor);
 		this.executor = executor;
 		return this;
 	}
@@ -403,10 +404,10 @@ public class ExifToolBuilder {
 		// Add some debugging information
 		if (log.isDebugEnabled()) {
 			log.debug("Create ExifTool instance:");
-			log.debug(" - Path: %s", path);
-			log.debug(" - Executor: %s", executor);
-			log.debug(" - Strategy: %s", strategy);
-			log.debug(" - StayOpen: %s", stayOpen);
+			log.debug(" - Path: {}", path);
+			log.debug(" - Executor: {}", executor);
+			log.debug(" - Strategy: {}", strategy);
+			log.debug(" - StayOpen: {}", stayOpen);
 		}
 
 		return new ExifTool(path, executor, strategy);
@@ -523,7 +524,7 @@ public class ExifToolBuilder {
 			// We have to look up the delay between automatic clean and create
 			// the scheduler.
 			final long delay = firstNonNull(this.delay, DELAY);
-			return delay > 0 ? new DefaultScheduler(delay) : new NoOpScheduler();
+			return delay > 0 ? new DefaultScheduler(millis(delay)) : new NoOpScheduler();
 		}
 	}
 

@@ -333,13 +333,26 @@ public class ExifTool implements AutoCloseable {
 	 *
 	 * <br>
 	 *
+	 * <strong>NOTE: Calling this method prevent this instance of {@link ExifTool} from being re-used.</strong>
+	 *
+	 * @throws Exception If an error occurred while closing exiftool client.
+	 */
+	@Override
+	public void close() throws Exception {
+		strategy.shutdown();
+	}
+
+	/**
+	 * Stop `ExifTool` client.
+	 *
 	 * <strong>NOTE</strong>: Calling this method does not preclude this
 	 * instance of {@link ExifTool} from being re-used, it merely disposes of
 	 * the native and internal resources until the next call to
 	 * {@code getImageMeta} causes them to be re-instantiated.
+	 *
+	 * @throws Exception If an error occurred while stopping exiftool client.
 	 */
-	@Override
-	public void close() throws Exception {
+	public void stop() throws Exception {
 		strategy.close();
 	}
 
@@ -403,7 +416,7 @@ public class ExifTool implements AutoCloseable {
 		notEmpty(tags, "Tags cannot be null and must contain 1 or more Tag to query the image for.");
 		isReadable(image, "Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", image);
 
-		log.debug("Querying %s tags from image: %s", tags.size(), image);
+		log.debug("Querying {} tags from image: {}", tags.size(), image);
 
 		// Create a result map big enough to hold results for each of the tags
 		// and avoid collisions while inserting.
@@ -416,7 +429,7 @@ public class ExifTool implements AutoCloseable {
 		strategy.execute(executor, path, args, tagHandler);
 
 		// Add some debugging log
-		log.debug("Image Meta Processed [queried %s, found %s values]", tagHandler.size(), tagHandler.size());
+		log.debug("Image Meta Processed [queried {}, found {} values]", tagHandler.size(), tagHandler.size());
 
 		return tagHandler.getTags();
 	}
@@ -447,7 +460,7 @@ public class ExifTool implements AutoCloseable {
 		notEmpty(tags, "Tags cannot be null and must contain 1 or more Tag to query the image for.");
 		isWritable(image, "Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", image);
 
-		log.debug("Writing %d tags to image: %s", tags.size(), image);
+		log.debug("Writing %s tags to image: {}", tags.size(), image);
 
 		long startTime = System.currentTimeMillis();
 
@@ -457,7 +470,7 @@ public class ExifTool implements AutoCloseable {
 		// Execute ExifTool command
 		strategy.execute(executor, path, args, stopHandler());
 
-		log.debug("Image Meta Processed in %d ms [write %d tags]", System.currentTimeMillis() - startTime, tags.size());
+		log.debug("Image Meta Processed in {} ms [write {} tags]", System.currentTimeMillis() - startTime, tags.size());
 	}
 
 	/**

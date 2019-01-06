@@ -23,6 +23,7 @@ import com.thebuzzmedia.exiftool.process.CommandExecutor;
 import com.thebuzzmedia.exiftool.process.CommandProcess;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 import org.assertj.core.api.Condition;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ import static com.thebuzzmedia.exiftool.tests.ReflectionUtils.writePrivateField;
 import static com.thebuzzmedia.exiftool.tests.TestConstants.BR;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,15 +66,12 @@ public class StayOpenStrategyTest {
 	private ArgumentCaptor<Command> cmdCaptor;
 
 	private String exifTool;
-
 	private List<String> args;
-
 	private StayOpenStrategy strategy;
 
 	@Before
 	public void setUp() throws Exception {
 		exifTool = "exiftool";
-		strategy = new StayOpenStrategy(scheduler);
 
 		// Mock withExecutor
 		when(executor.start(any(Command.class))).thenReturn(process);
@@ -82,14 +80,28 @@ public class StayOpenStrategyTest {
 		args = asList("-S", "-n", "-XArtist", "XComment", "-execute");
 	}
 
+	@After
+	public void tearDown() {
+		if (strategy != null) {
+			try {
+				strategy.close();
+			}
+			catch (Exception ex) {
+				// No worry, that's ok in these unit tests.
+			}
+		}
+	}
+
 	@Test
 	public void it_should_create_stay_open_strategy() throws Exception {
-		assertThat(readPrivateField(strategy, "scheduler", Scheduler.class)).isSameAs(scheduler);
-		assertThat(readPrivateField(strategy, "process", CommandProcess.class)).isNull();
+		strategy = new StayOpenStrategy(scheduler);
+		assertThat(readPrivateField(strategy, "scheduler")).isSameAs(scheduler);
+		assertThat(readPrivateField(strategy, "process")).isNull();
 	}
 
 	@Test
 	public void it_should_execute_command() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
 		strategy.execute(executor, exifTool, args, outputHandler);
 
 		InOrder inOrder = inOrder(scheduler, executor, process);
@@ -100,7 +112,7 @@ public class StayOpenStrategyTest {
 		inOrder.verify(process).flush();
 		inOrder.verify(process).read(any(OutputHandler.class));
 
-		assertThat(readPrivateField(strategy, "process", CommandProcess.class))
+		assertThat(readPrivateField(strategy, "process"))
 			.isNotNull()
 			.isSameAs(process);
 
@@ -110,6 +122,8 @@ public class StayOpenStrategyTest {
 
 	@Test
 	public void it_should_not_start_process_twice_if_it_is_running() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
+
 		// Mock Process
 		writePrivateField(strategy, "process", process);
 		when(process.isClosed()).thenReturn(false);
@@ -132,6 +146,8 @@ public class StayOpenStrategyTest {
 
 	@Test
 	public void it_should_restart_process_twice_if_it_is_not_running() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
+
 		// Mock Process
 		writePrivateField(strategy, "process", process);
 		when(process.isClosed()).thenReturn(true);
@@ -152,23 +168,47 @@ public class StayOpenStrategyTest {
 	}
 
 	@Test
-	public void it_should_not_close_process_if_it_is_not_started() throws Exception {
-		StayOpenStrategy strategy = new StayOpenStrategy(scheduler);
+	public void it_should_try_to_close_process_if_it_is_not_started() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
 		strategy.close();
-		verify(scheduler, never()).stop();
+		verify(scheduler).stop();
+	}
+
+	@Test
+	public void it_should_try_to_shutdown_process_if_it_is_not_started() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
+		strategy.shutdown();
+		verify(scheduler).shutdown();
 	}
 
 	@Test
 	public void it_should_close_process_if_it_is_started() throws Exception {
-		StayOpenStrategy strategy = new StayOpenStrategy(scheduler);
+		strategy = new StayOpenStrategy(scheduler);
 		writePrivateField(strategy, "process", process);
 		strategy.close();
 
 		InOrder inOrder = inOrder(scheduler, process);
-		inOrder.verify(scheduler).stop();
 		inOrder.verify(process).write("-stay_open\nFalse\n");
 		inOrder.verify(process).flush();
 		inOrder.verify(process).close();
+		inOrder.verify(scheduler).stop();
+
+		verifyNoMoreInteractions(process);
+		verifyNoMoreInteractions(scheduler);
+	}
+
+	@Test
+	public void it_should_shutdown_process_if_it_is_started() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
+		writePrivateField(strategy, "process", process);
+		strategy.shutdown();
+
+		InOrder inOrder = inOrder(scheduler, process);
+		inOrder.verify(process).write("-stay_open\nFalse\n");
+		inOrder.verify(process).flush();
+		inOrder.verify(process).close();
+		inOrder.verify(scheduler).stop();
+		inOrder.verify(scheduler).shutdown();
 
 		verifyNoMoreInteractions(process);
 		verifyNoMoreInteractions(scheduler);
@@ -176,7 +216,7 @@ public class StayOpenStrategyTest {
 
 	@Test
 	public void it_should_check_if_process_is_running() throws Exception {
-		StayOpenStrategy strategy = new StayOpenStrategy(scheduler);
+		strategy = new StayOpenStrategy(scheduler);
 		assertThat(strategy.isRunning()).isFalse();
 
 		writePrivateField(strategy, "process", process);

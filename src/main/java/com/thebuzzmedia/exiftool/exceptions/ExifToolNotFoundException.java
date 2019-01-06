@@ -17,13 +17,14 @@
 
 package com.thebuzzmedia.exiftool.exceptions;
 
-import java.io.IOException;
-
 import com.thebuzzmedia.exiftool.process.CommandResult;
+
+import java.io.IOException;
 
 /**
  * Exception thrown when exiftool program is missing.
  */
+@SuppressWarnings("serial")
 public class ExifToolNotFoundException extends AbstractExifException {
 
 	/**
@@ -51,6 +52,7 @@ public class ExifToolNotFoundException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
+	 * @param ex The original exception.
 	 * @param path ExifTool path defined during command execution.
 	 * @param result The result triggered during command execution.
 	 */

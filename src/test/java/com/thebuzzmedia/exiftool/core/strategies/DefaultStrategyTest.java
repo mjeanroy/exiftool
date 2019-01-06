@@ -28,7 +28,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -71,5 +71,10 @@ public class DefaultStrategyTest {
 	@Test
 	public void it_should_do_nothing_on_close() {
 		new DefaultStrategy().close();
+	}
+
+	@Test
+	public void it_should_do_nothing_on_shutdown() {
+		new DefaultStrategy().shutdown();
 	}
 }
