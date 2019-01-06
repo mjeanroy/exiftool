@@ -11,7 +11,6 @@ import com.thebuzzmedia.exiftool.Tag;
  * <code>NonConvertedTag.of(Tag.ANY)</code> is not equal to <code>Tag.ANY</code>
  * since it's possible to query two different formats of the same tag.
  * 
- * 
  * @author Jack (jack@pixbits.com)
  */
 
@@ -19,7 +18,7 @@ public class NonConvertedTag implements Tag {
     private final Tag original;
     
     public NonConvertedTag(Tag original) {
-      this.original = original;
+        this.original = original;
     }
     
     @Override 

@@ -83,7 +83,7 @@ public enum StandardFormat implements Format {
 	BINARY {
 	 @Override
 	 public List<String> getArgs() {
-	   return singletonList("-b");
-	 }
+	       return singletonList("-b");
+	    }
 	}
 }
