@@ -66,6 +66,7 @@ public interface Tag {
 	 * 
 	 * For simple tags this is equivalent to value returned by <code>getName</code>.
 	 * 
+   * @since 2.4.0
 	 * @return Display name of the tag.
 	 */
 	String getDisplayName();
