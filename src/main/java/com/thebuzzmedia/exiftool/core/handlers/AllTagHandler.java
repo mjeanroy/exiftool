@@ -17,22 +17,23 @@
 
 package com.thebuzzmedia.exiftool.core.handlers;
 
+import com.google.common.base.Optional;
 import com.thebuzzmedia.exiftool.Tag;
-import com.thebuzzmedia.exiftool.process.OutputHandler;
+import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 
-import java.util.Map;
+/**
+ * Read all tags line by line.
+ *
+ * <br>
+ *
+ * This class is not thread-safe and should be used to
+ * read exiftool output from one thread (should not be shared across
+ * several threads).
+ */
+public class AllTagHandler extends BaseTagHandler {
 
-public interface TagHandler extends OutputHandler {
-
-	/**
-	 * Get all tags that have been extracted.
-	 * @return map of tags to their values
-	 */
-	Map<Tag, String> getTags();
-
-	/**
-	 * Get the number of tags extracted.
-	 * @return number of tags
-	 */
-	int size();
+	@Override
+	Optional<? extends Tag> toTag(String name) {
+		return Optional.of(new UnspecifiedTag(name));
+	}
 }

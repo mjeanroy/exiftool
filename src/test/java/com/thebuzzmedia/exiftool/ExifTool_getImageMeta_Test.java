@@ -18,6 +18,7 @@
 package com.thebuzzmedia.exiftool;
 
 import static com.thebuzzmedia.exiftool.tests.MockitoUtils.anyListOf;
+import static com.thebuzzmedia.exiftool.tests.TagUtils.parseTags;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.rules.ExpectedException.none;
@@ -37,6 +38,7 @@ import java.util.Map;
 
 import com.thebuzzmedia.exiftool.core.StandardFormat;
 import com.thebuzzmedia.exiftool.core.StandardTag;
+import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 import com.thebuzzmedia.exiftool.exceptions.UnreadableFileException;
 import com.thebuzzmedia.exiftool.process.Command;
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
@@ -215,6 +217,61 @@ public class ExifTool_getImageMeta_Test {
 			.isNotEmpty()
 			.hasSize(tags.size())
 			.isEqualTo(tags);
+	}
+
+	@Test
+	public void it_should_get_all_image_metadata_if_no_tags_specified() throws Exception {
+		// Given
+		final Format format = StandardFormat.HUMAN_READABLE;
+		final File image = new FileBuilder("foo.png").build();
+		final Map<Tag, String> tags = new HashMap<>();
+		tags.put(new UnspecifiedTag("Artist"), "bar");
+		tags.put(new UnspecifiedTag("XPComment"), "foo");
+		tags.put(new UnspecifiedTag("CustomTag"), "baz");
+
+		doAnswer(new ReadTagsAnswer(tags, "{ready}"))
+				.when(strategy).execute(same(executor), same(path), anyListOf(String.class), any(OutputHandler.class));
+
+		// When
+		Map<Tag, String> results = exifTool.getImageMeta(image, format);
+
+		// Then
+		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
+
+		assertThat(results)
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(tags.size());
+
+		assertThat(parseTags(results))
+				.containsAllEntriesOf(parseTags(tags));
+	}
+
+	@Test
+	public void it_should_get_all_image_metadata_in_numeric_format_by_default() throws Exception {
+		// Given
+		final File image = new FileBuilder("foo.png").build();
+		final Map<Tag, String> tags = new HashMap<>();
+		tags.put(new UnspecifiedTag("Artist"), "foo");
+		tags.put(new UnspecifiedTag("XPComment"), "bar");
+		tags.put(new UnspecifiedTag("CustomTag"), "baz");
+
+		doAnswer(new ReadTagsAnswer(tags, "{ready}"))
+				.when(strategy).execute(same(executor), same(path), anyListOf(String.class), any(OutputHandler.class));
+
+		// When
+		Map<Tag, String> results = exifTool.getImageMeta(image);
+
+		// Then
+		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
+
+		assertThat(results)
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(tags.size());
+
+		assertThat(parseTags(results))
+				.containsAllEntriesOf(parseTags(tags));
 	}
 
 	private static class ReadTagsAnswer implements Answer<Void> {

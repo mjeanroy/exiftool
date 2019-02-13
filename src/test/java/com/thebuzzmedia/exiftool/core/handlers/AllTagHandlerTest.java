@@ -17,31 +17,20 @@
 
 package com.thebuzzmedia.exiftool.core.handlers;
 
+import com.thebuzzmedia.exiftool.Constants;
 import com.thebuzzmedia.exiftool.Tag;
-import com.thebuzzmedia.exiftool.core.StandardTag;
-import org.junit.Before;
+import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TagHandlerTest {
-
-	private List<? extends Tag> inputs;
-
-	@Before
-	public void setUp() {
-		inputs = asList(
-			StandardTag.APERTURE,
-			StandardTag.ARTIST
-		);
-	}
+public class AllTagHandlerTest {
 
 	@Test
 	public void it_should_read_null_line() {
-		TagHandler handler = new TagHandler(inputs);
+		AllTagHandler handler = new AllTagHandler();
 		boolean hasNext = handler.readLine(null);
 		assertThat(hasNext).isFalse();
 		assertThat(handler.getTags())
@@ -51,7 +40,7 @@ public class TagHandlerTest {
 
 	@Test
 	public void it_should_read_last_line() {
-		TagHandler handler = new TagHandler(inputs);
+		AllTagHandler handler = new AllTagHandler();
 		boolean hasNext = handler.readLine("{ready}");
 		assertThat(hasNext).isFalse();
 		assertThat(handler.getTags())
@@ -61,32 +50,63 @@ public class TagHandlerTest {
 
 	@Test
 	public void it_should_read_tag_line() {
-		Tag tag = StandardTag.ARTIST;
+		Tag tag = new UnspecifiedTag("baz");
 		String value = "foobar";
 
-		TagHandler handler = new TagHandler(inputs);
+		AllTagHandler handler = new AllTagHandler();
 		boolean hasNext = handler.readLine(tag.getName() + ": " + value);
 
+		Map<Tag, String> results = handler.getTags();
 		assertThat(hasNext).isTrue();
-		assertThat(handler.getTags())
+		assertThat(results)
 			.isNotNull()
 			.isNotEmpty()
-			.hasSize(1)
-			.containsEntry(tag, value);
+			.hasSize(1);
+
+		assertThat(results)
+				.containsKey(tag);
+		assertThat(results.get(tag))
+				.isEqualTo(value);
 	}
 
 	@Test
 	public void it_should_read_tag_line_with_additional_pattern() {
-		Tag tag = StandardTag.ARTIST;
+		Tag tag = new UnspecifiedTag("baz");
 		String value = "foobar: foo";
 
-		TagHandler handler = new TagHandler(inputs);
+		AllTagHandler handler = new AllTagHandler();
 		handler.readLine(tag.getName() + ": " + value);
 
-		assertThat(handler.getTags())
-			.isNotNull()
-			.isNotEmpty()
-			.hasSize(1)
-			.containsEntry(tag, value);
+		Map<Tag, String> results = handler.getTags();
+		assertThat(results)
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(1);
+
+		assertThat(results)
+				.containsKey(tag);
+		assertThat(results.get(tag))
+				.isEqualTo(value);
+	}
+
+	@Test
+	public void it_should_read_tag_line_with_multiple_values() {
+		Tag tag = new UnspecifiedTag("baz");
+		String value = "foo" + Constants.SEPARATOR + "bar";
+
+		AllTagHandler handler = new AllTagHandler();
+		boolean hasNext = handler.readLine(tag.getName() + ": " + value);
+
+		Map<Tag, String> results = handler.getTags();
+		assertThat(hasNext).isTrue();
+		assertThat(results)
+				.isNotNull()
+				.isNotEmpty()
+				.hasSize(1);
+
+		assertThat(results)
+				.containsKey(tag);
+		assertThat(tag.parse(results.get(tag)))
+				.isEqualTo(new String[]{"foo", "bar"});
 	}
 }

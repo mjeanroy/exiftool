@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package com.thebuzzmedia.exiftool.core.handlers;
+package com.thebuzzmedia.exiftool.tests;
 
 import com.thebuzzmedia.exiftool.Tag;
-import com.thebuzzmedia.exiftool.process.OutputHandler;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public interface TagHandler extends OutputHandler {
+/**
+ * Static utilities for tags.
+ */
+public final class TagUtils {
+
+	private TagUtils() {
+	}
 
 	/**
-	 * Get all tags that have been extracted.
-	 * @return map of tags to their values
+	 * Parse tag results into a map of tag names to parsed values
+	 * @param tags map of tags to values
+	 * @return map of tag names to parsed values
 	 */
-	Map<Tag, String> getTags();
-
-	/**
-	 * Get the number of tags extracted.
-	 * @return number of tags
-	 */
-	int size();
+	public static Map<String, Object> parseTags(Map<Tag, String> tags) {
+		final Map<String, Object> map = new HashMap<>(tags.size());
+		for(Map.Entry<Tag, String> entry : tags.entrySet()) {
+			String displayName = entry.getKey().getDisplayName();
+			Object value = entry.getKey().parse(entry.getValue());
+			map.put(displayName, value);
+		}
+		return map;
+	}
 }

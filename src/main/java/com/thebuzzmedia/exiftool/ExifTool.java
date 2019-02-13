@@ -17,8 +17,11 @@
 
 package com.thebuzzmedia.exiftool;
 
+import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 import com.thebuzzmedia.exiftool.core.StandardFormat;
 import com.thebuzzmedia.exiftool.core.cache.VersionCacheFactory;
+import com.thebuzzmedia.exiftool.core.handlers.AllTagHandler;
+import com.thebuzzmedia.exiftool.core.handlers.StandardTagHandler;
 import com.thebuzzmedia.exiftool.core.handlers.TagHandler;
 import com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException;
 import com.thebuzzmedia.exiftool.logs.Logger;
@@ -36,6 +39,7 @@ import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notBlank;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notNull;
 import static com.thebuzzmedia.exiftool.core.handlers.StopHandler.stopHandler;
+import static java.util.Collections.singleton;
 
 /**
  * Class used to provide a Java-like interface to Phil Harvey's excellent,
@@ -383,6 +387,39 @@ public class ExifTool implements AutoCloseable {
 	}
 
 	/**
+	 * Parse image metadata for all tags.
+	 * Output format is numeric.
+	 *
+	 * @param image Image.
+	 * @return Pair of tag associated with the value.
+	 * @throws IOException If something bad happen during I/O operations.
+	 * @throws NullPointerException If one parameter is null.
+	 * @throws IllegalArgumentException If list of tag is empty.
+	 * @throws com.thebuzzmedia.exiftool.exceptions.UnreadableFileException If image cannot be read.
+	 */
+	public Map<Tag, String> getImageMeta(File image) throws IOException {
+		return getImageMeta(image, StandardFormat.NUMERIC);
+	}
+
+	/**
+	 * Parse image metadata for all tags.
+	 *
+	 * @param image Image.
+	 * @param format Output format.
+	 * @return Pair of tag associated with the value.
+	 * @throws IOException If something bad happen during I/O operations.
+	 * @throws NullPointerException If one parameter is null.
+	 * @throws IllegalArgumentException If list of tag is empty.
+	 * @throws com.thebuzzmedia.exiftool.exceptions.UnreadableFileException If image cannot be read.
+	 */
+	public Map<Tag, String> getImageMeta(File image, Format format) throws IOException {
+
+		log.debug("Querying all tags from image: {}", image);
+
+		return getImageMeta(image, format, singleton(new UnspecifiedTag("All")), new AllTagHandler());
+	}
+
+	/**
 	 * Parse image metadata.
 	 * Output format is numeric.
 	 *
@@ -411,16 +448,22 @@ public class ExifTool implements AutoCloseable {
 	 * @throws com.thebuzzmedia.exiftool.exceptions.UnreadableFileException If image cannot be read.
 	 */
 	public Map<Tag, String> getImageMeta(File image, Format format, Collection<? extends Tag> tags) throws IOException {
-		notNull(image, "Image cannot be null and must be a valid stream of image data.");
-		notNull(format, "Format cannot be null.");
+
 		notEmpty(tags, "Tags cannot be null and must contain 1 or more Tag to query the image for.");
-		isReadable(image, "Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", image);
 
 		log.debug("Querying {} tags from image: {}", tags.size(), image);
 
 		// Create a result map big enough to hold results for each of the tags
 		// and avoid collisions while inserting.
-		TagHandler tagHandler = new TagHandler(tags);
+		StandardTagHandler tagHandler = new StandardTagHandler(tags);
+
+		return getImageMeta(image, format, tags, tagHandler);
+	}
+
+	private Map<Tag, String> getImageMeta(File image, Format format, Collection<? extends Tag> tags, TagHandler tagHandler) throws IOException {
+		notNull(image, "Image cannot be null and must be a valid stream of image data.");
+		notNull(format, "Format cannot be null.");
+		isReadable(image, "Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", image);
 
 		// Build list of exiftool arguments.
 		List<String> args = getImageMetaArguments(format, image, tags);
