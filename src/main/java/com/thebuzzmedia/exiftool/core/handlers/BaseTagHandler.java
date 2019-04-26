@@ -17,7 +17,6 @@
 
 package com.thebuzzmedia.exiftool.core.handlers;
 
-import com.google.common.base.Optional;
 import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.logs.Logger;
 import com.thebuzzmedia.exiftool.logs.LoggerFactory;
@@ -73,9 +72,9 @@ public abstract class BaseTagHandler implements TagHandler {
 			String name = pair[0];
 			String value = pair[1];
 
-			Optional<? extends Tag> tag = toTag(name);
-			if (tag.isPresent()) {
-				tags.put(tag.get(), value);
+			final Tag tag = toTag(name);
+			if (tag != null) {
+				tags.put(tag, value);
 				log.debug("Read Tag [name={}, value={}]", tag, value);
 			} else {
 				log.debug("Unable to read Tag: {}", line);
@@ -91,7 +90,7 @@ public abstract class BaseTagHandler implements TagHandler {
 	 * Get a {@link Tag} for the given exif name
 	 * @param name the name of the tag
 	 */
-	abstract Optional<? extends Tag> toTag(String name);
+	abstract Tag toTag(String name);
 
 	@Override
 	public Map<Tag, String> getTags() {

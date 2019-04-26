@@ -17,7 +17,6 @@
 
 package com.thebuzzmedia.exiftool.core.handlers;
 
-import com.google.common.base.Optional;
 import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 
@@ -33,7 +32,7 @@ import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 public class AllTagHandler extends BaseTagHandler {
 
 	@Override
-	Optional<? extends Tag> toTag(String name) {
-		return Optional.of(new UnspecifiedTag(name));
+	Tag toTag(String name) {
+		return new UnspecifiedTag(name);
 	}
 }

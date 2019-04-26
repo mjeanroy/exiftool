@@ -17,7 +17,6 @@
 
 package com.thebuzzmedia.exiftool.core.handlers;
 
-import com.google.common.base.Optional;
 import com.thebuzzmedia.exiftool.Tag;
 
 import java.util.Collection;
@@ -57,11 +56,11 @@ public class StandardTagHandler extends BaseTagHandler {
 	}
 
 	@Override
-	Optional<? extends Tag> toTag(String name) {
+	Tag toTag(String name) {
 		// Return the tag a only if we were able to map the name back
 		// to a Tag instance. If not, then this is an unknown/unexpected
 		// tag return value and we skip it since we cannot translate it
 		// back to one of our supported tags.
-		return Optional.fromNullable(inputs.get(name));
+		return inputs.get(name);
 	}
 }
