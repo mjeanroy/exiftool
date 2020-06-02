@@ -102,7 +102,7 @@
 		<logback.version>1.2.3</logback.version>
 		<log4j.version>1.2.17</log4j.version>
 		<log4j2.version>2.12.1</log4j2.version>
-		<guava.version>23.6-android</guava.version>
+		<guava.version>29.0-android</guava.version>
 
 		<!-- Tests dependencies -->
 		<junit.version>4.13</junit.version>
