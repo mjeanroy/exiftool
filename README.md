@@ -95,24 +95,19 @@ This library is available on maven repository:
 #### Parsing tags
 
 ```java
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Arrays.asList;
+
+import java.io.File;
+import java.util.Map;
 
 import com.thebuzzmedia.exiftool.ExifTool;
 import com.thebuzzmedia.exiftool.ExifToolBuilder;
 import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.core.StandardTag;
 
-import java.io.File;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-
 public class ExifParser {
 
-    private static final Logger log = LoggerFactory.getLogger(ExifParser.class);
-
-    public static Map<String, Tag> parse(File image) throws Exception {
+    public static Map<Tag, String> parse(File image) throws Exception {
         // ExifTool path must be defined as a system property (`exiftool.path`),
         // but path can be set using `withPath` method.
         try (ExifTool exifTool = new ExifToolBuilder().build()) {
@@ -122,15 +117,12 @@ public class ExifParser {
                 StandardTag.Y_RESOLUTION
             ));
 
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-            return null;
         }
     }
 
     public static void main(String[] args) throws Exception {
         for (String image : args) {
-            System.out.println("Tags: ", ExifParser.parse(new File(image)));
+            System.out.println("Tags: " + ExifParser.parse(new File(image)));
         }
     }
 }
