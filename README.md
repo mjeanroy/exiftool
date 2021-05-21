@@ -142,8 +142,11 @@ If you want to reuse your exiftool process, you may want to activate the `stay_o
 instance of `UnsupportedFeatureException` will be thrown your exiftool version is too old.
 
 ```java
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Arrays.asList;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import com.thebuzzmedia.exiftool.ExifTool;
 import com.thebuzzmedia.exiftool.ExifToolBuilder;
@@ -151,27 +154,20 @@ import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.core.StandardTag;
 import com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException;
 
-import java.io.File;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-
 public class ExifParser {
 
-    private static final Logger log = LoggerFactory.getLogger(ExifParser.class);
+    private static final ExifTool exifTool = detect();
 
-    private static final ExifTool exifTool;
-
-    static {
+    private static ExifTool detect() {
         try {
-            exifTool = new ExifToolBuilder().enableStayOpen().build();
+            return new ExifToolBuilder().enableStayOpen().build();
         } catch (UnsupportedFeatureException ex) {
             // Fallback to simple exiftool instance.
-            exifTool = new ExifToolBuilder().build();
+            return new ExifToolBuilder().build();
         }
     }
 
-    public static Map<String, Tag> parse(File image) {
+    public static Map<Tag, String> parse(File image) throws IOException {
         return exifTool.getImageMeta(image, asList(
             StandardTag.ISO,
             StandardTag.X_RESOLUTION,
@@ -182,7 +178,7 @@ public class ExifParser {
     public static void main(String[] args) throws Exception {
         try {
             for (String image : args) {
-                System.out.println("Tags: ", ExifParser.parse(new File(image)));
+                System.out.println("Tags: "+ ExifParser.parse(new File(image)));
             }
         } finally {
             exifTool.close();
