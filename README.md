@@ -186,8 +186,6 @@ will be synchronized. This can be a big problem if you need to manipulate images
 can be configured to allow a maximum number of `exiftool` to be open.
 
 ```java
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.thebuzzmedia.exiftool.ExifTool;
 import com.thebuzzmedia.exiftool.ExifToolBuilder;
@@ -201,8 +199,6 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 public class ExifParser {
-
-    private static final Logger log = LoggerFactory.getLogger(ExifParser.class);
 
     public static void main(String[] args) throws Exception {
         ExifTool exifTool = new ExifToolBuilder()
