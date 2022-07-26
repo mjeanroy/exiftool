@@ -92,7 +92,7 @@
 		<maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
 		<maven-install-plugin.version>3.0.0</maven-install-plugin.version>
 		<maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
-		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+		<maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 		<maven-site-plugin.version>3.12.0</maven-site-plugin.version>
 		<versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
