@@ -17,6 +17,8 @@
 
 package com.thebuzzmedia.exiftool;
 
+import com.thebuzzmedia.exiftool.commons.lang.Strings;
+
 import java.util.Objects;
 
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notBlank;
@@ -60,10 +62,11 @@ public final class Version implements Comparable<Version> {
 	public Version(String version) {
 		notBlank(version, "Version number should be set");
 
-		String[] parts = version.split("\\.");
-		major = Integer.parseInt(parts[0]);
-		minor = parts.length >= 2 ? Integer.parseInt(parts[1]) : 0;
-		patch = parts.length >= 3 ? Integer.parseInt(parts[2]) : 0;
+		String[] parts = version.split("[ .,]+");
+		major = Strings.tryParseInt(parts[0], 0);
+		minor = parts.length >= 2 ? Strings.tryParseInt(parts[1], 0) : 0;
+		patch = parts.length >= 3 ? Strings.tryParseInt(parts[2], 0) : 0;
+
 	}
 
 	/**

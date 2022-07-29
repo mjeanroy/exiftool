@@ -68,4 +68,24 @@ public class VersionTest {
 		assertThat(v4.compareTo(v1)).isGreaterThan(0);
 		assertThat(v1.compareTo(v3)).isZero();
 	}
+
+	@Test
+	public void handle_warnings() {
+		Version v1 = new Version("10.48 [Warning: Library version is 10.10]");
+
+		assertThat(v1.getMajor()).isEqualTo(10);
+		assertThat(v1.getMinor()).isEqualTo(48);
+		assertThat(v1.getPatch()).isEqualTo(0);
+
+	}
+
+	@Test
+	public void handle_invalid_strings() {
+		Version v1 = new Version("xxx.xx.xx");
+
+		assertThat(v1.getMajor()).isEqualTo(0);
+		assertThat(v1.getMinor()).isEqualTo(0);
+		assertThat(v1.getPatch()).isEqualTo(0);
+
+	}
 }

@@ -35,4 +35,19 @@ public final class Strings {
 	public static boolean isNotEmpty(String value) {
 		return value != null && !value.isEmpty();
 	}
+
+
+	/**
+	 * Try to parse a string as an Integer and return the value if valid, or returns fallback value
+	 *.
+	 * @param value The string to convert to an Integer
+	 * @return Optional Integer which will be parsed if valid, and {@code fallbackValue} if not.
+	 */
+	public static int tryParseInt(String value, int fallbackValue) {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return fallbackValue;
+		}
+	}
 }
