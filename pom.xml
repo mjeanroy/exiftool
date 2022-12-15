@@ -95,7 +95,7 @@
 		<maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
 		<maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-		<versions-maven-plugin.version>2.13.0</versions-maven-plugin.version>
+		<versions-maven-plugin.version>2.14.1</versions-maven-plugin.version>
 
 		<!-- Project dependencies -->
 		<slf4j.version>2.0.3</slf4j.version>
