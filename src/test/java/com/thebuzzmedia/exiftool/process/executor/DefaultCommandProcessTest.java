@@ -227,7 +227,7 @@ class DefaultCommandProcessTest {
 
 		process.close();
 
-		assertThatThrownBy(process::read)
+		assertThatThrownBy(() -> process.read())
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage("Cannot read from closed process");
 	}
