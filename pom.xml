@@ -111,7 +111,7 @@
 		<commons-exec.version>1.4.0</commons-exec.version>
 		<equalsverifier.version>3.15.6</equalsverifier.version>
 		<awaitility.version>4.2.0</awaitility.version>
-		<byte-buddy.version>1.14.11</byte-buddy.version>
+		<byte-buddy.version>1.14.12</byte-buddy.version>
 	</properties>
 
 	<dependencyManagement>
