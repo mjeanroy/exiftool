@@ -26,6 +26,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import static com.thebuzzmedia.exiftool.commons.io.IOs.readInputStream;
 import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
@@ -186,7 +187,7 @@ public class DefaultCommandProcess implements CommandProcess {
 		log.debug("Send command input: {}", input);
 
 		try {
-			os.write(input.getBytes());
+			os.write(input.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
