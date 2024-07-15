@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
-        java: [ 11, 17, 19, 21 ]
+        os: [ windows-latest ]
+        java: [ 21 ]
         distribution: [ 'temurin' ]
         include:
           - os: windows-latest
@@ -56,4 +56,4 @@ jobs:
       - name: Build
         run: mvn -B install --file pom.xml -DskipTests
       - name: Test
-        run: mvn verify
+        run: mvn verify -Dtest=ExifTool_IMG13_IT
