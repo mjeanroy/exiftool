@@ -30,16 +30,6 @@ jobs:
         os: [ windows-latest ]
         java: [ 21 ]
         distribution: [ 'temurin' ]
-        include:
-          - os: windows-latest
-            java: '8'
-            distribution: 'zulu'
-          - os: ubuntu-latest
-            java: '8'
-            distribution: 'zulu'
-          - os: macos-latest
-            java: '8'
-            distribution: 'zulu'
 
     steps:
       - uses: actions/checkout@v4.1.4
