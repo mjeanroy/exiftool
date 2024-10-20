@@ -24,6 +24,7 @@ import com.thebuzzmedia.exiftool.core.StandardOptions;
 import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 import com.thebuzzmedia.exiftool.core.cache.VersionCacheFactory;
 import com.thebuzzmedia.exiftool.core.handlers.AllTagHandler;
+import com.thebuzzmedia.exiftool.core.handlers.RawOutputHandler;
 import com.thebuzzmedia.exiftool.core.handlers.StandardTagHandler;
 import com.thebuzzmedia.exiftool.core.handlers.TagHandler;
 import com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException;
@@ -523,6 +524,41 @@ public class ExifTool implements AutoCloseable {
 		log.debug("Image Meta Processed [queried {}, found {} values]", tagHandler.size(), tagHandler.size());
 
 		return tagHandler.getTags();
+	}
+
+	/**
+	 * Run users custom Exiftool command on image and returns raw output from Exiftool as string
+	 * This just passes the arguments to Exiftool and does not do any checking on the validity of
+	 * those arguments before passing them to Exiftool. The user is also responsible for parsing
+	 * the raw output that has been returned.
+	 *
+	 * @param image Image.
+	 * @return String with whatever exiftool outputs.
+	 * @throws IOException If something bad happen during I/O operations.
+	 * @throws NullPointerException If one parameter is null.
+	 * @throws com.thebuzzmedia.exiftool.exceptions.UnreadableFileException If image cannot be read.
+	 */
+	public String getRawExifToolOutput(File image, List<String> arguments) throws IOException {
+		requireNonNull(image, "Image cannot be null and must be a valid stream of image data.");
+		requireNonNull(arguments, "Arguments cannot be null.");
+		isReadable(image, String.format("Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", image));
+
+		int expectedSize = arguments.size() + 2;
+		List<String> args = new ArrayList<>(expectedSize);
+
+		addAll(args, arguments);
+
+		// Add image argument.
+		args.add(image.getAbsolutePath());
+
+		// Add last argument.
+		// This argument will only be used by exiftool if stay_open flag has been set.
+		args.add("-execute");
+
+		RawOutputHandler resultHandler = new RawOutputHandler();
+		strategy.execute(executor, path, args, resultHandler);
+
+		return resultHandler.getOutput();
 	}
 
 	/**
