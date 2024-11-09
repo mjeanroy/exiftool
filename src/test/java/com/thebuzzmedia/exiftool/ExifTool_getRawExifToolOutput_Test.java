@@ -30,118 +30,93 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class ExifTool_getRawExifToolOutput_Test {
-  private String path;
-  private CommandExecutor executor;
-  private ExecutionStrategy strategy;
-  private List<String> args;
+	private String path;
+	private CommandExecutor executor;
+	private ExecutionStrategy strategy;
+	private List<String> args;
+	private ExifTool exifTool;
 
-  private ExifTool exifTool;
+	@BeforeEach
+	void setUp() throws Exception {
+		executor = mock(CommandExecutor.class);
+		strategy = mock(ExecutionStrategy.class);
+		path = "exiftool";
+		args = asList("-a", "-u", "-g1", "-j", "/tmp/foo.png", "-execute");
+		CommandResult cmd = new CommandResultBuilder().output("9.36").build();
+		when(executor.execute(any(Command.class))).thenReturn(cmd);
+		when(strategy.isSupported(any(Version.class))).thenReturn(true);
 
-  @BeforeEach
-  void setUp() throws Exception {
-    executor = mock(CommandExecutor.class);
-    strategy = mock(ExecutionStrategy.class);
-    path = "exiftool";
-    args = asList("-a", "-u", "-g1", "-j");
-    CommandResult cmd = new CommandResultBuilder().output("9.36").build();
-    when(executor.execute(any(Command.class))).thenReturn(cmd);
-    when(strategy.isSupported(any(Version.class))).thenReturn(true);
+		exifTool = new ExifTool(path, executor, strategy);
 
-    exifTool = new ExifTool(path, executor, strategy);
+		reset(executor);
+	}
 
-    reset(executor);
-  }
+	@Test
+	void it_should_fail_if_arguments_is_null() {
+		assertThatThrownBy(() -> exifTool.getRawExifToolOutput(null))
+			.isInstanceOf(NullPointerException.class)
+			.hasMessage("Arguments cannot be null.");
+	}
 
-  @Test
-  void it_should_fail_if_image_is_null() {
-    assertThatThrownBy(() -> exifTool.getRawExifToolOutput(null, args))
-        .isInstanceOf(NullPointerException.class)
-        .hasMessage("Image cannot be null and must be a valid stream of image data.");
-  }
+	@Test
+	void it_should_get_raw_image_metadata() throws Exception {
+		String rawOutput = "[{\n"
+				+ "\"SourceFile\": \"tmp/foo.png\",\n"
+				+ "\"IFD0\": {\n"
+				+ "\"Make\": \"HTC\",\n"
+				+ "\"Model\": \"myTouch 4G\",\n"
+				+ "\"XResolution\": 72,\n"
+				+ "\"YResolution\": 72,\n"
+				+ "\"ResolutionUnit\": \"inches\",\n"
+				+ "\"YCbCrPositioning\": \"Centered\"\n"
+				+ "},\n"
+				+ "}]";
 
-  @Test
-  void it_should_fail_if_arguments_is_null() {
-    assertThatThrownBy(() -> exifTool.getRawExifToolOutput(mock(File.class), null))
-        .isInstanceOf(NullPointerException.class)
-        .hasMessage("Arguments cannot be null.");
-  }
+		doAnswer(new ReadRawOutputAnswer(rawOutput, "{ready}")).when(strategy).execute(
+				same(executor), same(path), anyListOf(String.class), any(OutputHandler.class)
+		);
 
-  @Test
-  void it_should_fail_with_unknown_file() {
-    File image = new FileBuilder("foo.png").exists(false).build();
-    assertThatThrownBy(() -> exifTool.getRawExifToolOutput(image, args))
-        .isInstanceOf(UnreadableFileException.class)
-        .hasMessage(
-            "Unable to read the given image [/tmp/foo.png], " +
-                "ensure that the image exists at the given withPath and that the " +
-                "executing Java process has permissions to read it."
-        );
-  }
+		// When
+		String result = exifTool.getRawExifToolOutput(args);
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void it_should_get_raw_image_metadata() throws Exception {
-    // Given
-    File image = new FileBuilder("foo.png").build();
+		// Then
+		ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
+		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
 
-    String rawOutput = "[{\n"
-        + "\"SourceFile\": \"tmp/foo.png\",\n"
-        + "\"IFD0\": {\n"
-        + "\"Make\": \"HTC\",\n"
-        + "\"Model\": \"myTouch 4G\",\n"
-        + "\"XResolution\": 72,\n"
-        + "\"YResolution\": 72,\n"
-        + "\"ResolutionUnit\": \"inches\",\n"
-        + "\"YCbCrPositioning\": \"Centered\"\n"
-        + "},\n"
-        + "}]";
+		List<String> arguments = argsCaptor.getValue();
+		assertThat(arguments).isNotEmpty().containsExactly(
+				"-a",
+				"-u",
+				"-g1",
+				"-j",
+				"/tmp/foo.png",
+				"-execute"
+		);
+		assertThat(result).isEqualTo(rawOutput);
+	}
 
-    doAnswer(new ReadRawOutputAnswer(rawOutput, "{ready}")).when(strategy).execute(
-        same(executor), same(path), anyListOf(String.class), any(OutputHandler.class)
-    );
+	private static final class ReadRawOutputAnswer implements Answer<Void> {
+		private final String rawOutput;
+		private final String end;
 
-    // When
-    String result = exifTool.getRawExifToolOutput(image, args);
+		private ReadRawOutputAnswer(String rawOutput, String end) {
+			this.rawOutput = rawOutput;
+			this.end = end;
+		}
 
-    // Then
-    ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
-    verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
+		@Override
+		public Void answer(InvocationOnMock invocation) {
+			OutputHandler handler = (OutputHandler) invocation.getArguments()[3];
+			String[]lines = rawOutput.split(System.getProperty("line.separator"));
+			// read raw output
+			for(String tmpLine : lines){
+				handler.readLine(tmpLine);
+			}
 
-    List<String> arguments = argsCaptor.getValue();
-    assertThat(arguments).isNotEmpty().containsExactly(
-        "-a",
-        "-u",
-        "-g1",
-        "-j",
-        "/tmp/foo.png",
-        "-execute"
-    );
-    assertThat(result).isEqualTo("hello");
-  }
+			// Read last line
+			handler.readLine(end);
 
-  private static final class ReadRawOutputAnswer implements Answer<Void> {
-    private final String rawOutput;
-
-    private final String end;
-
-    private ReadRawOutputAnswer(String rawOutput, String end) {
-      this.rawOutput = rawOutput;
-      this.end = end;
-    }
-
-    @Override
-    public Void answer(InvocationOnMock invocation) {
-      OutputHandler handler = (OutputHandler) invocation.getArguments()[3];
-      String[]lines = rawOutput.split(System.getProperty("line.separator"));
-      // read raw output
-      for(String tmpLine : lines){
-        handler.readLine(tmpLine);
-      }
-
-      // Read last line
-      handler.readLine(end);
-
-      return null;
-    }
-  }
+			return null;
+		}
+	}
 }

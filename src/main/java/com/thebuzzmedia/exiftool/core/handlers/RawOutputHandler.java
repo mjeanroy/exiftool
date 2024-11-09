@@ -7,30 +7,31 @@ import com.thebuzzmedia.exiftool.process.OutputHandler;
 
 public class RawOutputHandler implements OutputHandler {
 
-    private final StringBuilder output;
+	private final StringBuilder output;
 
-    public RawOutputHandler() {
-      this.output = new StringBuilder();
-    }
+	public RawOutputHandler() {
+		this.output = new StringBuilder();
+	}
 
-    @Override
-    public boolean readLine(String line) {
-      // If line is null, then this is the end.
-      // If line is strictly equals to "{ready}", then it means that stay_open feature
-      // is enabled and this is the end of the output.
-      if (!stopHandler().readLine(line)) {
-        return false;
-      }
+	@Override
+	public boolean readLine(String line) {
+		// If line is null, then this is the end.
+		// If line is strictly equals to "{ready}", then it means that stay_open feature
+		// is enabled and this is the end of the output.
+		if (!stopHandler().readLine(line)) {
+			return false;
+		}
 
-      if (output.length() > 0) {
-        output.append(Constants.BR);
-      }
-      output.append(line);
+		if (output.length() > 0) {
+			output.append(Constants.BR);
+		}
+		output.append(line);
 
-      return true;
-    }
+		return true;
+	}
 
-    public String getOutput() {
-      return output.toString();
-    }
+	public String getOutput() {
+		// output the raw string that exiftool outputes
+		return output.toString();
+	}
 }
