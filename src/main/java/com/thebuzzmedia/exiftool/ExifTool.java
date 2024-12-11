@@ -24,6 +24,7 @@ import com.thebuzzmedia.exiftool.core.StandardOptions;
 import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 import com.thebuzzmedia.exiftool.core.cache.VersionCacheFactory;
 import com.thebuzzmedia.exiftool.core.handlers.AllTagHandler;
+import com.thebuzzmedia.exiftool.core.handlers.RawOutputHandler;
 import com.thebuzzmedia.exiftool.core.handlers.StandardTagHandler;
 import com.thebuzzmedia.exiftool.core.handlers.TagHandler;
 import com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException;
@@ -523,6 +524,27 @@ public class ExifTool implements AutoCloseable {
 		log.debug("Image Meta Processed [queried {}, found {} values]", tagHandler.size(), tagHandler.size());
 
 		return tagHandler.getTags();
+	}
+
+	/**
+	 * Run user's custom Exiftool command and returns raw output from Exiftool as string
+	 * This just passes the arguments to Exiftool and does not do any checking on the validity of
+	 * those arguments or validity of any image file in the argument before passing them to
+	 * Exiftool. The user is also responsible for parsing
+	 * the raw output that has been returned.
+	 *
+	 * @param arguments List of strings containing the commands to pass to exiftool
+	 * @return String with whatever exiftool outputs.
+	 * @throws IOException If something bad happen during I/O operations.
+	 * @throws NullPointerException If parameter is null.
+	 */
+	public String getRawExifToolOutput(List<String> arguments) throws IOException {
+		requireNonNull(arguments, "Arguments cannot be null.");
+
+		RawOutputHandler resultHandler = new RawOutputHandler();
+		strategy.execute(executor, path, arguments, resultHandler);
+
+		return resultHandler.getOutput();
 	}
 
 	/**
