@@ -23,7 +23,6 @@ import com.thebuzzmedia.exiftool.exceptions.UnwritableFileException;
 import java.io.File;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -51,7 +50,7 @@ public final class PreConditions {
 	 */
 	public static String notBlank(String val, String message) {
 		requireNonNull(val, message);
-		if (val.length() == 0 || val.trim().length() == 0) {
+		if (val.isEmpty() || val.trim().isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 
@@ -98,7 +97,7 @@ public final class PreConditions {
 	 */
 	public static <T, U> Map<T, U> notEmpty(Map<T, U> val, String message) {
 		requireNonNull(val, message);
-		if (val.size() == 0) {
+		if (val.isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 
@@ -184,9 +183,5 @@ public final class PreConditions {
 		}
 
 		return file;
-	}
-
-	private static String errorMessage(String message, Object[] params) {
-		return params.length > 0 ? format(message, params) : message;
 	}
 }

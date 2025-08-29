@@ -166,7 +166,7 @@ public class PoolStrategy implements ExecutionStrategy {
 			}
 		}
 
-		if (thrownEx.size() > 0) {
+		if (!thrownEx.isEmpty()) {
 			throw new PoolIOException("Some strategies in the pool failed to close properly", thrownEx);
 		}
 	}

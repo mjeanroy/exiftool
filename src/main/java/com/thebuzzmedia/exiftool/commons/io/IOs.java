@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Static Input/Output Utilities.
@@ -40,7 +41,7 @@ public final class IOs {
 	/**
 	 * Encoding.
 	 */
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
+	private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
 	// Ensure non instantiation.
 	private IOs() {

@@ -36,5 +36,5 @@ public final class Constants {
 	/**
 	 * OS independent line break.
 	 */
-	public static final String BR = System.getProperty("line.separator");
+	public static final String BR = System.lineSeparator();
 }

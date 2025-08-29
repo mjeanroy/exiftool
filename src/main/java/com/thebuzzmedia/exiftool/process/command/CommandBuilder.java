@@ -94,10 +94,8 @@ public class CommandBuilder {
 	public CommandBuilder addArgument(String arg, String... args) {
 		add(arg);
 
-		if (args.length > 0) {
-			for (String a : args) {
-				add(a);
-			}
+		for (String a : args) {
+			add(a);
 		}
 
 		return this;
