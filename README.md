@@ -6,12 +6,12 @@
 
 ### Description
 
-*The goal and main features of this fork did not changed, so this description is the same as the original library*
+*The goal and main features of this fork did not change, so this description is the same as the original library*
 
 This project represents the most robust Java integrations with Phil Harvey's
 excellent ExifTool available.
 
-The goal of this project was to provide such a tight, well designed and performant
+The goal of this project was to provide such a tight, well-designed and performant
 integration with ExifTool that any Java developer using the class would have no
 idea that they weren't simply calling into a standard Java library while still
 being able to leverage the unmatched robustness of ExifTool.
@@ -38,7 +38,7 @@ checking and error reporting during instantiation and use.
 For example, if you specify that you want to use `stay_open` support, the
 ExifTool class will actually check the native ExifTool executable for support
 for that feature before allowing the feature to be turned on and report the
-problem to the caller along with potential work-arounds if necessary.
+problem to the caller along with potential workarounds if necessary.
 
 Additionally, all external calls to the process are safely wrapped and reported
 with detailed exceptions if problems arise instead of just letting unknown
@@ -59,11 +59,11 @@ This library is a fork of [https://github.com/rkalla/exiftool](https://github.co
 - ExifTool is now thread-safe.
 - Integration with `slf4j` and `log4j`.
 
-More informations below.
+More information below.
 
 ### Support
 
-This library is tested against Java >= 7, Linux and Windows.
+This library is tested against Java >= 8, Linux and Windows.
 
 
 ### Installation
@@ -203,9 +203,7 @@ import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.core.StandardTag;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -241,16 +239,13 @@ public class ExifParser {
 
     try {
       for (final String image : args) {
-        executor.submit(new Runnable() {
-          @Override
-          public void run() {
+        executor.submit(() -> {
             try {
               System.out.println("Tags: " + parse(image));
             }
             catch (Exception ex) {
               ex.printStackTrace();
             }
-          }
         });
       }
     } finally {
@@ -280,7 +275,7 @@ Benchmark [tags=49, images=10, iterations=25]
 You can see that utilizing the -stay_open functionality provided in ExifTool
 you can realize magnitudes times more performance.
 
-Also the bigger of a test you run (more iterations) the bigger the performance
+Also, the bigger of a test you run (more iterations) the bigger the performance
 margin increases.
 
 ### Troubleshooting
@@ -316,7 +311,7 @@ Because of this and because of the expectation that ExifTool in daemon mode
 will be the primary use-case for this class, limited support for `InputStream`
 parsing was designed out of this class.
 
-- Do I need to manually call `close()` to cleanup a daemon ExifTool?
+- Do I need to manually call `close()` to clean up a daemon ExifTool?
 
 This is done automatically for you when `exifTool` instance is garbage collected or
 via the cleanup thread the class employs when a daemon instance of ExifTool is created.
@@ -324,7 +319,7 @@ Unless you modified the delay of the cleanup thread (and set it to 0 or less), t
 automatic cleanup thread is enabled and will clean up those resources for
 you after the specified amount of inactivity.
 
-Nevetheless, I suggest you to use exiftool with a `try-with-resource` and to force `close`
+Nevertheless, I suggest you to use exiftool with a `try-with-resource` and to force `close`
 operation when your program stops.
 
 ### Reference
