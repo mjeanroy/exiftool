@@ -21,11 +21,11 @@ import com.thebuzzmedia.exiftool.Constants;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
 /**
- * Simple command handler that just read output line by line
- * and append each one in a {@link StringBuilder} instance.
- * When current line is null, handler will return false.
+ * Simple command handler that just reads output line by line
+ * and appends each one in a {@link StringBuilder} instance.
+ * When current line is null, handler will return {@code false}.
  *
- * <p />
+ * <p>
  *
  * <strong>Note:</strong> that this handler is not thread safe and should be
  * synchronized if needed.

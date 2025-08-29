@@ -32,7 +32,7 @@ class LoggerLog4j2 implements Logger {
 
 	/**
 	 * Create logger.
-	 * This constructor should be called by {@link LoggerFactory} only.
+	 * This constructor should only be called by {@link LoggerFactory}.
 	 *
 	 * @param name Logger name.
 	 */

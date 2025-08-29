@@ -54,14 +54,14 @@ public class TimerScheduler implements Scheduler {
 
 	/**
 	 * Pending task.
-	 * This task should be cancel with {@link #stop()} method before any
+	 * This task should be cancelled with {@link #stop()} method before any
 	 * call to {@link #start(Runnable)} method.
 	 */
 	private TimerTask pendingTask;
 
 	/**
 	 * Create scheduler.
-	 * @param name Thread name.
+	 * @param name  Thread name.
 	 * @param delay Delay before task execution.
 	 * @throws IllegalArgumentException If {@code delay} is not strictly positive.
 	 */

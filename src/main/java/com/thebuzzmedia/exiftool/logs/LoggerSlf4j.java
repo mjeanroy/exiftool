@@ -30,7 +30,7 @@ class LoggerSlf4j implements Logger {
 
 	/**
 	 * Create logger.
-	 * This constructor should be called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory} only.
+	 * This constructor should only be called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory}.
 	 *
 	 * @param name Logger name.
 	 */

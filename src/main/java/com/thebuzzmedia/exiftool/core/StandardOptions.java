@@ -36,7 +36,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 
 /**
- * Support options from exiftool binary. Most options are documented
+ * Support options from ExifTool binary. Most options are documented
  * here: <a href="https://linux.die.net/man/1/exiftool">https://linux.die.net/man/1/exiftool</a>.
  */
 public final class StandardOptions implements ExifToolOptions {
@@ -113,7 +113,7 @@ public final class StandardOptions implements ExifToolOptions {
 
 	/**
 	 * Set current language for tag descriptions and converted values. LANG is "de", "fr", "ja", etc.
-	 *
+	 * <p>
 	 * Note that tag/group names are always English, independent of the lang setting,
 	 * and translation of warning/error messages has not yet been implemented.
 	 */
@@ -139,9 +139,9 @@ public final class StandardOptions implements ExifToolOptions {
 	private final boolean extractUnknown;
 
 	/**
-	 * Wether or not to override original file when writing information to an image. Caution: This option should only
+	 * Whether to override original file when writing information to an image. Caution: This option should only
 	 * be used if you already have separate backup copies of your image files.
-	 *
+	 * <p>
 	 * Two mode are available:
 	 * <ul>
 	 *   <li>
@@ -149,7 +149,7 @@ public final class StandardOptions implements ExifToolOptions {
 	 *     edited version in a single operation.
 	 *   </li>
 	 *   <li>
-	 *     Similar to -overwrite_original except that an extra step is added to allow the original file attributes to be preserved.
+	 *     Similar to {@code -overwrite_original} except that an extra step is added to allow the original file attributes to be preserved.
 	 *     For example, on a Mac this causes the original file creation date, ownership, type, creator, label color and icon to be preserved.
 	 *     This is implemented by opening the original file in update mode and replacing its data with a copy of a temporary file before
 	 *     deleting the temporary. The extra step results in slower performance, so the first mode should be used instead unless necessary.
@@ -159,7 +159,7 @@ public final class StandardOptions implements ExifToolOptions {
 	private final OverwriteMode overwriteOriginal;
 
 	/**
-	 * Output information in the form of exiftool arguments, suitable for use with the -@ option when writing.
+	 * Output information in the form of exiftool arguments, suitable for use with the {@code -@} option when writing.
 	 */
 	private final boolean useArgsFormat;
 

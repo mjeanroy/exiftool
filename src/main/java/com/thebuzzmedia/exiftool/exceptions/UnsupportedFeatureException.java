@@ -33,7 +33,7 @@ import static java.lang.String.format;
 public class UnsupportedFeatureException extends AbstractExifException {
 
 	/**
-	 * Exif Version (this version do not support feature).
+	 * Exif Version (this version does not support feature).
 	 */
 	private final Version version;
 
@@ -45,7 +45,7 @@ public class UnsupportedFeatureException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
-	 * @param path ExifTool path.
+	 * @param path    ExifTool path.
 	 * @param version Exif Version.
 	 */
 	public UnsupportedFeatureException(String path, Version version) {

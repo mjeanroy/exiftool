@@ -39,7 +39,7 @@ public final class PreConditions {
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
-	 *   <li>Not blank (i.e contains at least one character other than space).</li>
+	 *   <li>Not blank (i.e. contains at least one character other than space).</li>
 	 * </ul>
 	 *
 	 * @param val     Value to check.
@@ -58,7 +58,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that array is:
+	 * Ensures that an array is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -81,7 +81,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that map is:
+	 * Ensures that a map is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -105,7 +105,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that iterable element is:
+	 * Ensures that an iterable element is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -129,7 +129,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check if given number is strictly positive (strictly greater than zero).
+	 * Checks if the given number is strictly positive (strictly greater than zero).
 	 *
 	 * @param nb      Number.
 	 * @param message Error message.
@@ -148,7 +148,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check that a given file exist and is readable.
+	 * Checks that a given file exist and is readable.
 	 *
 	 * @param file    File to check.
 	 * @param message Error message.
@@ -167,7 +167,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check that a given file exist and is writable.
+	 * Checks that a given file exist and is writable.
 	 *
 	 * @param file    File to check.
 	 * @param message Error message.

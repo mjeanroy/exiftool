@@ -28,15 +28,15 @@ import static java.util.Collections.unmodifiableList;
 /**
  * Composite handler.
  *
- * <p />
+ * <p>
  *
- * Run each internal handler and return false if one of them returns
- * false during line processing.
- *
+ * Run each internal handler and return {@code false} if one of them returns
+ * {@code false} during line processing.
+ * <p>
  * This class should only be used internally (to compose handlers during
  * command execution).
  *
- * <p />
+ * <p>
  *
  * <strong>Note:</strong> this class is thread safe if (and only if)
  * internal handlers are thread safe.

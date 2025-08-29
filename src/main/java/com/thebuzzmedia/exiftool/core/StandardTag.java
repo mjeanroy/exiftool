@@ -27,17 +27,17 @@ import java.util.regex.Pattern;
  * Enum used to pre-define a convenient list of tags that can be easily
  * extracted from images using this class with an external install of
  * ExifTool.
- *
+ * <p>
  * Each tag defined also includes a type hint for the parsed value
  * associated with it when the default {@link com.thebuzzmedia.exiftool.core.StandardFormat#NUMERIC}
  * value format is used.
  *
- * <br>
+ * <p>
  *
  * The types provided by each tag are merely a hint based on the
- * <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/index.html">ExifTool Tag Guide</a>
+ * <a href="https://exiftool.org/TagNames/index.html">ExifTool Tag Guide</a>
  * by Phil Harvey; the caller is free to parse or process the returned {@link String} values any way they wish.
- *
+ * <p>
  * This list was determined by looking at the common metadata tag values
  * written to images by popular mobile devices (iPhone, Android) as well as
  * cameras like simple point and shoots as well as DSLRs. As an additional

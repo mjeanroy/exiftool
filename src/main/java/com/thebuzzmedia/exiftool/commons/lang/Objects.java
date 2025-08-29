@@ -27,13 +27,13 @@ public final class Objects {
 	}
 
 	/**
-	 * Returns the first of two given parameters that is not {@code null}.
+	 * Returns the first parameter that is not {@code null}.
 	 *
 	 * @param val1 First value.
 	 * @param val2 Second value.
-	 * @param others Other value.
+	 * @param others Other values.
 	 * @param <T> Type of parameters.
-	 * @return First parameter if it is not {@code null}, second parameter otherwise.
+	 * @return The first non {@code null} parameter.
 	 */
 	@SafeVarargs
 	public static <T> T firstNonNull(T val1, T val2, T... others) {

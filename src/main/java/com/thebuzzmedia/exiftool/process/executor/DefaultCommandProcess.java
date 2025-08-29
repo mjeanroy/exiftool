@@ -39,7 +39,7 @@ import static java.util.Objects.requireNonNull;
  *
  * <br>
  *
- * This implementation used instance of {@link InputStream} to handle
+ * This implementation uses instance of {@link InputStream} to handle
  * read operation and instance of {@link OutputStream} to handle write
  * operation. These streams may come from instance of {@link Process} for instance.
  *
@@ -78,8 +78,8 @@ public class DefaultCommandProcess implements CommandProcess {
 
 	/**
 	 * Create process.
-	 * @param is Input stream.
-	 * @param os Output stream.
+	 * @param is  Input stream.
+	 * @param os  Output stream.
 	 * @param err Error stream.
 	 */
 	public DefaultCommandProcess(InputStream is, OutputStream os, InputStream err) {

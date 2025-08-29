@@ -29,15 +29,14 @@ public final class Strings {
 	}
 
 	/**
-	 * Check that given string is not {@code null} or empty.
+	 * Checks that the given string is not {@code null} or empty.
 	 *
 	 * @param value Given string to check.
-	 * @return {@code true} if {@code value} is {@code null} or empty.
+	 * @return {@code true} if {@code value} is not {@code null} nor empty.
 	 */
 	public static boolean isNotEmpty(String value) {
 		return value != null && !value.isEmpty();
 	}
-
 
 	/**
 	 * Try to parse a string as an Integer and return the value if valid, or an Optional empty if not.

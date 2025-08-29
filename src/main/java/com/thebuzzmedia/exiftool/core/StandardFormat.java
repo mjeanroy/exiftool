@@ -30,28 +30,28 @@ import static java.util.Collections.singletonList;
  * Enum used to define the 2 different output formats that {@link StandardTag}
  * values can be returned in: numeric or human-readable text.
  *
- * <br>
+ * <p>
  *
- * ExifTool, via the <code>-n</code> command line arg, is capable of returning
+ * ExifTool, via the {@code -n} command line arg, is capable of returning
  * most values in their raw numeric form (e.g. Aperture="2.8010323841") as well
  * as a more human-readable/friendly format (e.g. Aperture="2.8").
  *
- * <br>
+ * <p>
  *
  * If the caller finds the human-readable format easier to process,
  * {@link StandardFormat#HUMAN_READABLE} can be specified when calling
  * {@link com.thebuzzmedia.exiftool.ExifTool#getImageMeta(File, Format, Collection)}
  * and the returned {@link String} values processed manually by the caller.
  *
- * <br>
+ * <p>
  *
  * In order to see the types of values that are returned when
  * {@link StandardFormat#HUMAN_READABLE} is used, you can check the
  * comprehensive
- * <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/index.html">
+ * <a href="https://exiftool.org/TagNames/index.html">
  * ExifTool Tag Guide</a>.
  *
- * <br>
+ * <p>
  *
  * This makes sense with some values like Aperture that in
  * {@link StandardFormat#NUMERIC} format end up returning as 14-decimal-place,

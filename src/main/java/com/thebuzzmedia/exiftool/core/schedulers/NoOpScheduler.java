@@ -20,7 +20,7 @@ package com.thebuzzmedia.exiftool.core.schedulers;
 import com.thebuzzmedia.exiftool.Scheduler;
 
 /**
- * This scheduler do nothing (use it for disabling scheduler).
+ * This scheduler does nothing (use it for disabling scheduler).
  */
 public class NoOpScheduler implements Scheduler {
 

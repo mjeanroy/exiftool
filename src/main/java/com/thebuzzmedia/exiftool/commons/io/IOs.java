@@ -74,7 +74,7 @@ public final class IOs {
 			throw ex;
 		}
 		finally {
-			// Maybe last line is not null (suppose an handler that should stop on given output).
+			// Maybe last line is not null (suppose a handler that should stop on given output).
 			// On the opposite, if line is null, then we know that stream should be closed.
 			if (line == null) {
 				closeQuietly(br);
