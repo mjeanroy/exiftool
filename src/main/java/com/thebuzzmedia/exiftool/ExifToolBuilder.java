@@ -30,9 +30,9 @@ import com.thebuzzmedia.exiftool.process.executor.CommandExecutors;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.thebuzzmedia.exiftool.core.schedulers.SchedulerDuration.millis;
-import static com.thebuzzmedia.exiftool.process.executor.CommandExecutors.newExecutor;
 
 /**
  * Builder for {@link ExifTool} instance.
@@ -134,19 +134,56 @@ public class ExifToolBuilder {
 	private static final Logger log = LoggerFactory.getLogger(ExifToolBuilder.class);
 
 	/**
-	 * Function to get default path value.
+	 * Gets the default path value.
+	 * <p>
+	 * The path value is the absolute path to the ExifTool executable on the host system running
+	 * this class as defined by the {@code exiftool.path} system property.
+	 * <p>
+	 * This system property can be set on startup with {@code -Dexiftool.path=/path/to/exiftool}
+	 * or by calling {@link System#setProperty(String, String)} before
+	 * this class is loaded.
+	 * <p>
+	 * On Windows be sure to double-escape the path to the tool,
+	 * for example: {@code -Dexiftool.path=C:\\Tools\\exiftool.exe}.
+	 * <p>
+	 * If the property is not defined it will use {@code exiftool}.
 	 */
-	private static final PathFunction PATH = new PathFunction();
+	private static final Supplier<String> PATH = () -> System.getProperty("exiftool.path", "exiftool");
 
 	/**
-	 * Function to get default cleanup interval.
+	 * Gets the default cleanup interval.
+	 * <p>
+	 * The cleanup interval is the interval (in milliseconds) of inactivity before the cleanup thread wakes
+	 * up and cleans up the daemon ExifTool process and the read/write streams
+	 * used to communicate with it when the {@code stay_open} feature is
+	 * used.
+	 * <p>
+	 * Every time a call to {@link ExifTool#getImageMeta} is processed, the timer
+	 * keeping track of cleanup is reset; more specifically, this class has to
+	 * experience no activity for this duration of time before the cleanup
+	 * process is fired up and cleans up the host OS process and the stream
+	 * resources.
+	 * <p>
+	 * Any subsequent calls to {@link ExifTool#getImageMeta} after a cleanup simply
+	 * re-initializes the resources.
+	 * <p>
+	 * This system property can be set on startup with {@code -Dexiftool.processCleanupDelay=600000}
+	 * or by calling {@link System#setProperty(String, String)} before
+	 * this class is loaded.
+	 * <p>
+	 * Setting this value to 0 disables the automatic cleanup thread completely
+	 * and the caller will need to manually clean up the external ExifTool
+	 * process and read/write streams by calling {@link ExifTool#close} method.
+	 * <p>
+	 * If the property is not defined it will default to {@code 600000} (10 minutes).
 	 */
-	private static final DelayFunction DELAY = new DelayFunction();
+	private static final Supplier<Long> DELAY = () -> Long.getLong("exiftool.processCleanupDelay", 600000);
 
 	/**
-	 * Function to get default executor environment.
+	 * Gets the default executor for the created ExifTool instance.
+	 * The default executor is the result of {@link CommandExecutors#newExecutor()} method.
 	 */
-	private static final ExecutorFunction EXECUTOR = new ExecutorFunction();
+	private static final Supplier<CommandExecutor> EXECUTOR = CommandExecutors::newExecutor;
 
 	/**
 	 * ExifTool path.
@@ -426,86 +463,12 @@ public class ExifToolBuilder {
 	 * </ul>
 	 *
 	 * @param value   First value.
-	 * @param factory Function used to get non-null value.
+	 * @param supplier Function used to get non-null value.
 	 * @param <T> Type of values.
 	 * @return Non null value.
 	 */
-	private static <T> T firstNonNull(T value, FactoryFunction<T> factory) {
-		return value == null ? factory.apply() : value;
-	}
-
-	/**
-	 * Interface to return values.
-	 * This interface should be used by builder to lazily create
-	 * default settings parameters.
-	 *
-	 * @param <T> Type of settings.
-	 */
-	private interface FactoryFunction<T> {
-		T apply();
-	}
-
-	/**
-	 * Return the absolute path to the ExifTool executable on the host system running
-	 * this class as defined by the {@code exiftool.path} system property.
-	 * <p>
-	 * This system property can be set on startup with {@code -Dexiftool.path=/path/to/exiftool}
-	 * or by calling {@link System#setProperty(String, String)} before
-	 * this class is loaded.
-	 * <p>
-	 * On Windows be sure to double-escape the path to the tool,
-	 * for example: {@code -Dexiftool.path=C:\\Tools\\exiftool.exe}.
-	 * <p>
-	 * Default value is {@code exiftool}.
-	 */
-	private static class PathFunction implements FactoryFunction<String> {
-		@Override
-		public String apply() {
-			return System.getProperty("exiftool.path", "exiftool");
-		}
-	}
-
-	/**
-	 * Return the interval (in milliseconds) of inactivity before the cleanup thread wakes
-	 * up and cleans up the daemon ExifTool process and the read/write streams
-	 * used to communicate with it when the {@code stay_open} feature is
-	 * used.
-	 * <p>
-	 * Every time a call to {@link ExifTool#getImageMeta} is processed, the timer
-	 * keeping track of cleanup is reset; more specifically, this class has to
-	 * experience no activity for this duration of time before the cleanup
-	 * process is fired up and cleans up the host OS process and the stream
-	 * resources.
-	 * <p>
-	 * Any subsequent calls to {@link ExifTool#getImageMeta} after a cleanup simply
-	 * re-initializes the resources.
-	 * <p>
-	 * This system property can be set on startup with {@code -Dexiftool.processCleanupDelay=600000}
-	 * or by calling {@link System#setProperty(String, String)} before
-	 * this class is loaded.
-	 * <p>
-	 * Setting this value to 0 disables the automatic cleanup thread completely
-	 * and the caller will need to manually clean up the external ExifTool
-	 * process and read/write streams by calling {@link ExifTool#close} method.
-	 * <p>
-	 * Default value is {@code 600000} (10 minutes).
-	 */
-	private static class DelayFunction implements FactoryFunction<Long> {
-		@Override
-		public Long apply() {
-			return Long.getLong("exiftool.processCleanupDelay", 600000);
-		}
-	}
-
-	/**
-	 * Returns the default executor for the created ExifTool instance.
-	 * Default executor is the result of {@link CommandExecutors#newExecutor()} method.
-	 */
-	private static class ExecutorFunction implements FactoryFunction<CommandExecutor> {
-		@Override
-		public CommandExecutor apply() {
-			return newExecutor();
-		}
+	private static <T> T firstNonNull(T value, Supplier<T> supplier) {
+		return value == null ? supplier.get() : value;
 	}
 
 	/**
@@ -516,7 +479,7 @@ public class ExifToolBuilder {
 	 * <li>If {@code delay} is greater than zero, then an instance of {@link DefaultScheduler} will be returned.</li>
 	 * </ul>
 	 */
-	private static class SchedulerFunction implements FactoryFunction<Scheduler> {
+	private static class SchedulerFunction implements Supplier<Scheduler> {
 		private final Long delay;
 
 		public SchedulerFunction(Long delay) {
@@ -524,7 +487,7 @@ public class ExifToolBuilder {
 		}
 
 		@Override
-		public Scheduler apply() {
+		public Scheduler get() {
 			// Otherwise, this is the StayOpen strategy.
 			// We have to look up the delay between automatic clean and create
 			// the scheduler.
@@ -545,7 +508,7 @@ public class ExifToolBuilder {
 	 * a task to clean resources used by this strategy. This task will run automatically after a specified
 	 * delay.
 	 */
-	private static class StrategyFunction implements FactoryFunction<ExecutionStrategy> {
+	private static class StrategyFunction implements Supplier<ExecutionStrategy> {
 		private final Boolean stayOpen;
 
 		private final Long delay;
@@ -562,12 +525,12 @@ public class ExifToolBuilder {
 		}
 
 		@Override
-		public ExecutionStrategy apply() {
+		public ExecutionStrategy get() {
 			// First, try the pool strategy.
 			if (poolSize > 0) {
 				List<ExecutionStrategy> strategies = new ArrayList<>(poolSize);
 				for (int i = 0; i < poolSize; i++) {
-					Scheduler scheduler = new SchedulerFunction(delay).apply();
+					Scheduler scheduler = new SchedulerFunction(delay).get();
 					StayOpenStrategy strategy = new StayOpenStrategy(scheduler);
 					strategies.add(strategy);
 				}

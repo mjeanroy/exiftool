@@ -171,6 +171,7 @@ public class PoolStrategy implements ExecutionStrategy {
 		}
 	}
 
+	@FunctionalInterface
 	private interface ExecutionStrategyFunction {
 		void apply(ExecutionStrategy strategy, int i) throws Exception;
 	}
