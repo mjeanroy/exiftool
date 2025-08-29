@@ -25,11 +25,11 @@ import java.util.Objects;
 
 /**
  * Utility class used to generate tags which are not print converted. This is
- * done in Exiftool by suffixing <code>#</code> to the tag and it has the same
- * effect of <code>-n</code> but applied on a per-tag basis.
- *
+ * done in ExifTool by suffixing {@code #} to the tag and it has the same
+ * effect of {@code -n} but applied on a per-tag basis.
+ * <p>
  * The class wraps another tag and manages its different query name. By design
- * <code>NonConvertedTag.of(Tag.ANY)</code> is not equal to <code>Tag.ANY</code>
+ * {@code NonConvertedTag.of(Tag.ANY)} is not equal to {@code Tag.ANY}
  * since it's possible to query two different formats of the same tag.
  *
  * @author Jack (jack@pixbits.com)

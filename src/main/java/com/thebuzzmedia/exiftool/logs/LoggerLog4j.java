@@ -34,7 +34,7 @@ class LoggerLog4j implements Logger {
 
 	/**
 	 * Create logger.
-	 * This constructor should be called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory} only.
+	 * This constructor should be only called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory}.
 	 *
 	 * @param name Logger name.
 	 */

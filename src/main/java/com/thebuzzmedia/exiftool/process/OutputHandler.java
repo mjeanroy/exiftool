@@ -24,7 +24,7 @@ import com.thebuzzmedia.exiftool.commons.io.StreamVisitor;
  *
  * <br>
  *
- * Each line is give to the {@link #readLine(String)} method.
+ * Each line is given to the {@link #readLine(String)} method.
  * This method should return:
  * <ul>
  *   <li>

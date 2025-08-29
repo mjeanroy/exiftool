@@ -31,12 +31,11 @@ import static com.thebuzzmedia.exiftool.Constants.SEPARATOR;
  * <p>
  * Since the type of value is unknown, typed parsing is not possible,
  * and the tag does not know whether multiple values are expected or not.
- * Consequently, when parsing, it returns a String[] regardless of whether
+ * Consequently, when parsing, it returns a {@code String[]} regardless of whether
  * the tag will ever have multiple values. Further parsing is then up to the caller.
  *
  * @author David Edwards (david@more.fool.me.uk)
  */
-
 public final class UnspecifiedTag implements Tag {
 
 	/**

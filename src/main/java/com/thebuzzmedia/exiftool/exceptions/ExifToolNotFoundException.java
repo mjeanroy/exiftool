@@ -39,7 +39,7 @@ public class ExifToolNotFoundException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
-	 * @param path ExifTool path defined during command execution.
+	 * @param path   ExifTool path defined during command execution.
 	 * @param result The result triggered during command execution.
 	 */
 	public ExifToolNotFoundException(String path, CommandResult result) {
@@ -51,7 +51,7 @@ public class ExifToolNotFoundException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
-	 * @param ex The original exception.
+	 * @param ex   The original exception.
 	 * @param path ExifTool path defined during command execution.
 	 */
 	public ExifToolNotFoundException(IOException ex, String path) {

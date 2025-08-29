@@ -18,7 +18,7 @@
 package com.thebuzzmedia.exiftool;
 
 /**
- * List of constants used with Exiftool.
+ * List of constants used with ExifTool.
  */
 public final class Constants {
 

@@ -31,7 +31,7 @@ public class RawOutputHandler implements OutputHandler {
 	}
 
 	public String getOutput() {
-		// output the raw string that exiftool outputes
+		// output the raw string that exiftool outputs
 		return output.toString();
 	}
 }

@@ -26,8 +26,8 @@ public interface CommandExecutor {
 
 	/**
 	 * Execute command and build the result.
-	 *
-	 * **NOTE:** Execution is synchronous.
+	 * <p>
+	 * <strong>NOTE:</strong> Execution is synchronous.
 	 *
 	 * @param command Command input.
 	 * @return Result of execution.
@@ -37,7 +37,8 @@ public interface CommandExecutor {
 
 	/**
 	 * Execute command and build the result.
-	 * **NOTE:** Execution is synchronous.
+	 * <p>
+	 * <strong>NOTE:</strong> Execution is synchronous.
 	 *
 	 * @param command Command.
 	 * @param handler Custom output handler.
@@ -49,8 +50,10 @@ public interface CommandExecutor {
 	/**
 	 * Start command line and return associated process.
 	 * This process will be used to:
-	 * - Read output.
-	 * - Write arguments.
+	 * <ul>
+	 *   <li>Read output.</li>
+	 *   <li>Write arguments.</li>
+	 * </ul>
 	 *
 	 * @param command Command.
 	 * @return Process.
