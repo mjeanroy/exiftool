@@ -139,6 +139,11 @@ public final class StandardOptions implements ExifToolOptions {
 	private final boolean extractUnknown;
 
 	/**
+	 * Avoid extracting composite tags.
+	 */
+	private final boolean noCompositeTags;
+
+	/**
 	 * Wether or not to override original file when writing information to an image. Caution: This option should only
 	 * be used if you already have separate backup copies of your image files.
 	 *
@@ -179,6 +184,7 @@ public final class StandardOptions implements ExifToolOptions {
 	 * @param duplicates Allow or suppress duplicate tag names to be extracted.
 	 * @param extractEmbedded Extract information from embedded documents.
 	 * @param extractUnknown Extract unknown tags.
+	 * @param noCompositeTags Do not extract composite tags.
 	 * @param overwriteMode The overwrite mode.
 	 * @param useArgsFormat Output information in the form of exiftool arguments.
 	 */
@@ -196,6 +202,7 @@ public final class StandardOptions implements ExifToolOptions {
 			boolean duplicates,
 			boolean extractEmbedded,
 			boolean extractUnknown,
+			boolean noCompositeTags,
 			OverwriteMode overwriteMode,
 			boolean useArgsFormat) {
 
@@ -211,6 +218,7 @@ public final class StandardOptions implements ExifToolOptions {
 		this.lang = lang;
 		this.extractEmbedded = extractEmbedded;
 		this.extractUnknown = extractUnknown;
+		this.noCompositeTags = noCompositeTags;
 		this.duplicates = duplicates;
 		this.overwriteOriginal = overwriteMode;
 		this.useArgsFormat = useArgsFormat;
@@ -282,6 +290,10 @@ public final class StandardOptions implements ExifToolOptions {
 
 		if (extractEmbedded) {
 			arguments.add("-extractEmbedded");
+		}
+
+		if (noCompositeTags) {
+			arguments.add("-e");
 		}
 
 		String overwrite = overwriteOriginal == null ? null : overwriteOriginal.arg;
@@ -410,6 +422,15 @@ public final class StandardOptions implements ExifToolOptions {
 	}
 
 	/**
+	 * Get {@link #noCompositeTags}
+	 *
+	 * @return {@link #noCompositeTags}
+	 */
+	public boolean isWithoutCompositeTags() {
+		return noCompositeTags;
+	}
+
+	/**
 	 * Check if writing metadata will overwrite original file <strong>(not in place)</strong>.
 	 *
 	 * @return {@code true} if writing to file will overwrite it, {@code false otherwise}.
@@ -458,6 +479,7 @@ public final class StandardOptions implements ExifToolOptions {
 				.withDuplicates(duplicates)
 				.withExtractEmbedded(extractEmbedded)
 				.withExtractUnknown(extractUnknown)
+				.withoutCompositeTags(noCompositeTags)
 				.withOverwriteMode(overwriteOriginal)
 				.withUseArgsFormat(useArgsFormat);
 	}
@@ -483,6 +505,7 @@ public final class StandardOptions implements ExifToolOptions {
 					&& Objects.equals(duplicates, opts.duplicates)
 					&& Objects.equals(extractEmbedded, opts.extractEmbedded)
 					&& Objects.equals(extractUnknown, opts.extractUnknown)
+					&& Objects.equals(noCompositeTags, opts.noCompositeTags)
 					&& Objects.equals(overwriteOriginal, opts.overwriteOriginal)
 					&& Objects.equals(useArgsFormat, opts.useArgsFormat);
 		}
@@ -506,6 +529,7 @@ public final class StandardOptions implements ExifToolOptions {
 				duplicates,
 				extractEmbedded,
 				extractUnknown,
+				noCompositeTags,
 				overwriteOriginal,
 				useArgsFormat
 		);
@@ -527,6 +551,7 @@ public final class StandardOptions implements ExifToolOptions {
 				.append("duplicates", duplicates)
 				.append("extractEmbedded", extractEmbedded)
 				.append("extractUnknown", extractUnknown)
+				.append("noCompositeTags", noCompositeTags)
 				.append("overwriteOriginal", overwriteOriginal)
 				.append("useArgsFormat", useArgsFormat)
 				.build();
@@ -629,6 +654,13 @@ public final class StandardOptions implements ExifToolOptions {
 		private boolean extractUnknown;
 
 		/**
+		 * Do not extract composite tags.
+		 *
+		 * @see StandardOptions#noCompositeTags
+		 */
+		private boolean noCompositeTags;
+
+		/**
 		 * Overwrite original file mode.
 		 *
 		 * @see StandardOptions#overwriteOriginal
@@ -654,6 +686,7 @@ public final class StandardOptions implements ExifToolOptions {
 			this.duplicates = false;
 			this.extractEmbedded = false;
 			this.extractUnknown = false;
+			this.noCompositeTags = false;
 			this.overwriteOriginal = OverwriteMode.NONE;
 			this.useArgsFormat = false;
 		}
@@ -825,6 +858,17 @@ public final class StandardOptions implements ExifToolOptions {
 		}
 
 		/**
+		 * Update {@link #noCompositeTags}
+		 *
+		 * @param noCompositeTags New {@link #noCompositeTags}
+		 * @return The builder.
+		 */
+		public Builder withoutCompositeTags(boolean noCompositeTags) {
+			this.noCompositeTags = noCompositeTags;
+			return this;
+		}
+
+		/**
 		 * Do not overwrite original file.
 		 *
 		 * @return The builder.
@@ -945,6 +989,7 @@ public final class StandardOptions implements ExifToolOptions {
 					duplicates,
 					extractEmbedded,
 					extractUnknown,
+					noCompositeTags,
 					overwriteOriginal,
 					useArgsFormat
 			);
@@ -1068,6 +1113,15 @@ public final class StandardOptions implements ExifToolOptions {
 		}
 
 		/**
+		 * Get {@link #noCompositeTags}
+		 *
+		 * @return {@link #noCompositeTags}
+		 */
+		public boolean isWithoutCompositeTags() {
+			return noCompositeTags;
+		}
+
+		/**
 		 * Check if writing metadata will overwrite original file <strong>(not in place)</strong>.
 		 *
 		 * @return {@code true} if writing to file will overwrite it, {@code false otherwise}.
@@ -1111,6 +1165,7 @@ public final class StandardOptions implements ExifToolOptions {
 					.append("lang", lang)
 					.append("duplicates", duplicates)
 					.append("extractEmbedded", extractEmbedded)
+					.append("noCompositeTags", noCompositeTags)
 					.append("overwriteOriginal", overwriteOriginal)
 					.append("useArgsFormat", useArgsFormat)
 					.build();
