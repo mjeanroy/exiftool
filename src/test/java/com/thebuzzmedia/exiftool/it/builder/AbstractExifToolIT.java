@@ -24,9 +24,11 @@ import com.thebuzzmedia.exiftool.exceptions.ExifToolNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.FileSystems;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static com.thebuzzmedia.exiftool.tests.TestConstants.EXIF_TOOL;
+import static com.thebuzzmedia.exiftool.tests.TestConstants.EXIF_TOOL_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -52,6 +54,18 @@ abstract class AbstractExifToolIT {
 				.isInstanceOf(ExifToolNotFoundException.class)
 				.hasMessageContaining("Cannot run program \"" + path + "\"")
 				.hasMessageContaining("error=2");
+	}
+
+	@Test
+	void it_should_read_config() throws Exception {
+		ExifToolBuilder builder = create()
+			.withPath(EXIF_TOOL.getAbsolutePath())
+			.withConfig(EXIF_TOOL_CONFIG.getAbsolutePath());
+
+		try (ExifTool exifTool = builder.build()) {
+			String result = exifTool.getRawExifToolOutput(Arrays.asList("-ver", "-execute"));
+			assertThat(result).startsWith(EXIF_TOOL_CONFIG.getAbsolutePath() + " did not return a true value at ");
+		}
 	}
 
 	abstract ExifToolBuilder create();

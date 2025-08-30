@@ -61,6 +61,21 @@ public interface ExecutionStrategy extends AutoCloseable {
 	void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException;
 
 	/**
+	 * Set the ExifTool config file path.
+	 * The default is {@code .ExifTool_config}.
+	 * <p>
+	 * Use {@code null} to specify no custom config path,
+	 * and an empty string to disable loading the default config file.
+	 *
+	 * @param configPath Path to the new config path, or {@code null} for no config path.
+	 * @implNote The default implementation does nothing, and only exists for backwards compatibility.
+	 *           Implementers should always override it.
+	 * @see <a href="https://exiftool.org/config.html">exiftool.org/config.html</a>
+	 */
+	default void setConfigFilePath(String configPath) {
+	}
+
+	/**
 	 * Check if exiftool process is currently running.
 	 * This method is important especially if {@code stay_open} flag has been enabled.
 	 *

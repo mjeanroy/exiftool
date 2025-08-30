@@ -154,6 +154,11 @@ public class ExifToolBuilder {
 	private String path;
 
 	/**
+	 * ExifTool config file path.
+	 */
+	private String configPath;
+
+	/**
 	 * ExifTool executor.
 	 */
 	private CommandExecutor executor;
@@ -226,6 +231,39 @@ public class ExifToolBuilder {
 		}
 
 		this.path = path.getAbsolutePath();
+		return this;
+	}
+
+	/**
+	 * Override the default ExifTool config path.
+	 * The default path is {@code .ExifTool_config}.
+	 * <p>
+	 * Set this to an empty string to disable loading the default config file.
+	 *
+	 * @param configPath New config path.
+	 * @return Current builder.
+	 * @see <a href="https://exiftool.org/config.html">exiftool.org/config.html</a>
+	 */
+	public ExifToolBuilder withConfig(String configPath) {
+		log.debug("Set configPath: {}", configPath);
+		this.configPath = configPath;
+		return this;
+	}
+
+	/**
+	 * Override the default ExifTool config path.
+	 * The default path is {@code .ExifTool_config}.
+	 * <p>
+	 * Call {@link #withConfig(String)} with an empty string to
+	 * disable loading the default config file.
+	 *
+	 * @param configPath New config path.
+	 * @return Current builder.
+	 * @see <a href="https://exiftool.org/config.html">exiftool.org/config.html</a>
+	 */
+	public ExifToolBuilder withConfig(File configPath) {
+		log.debug("Set configPath: {}", configPath);
+		this.configPath = configPath.getAbsolutePath();
 		return this;
 	}
 
@@ -405,6 +443,7 @@ public class ExifToolBuilder {
 		String path = firstNonNull(this.path, PATH);
 		CommandExecutor executor = firstNonNull(this.executor, EXECUTOR);
 		ExecutionStrategy strategy = firstNonNull(this.strategy, new StrategyFunction(stayOpen, cleanupDelay, scheduler, poolSize));
+		strategy.setConfigFilePath(configPath);
 
 		// Add some debugging information
 		if (log.isDebugEnabled()) {
