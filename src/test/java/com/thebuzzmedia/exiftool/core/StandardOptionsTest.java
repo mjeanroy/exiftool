@@ -47,6 +47,7 @@ class StandardOptionsTest {
 		assertThat(opts.isDuplicates()).isFalse();
 		assertThat(opts.isExtractEmbedded()).isFalse();
 		assertThat(opts.isExtractUnknown()).isFalse();
+		assertThat(opts.isWithoutCompositeTags()).isFalse();
 		assertThat(opts.isOverwriteOriginal()).isFalse();
 		assertThat(opts.isOverwriteOriginalInPlace()).isFalse();
 		assertThat(opts.isUseArgsFormat()).isFalse();
@@ -271,6 +272,18 @@ class StandardOptionsTest {
 	}
 
 	@Test
+	void it_should_set_no_composite_tags() {
+		StandardOptions opts = StandardOptions.builder()
+			.withoutCompositeTags(true)
+			.build();
+
+		assertThat(opts).isNotNull();
+		assertThat(opts.isWithoutCompositeTags()).isTrue();
+		assertThat(opts.serialize()).hasSize(1).containsExactly("-e");
+		assertThat(opts.toBuilder().isWithoutCompositeTags()).isTrue();
+	}
+
+	@Test
 	void it_should_overwrite_original() {
 		StandardOptions opts = StandardOptions.builder()
 				.withOverwriteOriginal()
@@ -349,6 +362,7 @@ class StandardOptionsTest {
 						"duplicates: false, " +
 						"extractEmbedded: false, " +
 						"extractUnknown: false, " +
+						"noCompositeTags: false, " +
 						"overwriteOriginal: NONE, " +
 						"useArgsFormat: false" +
 				"}"
@@ -375,6 +389,7 @@ class StandardOptionsTest {
 						"lang: null, " +
 						"duplicates: false, " +
 						"extractEmbedded: false, " +
+						"noCompositeTags: false, " +
 						"overwriteOriginal: NONE, " +
 						"useArgsFormat: false" +
 				"}"
