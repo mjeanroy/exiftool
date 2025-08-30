@@ -53,7 +53,7 @@ public final class SchedulerDuration {
 	/**
 	 * Create new duration in millis.
 	 *
-	 * @param delay The delay, in millis.
+	 * @param delay    The delay, in millis.
 	 * @param timeUnit The time unit.
 	 * @return The duration.
 	 */
@@ -74,7 +74,7 @@ public final class SchedulerDuration {
 	/**
 	 * Create new duration.
 	 *
-	 * @param delay Duration delay.
+	 * @param delay    Duration delay.
 	 * @param timeUnit Duration unit.
 	 */
 	private SchedulerDuration(long delay, TimeUnit timeUnit) {

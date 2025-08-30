@@ -22,8 +22,10 @@ import java.io.File;
 /**
  * Exception thrown when a file cannot be written.
  * A file cannot be written because:
- * - It does not exist.
- * - It is corrupted and cannot be updated.
+ * <ul>
+ *   <li>It does not exist.</li>
+ *   <li>It is corrupted and cannot be updated.</li>
+ * </ul>
  */
 public class UnwritableFileException extends AbstractExifException {
 
@@ -35,7 +37,7 @@ public class UnwritableFileException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
-	 * @param file Unwritable file.
+	 * @param file    Unwritable file.
 	 * @param message Error message.
 	 */
 	public UnwritableFileException(File file, String message) {

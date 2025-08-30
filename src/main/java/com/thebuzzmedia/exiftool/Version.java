@@ -51,10 +51,10 @@ public final class Version implements Comparable<Version> {
 	/**
 	 * Create new version number from a given string formatted
 	 * such as: {@code [major].[minor].[patch]}.
-	 *
+	 * <p>
 	 * Major identifier is mandatory, other elements are optional and will be initialized
 	 * to zero by default.
-	 *
+	 * <p>
 	 * Valid format: 1.1.0 / 1.1 / 1
 	 *
 	 * @param version Version number.

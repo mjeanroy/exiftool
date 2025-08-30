@@ -19,7 +19,7 @@ package com.thebuzzmedia.exiftool;
 
 /**
  * Scheduler interface.
- *
+ * <p>
  * Each implementation should provide implementation for:
  * <ul>
  *   <li>{@link #start(Runnable)} method: should schedule task in a specified amount of time.</li>

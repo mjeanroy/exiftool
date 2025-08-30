@@ -53,7 +53,7 @@ public final class DefaultCommandResult implements CommandResult {
 	 * Create new result.
 	 *
 	 * @param exitStatus Exit status.
-	 * @param output Standard output.
+	 * @param output     Standard output.
 	 */
 	public DefaultCommandResult(int exitStatus, String output) {
 		this.exitStatus = exitStatus;

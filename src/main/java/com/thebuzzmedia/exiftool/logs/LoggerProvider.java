@@ -19,7 +19,7 @@ package com.thebuzzmedia.exiftool.logs;
 
 /**
  * A provider for {@link Logger} instance, that can be used with the Service Provider
- * Interface (see {@link java.util.ServiceLoader}.
+ * Interface (see {@link java.util.ServiceLoader}).
  */
 public interface LoggerProvider {
 

@@ -51,7 +51,7 @@ public class CommandBuilder {
 	 * Get new builder.
 	 *
 	 * @param executable Executable value.
-	 * @param nbArgs The expected number of arguments.
+	 * @param nbArgs     The expected number of arguments.
 	 * @return The new builder.
 	 * @throws NullPointerException If executable is null.
 	 * @throws IllegalArgumentException If executable is empty or blank.
@@ -85,7 +85,7 @@ public class CommandBuilder {
 	/**
 	 * Add new argument to the command line.
 	 *
-	 * @param arg First argument.
+	 * @param arg  First argument.
 	 * @param args Next optional arguments.
 	 * @return The builder.
 	 * @throws NullPointerException If one of the arguments is {@code null}.
@@ -94,10 +94,8 @@ public class CommandBuilder {
 	public CommandBuilder addArgument(String arg, String... args) {
 		add(arg);
 
-		if (args.length > 0) {
-			for (String a : args) {
-				add(a);
-			}
+		for (String a : args) {
+			add(a);
 		}
 
 		return this;

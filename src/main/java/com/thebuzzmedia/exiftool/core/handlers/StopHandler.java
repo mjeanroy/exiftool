@@ -21,7 +21,7 @@ import com.thebuzzmedia.exiftool.process.OutputHandler;
 
 /**
  * Check if line means it is the end of the stream.
- *
+ * <p>
  * End is detected if:
  * <ul>
  *   <li>Line is {@code null}.</li>

@@ -72,7 +72,7 @@ public interface CommandProcess extends AutoCloseable {
 	void write(String input, String... others) throws IOException;
 
 	/**
-	 * Write set of inputs to the current process.
+	 * Write a set of inputs to the current process.
 	 *
 	 * @param inputs Collection of inputs.
 	 * @throws java.io.IOException If an error occurred during operation.

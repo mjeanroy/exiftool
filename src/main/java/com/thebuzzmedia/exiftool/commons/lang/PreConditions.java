@@ -23,7 +23,6 @@ import com.thebuzzmedia.exiftool.exceptions.UnwritableFileException;
 import java.io.File;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -40,7 +39,7 @@ public final class PreConditions {
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
-	 *   <li>Not blank (i.e contains at least one character other than space).</li>
+	 *   <li>Not blank (i.e. contains at least one character other than space).</li>
 	 * </ul>
 	 *
 	 * @param val     Value to check.
@@ -51,7 +50,7 @@ public final class PreConditions {
 	 */
 	public static String notBlank(String val, String message) {
 		requireNonNull(val, message);
-		if (val.length() == 0 || val.trim().length() == 0) {
+		if (val.isEmpty() || val.trim().isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 
@@ -59,7 +58,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that array is:
+	 * Ensures that an array is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -82,7 +81,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that map is:
+	 * Ensures that a map is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -98,7 +97,7 @@ public final class PreConditions {
 	 */
 	public static <T, U> Map<T, U> notEmpty(Map<T, U> val, String message) {
 		requireNonNull(val, message);
-		if (val.size() == 0) {
+		if (val.isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 
@@ -106,7 +105,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Ensures that iterable element is:
+	 * Ensures that an iterable element is:
 	 * <ul>
 	 *   <li>Not {@code null}.</li>
 	 *   <li>Not empty.</li>
@@ -130,7 +129,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check if given number is strictly positive (strictly greater than zero).
+	 * Checks if the given number is strictly positive (strictly greater than zero).
 	 *
 	 * @param nb      Number.
 	 * @param message Error message.
@@ -149,7 +148,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check that a given file exist and is readable.
+	 * Checks that a given file exist and is readable.
 	 *
 	 * @param file    File to check.
 	 * @param message Error message.
@@ -168,7 +167,7 @@ public final class PreConditions {
 	}
 
 	/**
-	 * Check that a given file exist and is writable.
+	 * Checks that a given file exist and is writable.
 	 *
 	 * @param file    File to check.
 	 * @param message Error message.
@@ -184,9 +183,5 @@ public final class PreConditions {
 		}
 
 		return file;
-	}
-
-	private static String errorMessage(String message, Object[] params) {
-		return params.length > 0 ? format(message, params) : message;
 	}
 }
