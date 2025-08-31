@@ -37,11 +37,11 @@ import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 /**
  * Implementation of {@link ExecutionStrategy} using a pool of
  * strategies.
- *
- * Each time {{@link #execute(CommandExecutor, String, List, OutputHandler)} method
+ * <p>
+ * Each time {@link #execute(CommandExecutor, String, List, OutputHandler)} method
  * is called, an internal strategy from the pool is picked and return to the pool once work
  * is finished.
- *
+ * <p>
  * This strategy should be used in a multithreaded environment, when application need to
  * extract exif data from images in parallel.
  */
@@ -53,7 +53,7 @@ public class PoolStrategy implements ExecutionStrategy {
 	private static final Logger log = LoggerFactory.getLogger(PoolStrategy.class);
 
 	/**
-	 * Pool size (i.e number of available slot).
+	 * Pool size (i.e. number of available slot).
 	 */
 	private final int poolSize;
 
@@ -166,11 +166,12 @@ public class PoolStrategy implements ExecutionStrategy {
 			}
 		}
 
-		if (thrownEx.size() > 0) {
+		if (!thrownEx.isEmpty()) {
 			throw new PoolIOException("Some strategies in the pool failed to close properly", thrownEx);
 		}
 	}
 
+	@FunctionalInterface
 	private interface ExecutionStrategyFunction {
 		void apply(ExecutionStrategy strategy, int i) throws Exception;
 	}

@@ -35,7 +35,7 @@ public interface VersionCache {
 	Version load(String exifTool, CommandExecutor executor);
 
 	/**
-	 * Get current size of cache (a.k.a number of entries).
+	 * Get current size of cache (a.k.a. number of entries).
 	 *
 	 * @return Cache Size.
 	 */

@@ -31,11 +31,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Get given class if available on classpath, otherwise throw {@link ReflectionException}.
+	 * Get the given class if available on classpath, otherwise throw {@link ReflectionException}.
 	 *
 	 * @param klass Class name.
 	 * @return The class instance if available.
-	 * @throws ReflectionException If given class is not found in the classpath.
+	 * @throws ReflectionException If the given class is not found in the classpath.
 	 */
 	public static Class<?> lookupClass(String klass) {
 		try {
@@ -47,11 +47,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Find static method with given return type parameter types on given class.
+	 * Find static method with given return type and parameter types on given class.
 	 *
-	 * @param klass The class.
-	 * @param methodName The method name.
-	 * @param returnType The method return type.
+	 * @param klass          The class.
+	 * @param methodName     The method name.
+	 * @param returnType     The method return type.
 	 * @param parameterTypes Parameter types.
 	 * @return The method.
 	 * @throws ReflectionException If given method does not exist.
@@ -70,11 +70,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Find non static method with given return type parameter types on given class.
+	 * Find non-static method with given return type parameter types on given class.
 	 *
-	 * @param klass The class.
-	 * @param methodName The method name.
-	 * @param returnType The method return type.
+	 * @param klass          The class.
+	 * @param methodName     The method name.
+	 * @param returnType     The method return type.
 	 * @param parameterTypes Parameter types.
 	 * @return The method.
 	 * @throws ReflectionException If given method does not exist.
@@ -96,7 +96,7 @@ public final class ClassUtils {
 	 * Invoke given static method.
 	 *
 	 * @param method The method to invoke.
-	 * @param args Method parameters.
+	 * @param args   Method parameters.
 	 * @return The method result.
 	 * @throws ReflectionException If an error occurs while calling method.
 	 */
@@ -109,7 +109,7 @@ public final class ClassUtils {
 	 *
 	 * @param method The method to invoke.
 	 * @param target The target instance.
-	 * @param args Method parameters.
+	 * @param args   Method parameters.
 	 * @return The method result.
 	 * @throws ReflectionException If an error occurs while calling method.
 	 */
@@ -121,7 +121,7 @@ public final class ClassUtils {
 	 * Invoke given method with given arguments.
 	 *
 	 * @param method The method to invoke.
-	 * @param args Method parameters.
+	 * @param args   Method parameters.
 	 * @return The method result.
 	 * @throws ReflectionException If an error occurs while calling method.
 	 */

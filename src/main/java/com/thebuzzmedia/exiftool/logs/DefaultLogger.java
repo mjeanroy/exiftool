@@ -27,8 +27,8 @@ import static com.thebuzzmedia.exiftool.logs.LogUtils.fromSlf4jStyle;
  * <br>
  *
  * This logger will only log to the standard output.
- *
- * Log level will be detected using `exiftool.debug` system property.
+ * <p>
+ * Log level will be detected using {@code exiftool.debug} system property.
  * This system property can be set on startup with:
  * <ul>
  *   <li>{@code -Dexiftool.debug=true}</li>

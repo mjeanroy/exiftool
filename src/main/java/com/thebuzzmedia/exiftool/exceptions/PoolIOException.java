@@ -36,7 +36,7 @@ public class PoolIOException extends IOException {
 	/**
 	 * Create exception.
 	 *
-	 * @param message Error message.
+	 * @param message          Error message.
 	 * @param thrownExceptions Original exceptions.
 	 */
 	public PoolIOException(String message, Collection<Exception> thrownExceptions) {

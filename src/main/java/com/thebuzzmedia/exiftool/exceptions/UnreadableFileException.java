@@ -22,8 +22,10 @@ import java.io.File;
 /**
  * Exception thrown when a file cannot be read.
  * A file cannot be read because:
- * - It does not exist.
- * - It is corrupted and cannot be read.
+ * <ul>
+ *   <li>It does not exist.</li>
+ *   <li>It is corrupted and cannot be read.</li>
+ * </ul>
  */
 public class UnreadableFileException extends AbstractExifException {
 
@@ -35,7 +37,7 @@ public class UnreadableFileException extends AbstractExifException {
 	/**
 	 * Create exception.
 	 *
-	 * @param file Unreadable file.
+	 * @param file    Unreadable file.
 	 * @param message Error message.
 	 */
 	public UnreadableFileException(File file, String message) {

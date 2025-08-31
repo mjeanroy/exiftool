@@ -38,7 +38,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 Message parameter.
+	 * @param p1      Message parameter.
 	 */
 	void trace(String message, Object p1);
 
@@ -48,8 +48,8 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
-	 * @param p2 Second message parameter.
+	 * @param p1      First message parameter.
+	 * @param p2      Second message parameter.
 	 */
 	void trace(String message, Object p1, Object p2);
 
@@ -68,7 +68,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
+	 * @param p1      First message parameter.
 	 */
 	void info(String message, Object p1);
 
@@ -78,8 +78,8 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
-	 * @param p2 Second message parameter.
+	 * @param p1      First message parameter.
+	 * @param p2      Second message parameter.
 	 */
 	void info(String message, Object p1, Object p2);
 
@@ -98,7 +98,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 Optional message parameter.
+	 * @param p1      Optional message parameter.
 	 */
 	void debug(String message, Object p1);
 
@@ -108,8 +108,8 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 Optional (first) message parameter.
-	 * @param p2 Optional (second) message parameter.
+	 * @param p1      Optional (first) message parameter.
+	 * @param p2      Optional (second) message parameter.
 	 */
 	void debug(String message, Object p1, Object p2);
 
@@ -128,7 +128,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param ex The exception to log.
+	 * @param ex      The exception to log.
 	 */
 	void warn(String message, Throwable ex);
 
@@ -138,7 +138,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
+	 * @param p1      First message parameter.
 	 */
 	void warn(String message, Object p1);
 
@@ -148,8 +148,8 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
-	 * @param p2 Second message parameter.
+	 * @param p1      First message parameter.
+	 * @param p2      Second message parameter.
 	 */
 	void warn(String message, Object p1, Object p2);
 
@@ -168,7 +168,7 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
+	 * @param p1      First message parameter.
 	 */
 	void error(String message, Object p1);
 
@@ -178,8 +178,8 @@ public interface Logger {
 	 * is enabled.
 	 *
 	 * @param message Message to display.
-	 * @param p1 First message parameter.
-	 * @param p2 Second message parameter.
+	 * @param p1      First message parameter.
+	 * @param p2      Second message parameter.
 	 */
 	void error(String message, Object p1, Object p2);
 
@@ -187,7 +187,7 @@ public interface Logger {
 	 * Log exception stack trace as error Level.
 	 *
 	 * @param message Error message.
-	 * @param ex Thrown exception.
+	 * @param ex      Thrown exception.
 	 */
 	void error(String message, Throwable ex);
 

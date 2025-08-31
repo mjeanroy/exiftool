@@ -38,7 +38,7 @@ import java.util.List;
  * </ul>
  *
  * Each implementation will define the main logic for reading and
- * writing metadata (this is the main purpose for the {@link #execute} method.
+ * writing metadata (this is the main purpose for the {@link #execute} method).
  *
  * <br>
  *
@@ -52,10 +52,10 @@ public interface ExecutionStrategy extends AutoCloseable {
 	/**
 	 * Execute exiftool command.
 	 *
-	 * @param executor ExifTool withExecutor.
-	 * @param exifTool ExifTool withPath.
+	 * @param executor  ExifTool withExecutor.
+	 * @param exifTool  ExifTool withPath.
 	 * @param arguments Command line arguments.
-	 * @param handler Handler to read command output.
+	 * @param handler   Handler to read command output.
 	 * @throws IOException If an error occurred during execution.
 	 */
 	void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException;

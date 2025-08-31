@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of {@link Cleaner} using {@code sun.misc.Cleaner} implementation.
- *
+ * <p>
  * This cleaner is created using reflection, as {@code sun.misc.Cleaner} does not exist in Java >= 9.
  * Once this library will support java >= 9 only, this implementation will be removed.
  */

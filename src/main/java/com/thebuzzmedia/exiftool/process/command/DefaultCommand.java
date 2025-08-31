@@ -48,7 +48,7 @@ public final class DefaultCommand implements Command {
 	 * Create command line.
 	 *
 	 * @param executable Executable value.
-	 * @param arguments List of optional arguments.
+	 * @param arguments  List of optional arguments.
 	 */
 	public DefaultCommand(String executable, List<String> arguments) {
 		List<String> args = new ArrayList<>(size(arguments) + 1);

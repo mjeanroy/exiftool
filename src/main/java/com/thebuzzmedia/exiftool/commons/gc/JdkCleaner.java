@@ -28,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Implementation of {@link Cleaner} using {@code java.lang.ref.Cleaner} implementation.
- *
+ * <p>
  * This cleaner is created using reflection, once this library will support Java >= 9 only, we'll be
  * able to get rid of Reflection.
  */
