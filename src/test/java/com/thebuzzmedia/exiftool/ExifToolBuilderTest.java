@@ -57,6 +57,7 @@ public class ExifToolBuilderTest {
 	private ExecutionStrategy strategy;
 	private Scheduler scheduler;
 	private String path;
+	private String configPath;
 
 	private ExifToolBuilder builder;
 
@@ -68,6 +69,7 @@ public class ExifToolBuilderTest {
 
 		builder = new ExifToolBuilder();
 		path = "/foo";
+		configPath = "/bar";
 
 		// Mock ExifTool Version
 		CommandResult v9_36 = new CommandResultBuilder()
@@ -91,6 +93,21 @@ public class ExifToolBuilderTest {
 		ExifToolBuilder res = builder.withPath(file);
 		assertThat(res).isSameAs(builder);
 		assertThat(builder).extracting("path").isEqualTo(file.getAbsolutePath());
+	}
+
+	@Test
+	void it_should_update_config_path() {
+		ExifToolBuilder res = builder.withConfig(configPath);
+		assertThat(res).isSameAs(builder);
+		assertThat(builder).extracting("configPath").isEqualTo(configPath);
+	}
+
+	@Test
+	void it_should_update_config_path_with_file() {
+		File file = new FileBuilder("config.config").build();
+		ExifToolBuilder res = builder.withConfig(file);
+		assertThat(res).isSameAs(builder);
+		assertThat(builder).extracting("configPath").isEqualTo(file.getAbsolutePath());
 	}
 
 	@Test
@@ -149,6 +166,7 @@ public class ExifToolBuilderTest {
 	void it_should_create_exiftool_with_custom_props() {
 		ExifTool exifTool = builder
 				.withPath(path)
+				.withConfig(configPath)
 				.withExecutor(executor)
 				.enableStayOpen()
 				.build();
@@ -156,6 +174,7 @@ public class ExifToolBuilderTest {
 		assertThat(exifTool).extracting("path").isEqualTo(path);
 		assertThat(exifTool).extracting("executor").isEqualTo(executor);
 		assertThat(exifTool).extracting("strategy").isExactlyInstanceOf(StayOpenStrategy.class);
+		assertThat(exifTool).extracting("strategy").extracting("configPath").isEqualTo(configPath);
 	}
 
 	@Test

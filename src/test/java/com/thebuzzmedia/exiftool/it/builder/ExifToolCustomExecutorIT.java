@@ -87,4 +87,9 @@ class ExifToolCustomExecutorIT extends AbstractExifToolIT {
 			return sb.toString().trim();
 		}
 	}
+
+	@Override
+	void it_should_read_config() {
+		// Cannot run as execute(Command, OutputHandler) is not implemented.
+	}
 }
