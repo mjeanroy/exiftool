@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("resource")
 class DefaultStrategyTest {
+	private final String configPath = "config.config";
 
 	@Test
 	void it_should_execute_command() throws Exception {
@@ -56,6 +57,45 @@ class DefaultStrategyTest {
 
 		Command cmd = cmdCaptor.getValue();
 		assertThat(cmd.getArguments()).hasSameSizeAs(expectedArguments).isEqualTo(expectedArguments);
+	}
+
+	@Test
+	void it_should_execute_command_with_config_path() throws Exception {
+		String exifTool = "exiftool";
+		List<String> args = asList("-S", "-n", "-XArtist", "-XComment", "-execute");
+		CommandExecutor executor = mock(CommandExecutor.class);
+		OutputHandler handler = mock(OutputHandler.class);
+
+		DefaultStrategy strategy = new DefaultStrategy();
+		strategy.setConfigFilePath(configPath);
+		strategy.execute(executor, exifTool, args, handler);
+
+		ArgumentCaptor<Command> cmdCaptor = ArgumentCaptor.forClass(Command.class);
+		verify(executor).execute(cmdCaptor.capture(), same(handler));
+
+		List<String> expectedArguments = new ArrayList<>();
+		expectedArguments.add(exifTool);
+		expectedArguments.add("-config");
+		expectedArguments.add(configPath);
+		expectedArguments.add("-sep");
+		expectedArguments.add("|>☃");
+		expectedArguments.addAll(args);
+
+		Command cmd = cmdCaptor.getValue();
+		assertThat(cmd.getArguments()).hasSameSizeAs(expectedArguments).isEqualTo(expectedArguments);
+	}
+
+
+	@Test
+	void it_should_not_have_config_path_if_none_is_set() {
+		assertThat(new DefaultStrategy()).extracting("configPath").isNull();
+	}
+
+	@Test
+	void it_should_set_config_path() {
+		DefaultStrategy strategy = new DefaultStrategy();
+		strategy.setConfigFilePath(configPath);
+		assertThat(strategy).extracting("configPath").isEqualTo(configPath);
 	}
 
 	@Test
