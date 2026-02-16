@@ -50,6 +50,12 @@ public class DefaultStrategy implements ExecutionStrategy {
 	private static final Logger log = LoggerFactory.getLogger(DefaultStrategy.class);
 
 	/**
+	 * Path to the ExifTool config file,
+	 * or {@code null} if no custom config file is specified.
+	 */
+	private String configPath;
+
+	/**
 	 * Create strategy.
 	 */
 	public DefaultStrategy() {
@@ -59,12 +65,21 @@ public class DefaultStrategy implements ExecutionStrategy {
 	public void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException {
 		log.debug("Using ExifTool in non-daemon mode (-stay_open False)...");
 
-		Command cmd = CommandBuilder.builder(exifTool, arguments.size() + 2)
+		CommandBuilder cmdBuilder = CommandBuilder.builder(exifTool, arguments.size() + (configPath == null ? 2 : 4));
+		if (configPath != null) {
+			cmdBuilder.addArgument("-config", configPath);
+		}
+		Command cmd = cmdBuilder
 				.addArgument("-sep", Constants.SEPARATOR)
 				.addAll(arguments)
 				.build();
 
 		executor.execute(cmd, handler);
+	}
+
+	@Override
+	public void setConfigFilePath(String configPath) {
+		this.configPath = configPath;
 	}
 
 	@Override
