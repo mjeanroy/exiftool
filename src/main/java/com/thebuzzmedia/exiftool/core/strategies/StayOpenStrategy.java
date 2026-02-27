@@ -61,6 +61,12 @@ public class StayOpenStrategy implements ExecutionStrategy {
 	private CommandProcess process;
 
 	/**
+	 * Path to the ExifTool config file,
+	 * or {@code null} if no custom config file is specified.
+	 */
+	private String configPath;
+
+	/**
 	 * Create strategy.
 	 * Scheduler provided in parameter will be used to clean resources (exiftool process).
 	 *
@@ -82,7 +88,11 @@ public class StayOpenStrategy implements ExecutionStrategy {
 			// ready to receive commands from us.
 			if (process == null || process.isClosed()) {
 				log.debug("Start exiftool process");
-				process = executor.start(CommandBuilder.builder(exifTool, 6)
+				CommandBuilder cmdBuilder = CommandBuilder.builder(exifTool, (configPath == null ? 6 : 8));
+				if (configPath != null) {
+					cmdBuilder.addArgument("-config", configPath);
+				}
+				process = executor.start(cmdBuilder
 						.addArgument("-stay_open", "True")
 						.addArgument("-sep", Constants.SEPARATOR)
 						.addArgument("-@")
@@ -104,6 +114,11 @@ public class StayOpenStrategy implements ExecutionStrategy {
 				throw ex;
 			}
 		}
+	}
+
+	@Override
+	public void setConfigFilePath(String configPath) {
+		this.configPath = configPath;
 	}
 
 	@Override
