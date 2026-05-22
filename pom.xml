@@ -101,7 +101,7 @@
 		<guava.version>33.6.0-android</guava.version>
 
 		<!-- Tests dependencies -->
-		<junit-jupiter.version>5.13.4</junit-jupiter.version>
+		<junit-jupiter.version>6.1.0</junit-jupiter.version>
 		<assertj.version>3.27.7</assertj.version>
 		<mockito.version>4.11.0</mockito.version>
 		<commons-exec.version>1.6.0</commons-exec.version>
