@@ -52,6 +52,7 @@ class StayOpenStrategyTest {
 	private OutputHandler outputHandler;
 
 	private String exifTool;
+	private String configPath;
 	private List<String> args;
 	private StayOpenStrategy strategy;
 
@@ -62,6 +63,7 @@ class StayOpenStrategyTest {
 		executor = mock(CommandExecutor.class);
 		outputHandler = mock(OutputHandler.class);
 		exifTool = "exiftool";
+		configPath = "config.config";
 
 		// Mock withExecutor
 		when(executor.start(any(Command.class))).thenReturn(process);
@@ -87,6 +89,14 @@ class StayOpenStrategyTest {
 		strategy = new StayOpenStrategy(scheduler);
 		assertThat(strategy).extracting("scheduler").isSameAs(scheduler);
 		assertThat(strategy).extracting("process").isNull();
+		assertThat(strategy).extracting("configPath").isNull();
+	}
+
+	@Test
+	void it_should_set_config_path() {
+		StayOpenStrategy strategy = new StayOpenStrategy(scheduler);
+		strategy.setConfigFilePath(configPath);
+		assertThat(strategy).extracting("configPath").isEqualTo(configPath);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -108,6 +118,31 @@ class StayOpenStrategyTest {
 		assertThat(strategy).extracting("process").isSameAs(process);
 
 		verifyStartProcess(cmdCaptor);
+		verifyExecutionArguments(argsCaptor);
+	}
+
+	@Test
+	void it_should_execute_command_with_config_path() throws Exception {
+		strategy = new StayOpenStrategy(scheduler);
+		strategy.setConfigFilePath(configPath);
+		strategy.execute(executor, exifTool, args, outputHandler);
+
+		ArgumentCaptor<Command> cmdCaptor = ArgumentCaptor.forClass(Command.class);
+		ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
+		InOrder inOrder = inOrder(scheduler, executor, process);
+		inOrder.verify(executor).start(cmdCaptor.capture());
+		inOrder.verify(scheduler).stop();
+		inOrder.verify(scheduler).start(any(Runnable.class));
+		inOrder.verify(process).write(argsCaptor.capture());
+		inOrder.verify(process).flush();
+		inOrder.verify(process).read(any(OutputHandler.class));
+
+		assertThat(strategy).extracting("process").isSameAs(process);
+
+		Command startCmd = cmdCaptor.getValue();
+		assertThat(startCmd.getArguments()).hasSize(9).containsExactly(
+			exifTool, "-config", configPath, "-stay_open", "True", "-sep", "|>☃", "-@", "-"
+		);
 		verifyExecutionArguments(argsCaptor);
 	}
 
