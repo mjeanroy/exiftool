@@ -51,6 +51,7 @@ class PoolStrategyTest {
 
 	private CommandExecutor executor;
 	private String exifTool;
+	private String configPath;
 	private List<String> arguments;
 	private OutputHandler handler;
 
@@ -60,6 +61,7 @@ class PoolStrategyTest {
 	void setUp() {
 		executor = mock(CommandExecutor.class);
 		exifTool = "exiftool";
+		configPath = "config.config";
 		arguments = singletonList("-ver");
 		handler = mock(OutputHandler.class);
 	}
@@ -127,6 +129,31 @@ class PoolStrategyTest {
 
 		pool = new PoolStrategy(strategies);
 		assertThat(pool.isSupported(version)).isTrue();
+	}
+
+	@Test
+	void it_should_not_set_config_path_if_none_is_set() {
+		ExecutionStrategy s1 = mock(ExecutionStrategy.class);
+		ExecutionStrategy s2 = mock(ExecutionStrategy.class);
+		Collection<ExecutionStrategy> strategies = asList(s1, s2);
+
+		pool = new PoolStrategy(strategies);
+
+		verify(s1, never()).setConfigFilePath(configPath);
+		verify(s2, never()).setConfigFilePath(configPath);
+	}
+
+	@Test
+	void it_should_set_config_path() {
+		ExecutionStrategy s1 = mock(ExecutionStrategy.class);
+		ExecutionStrategy s2 = mock(ExecutionStrategy.class);
+		Collection<ExecutionStrategy> strategies = asList(s1, s2);
+
+		pool = new PoolStrategy(strategies);
+		pool.setConfigFilePath(configPath);
+
+		verify(s1).setConfigFilePath(configPath);
+		verify(s2).setConfigFilePath(configPath);
 	}
 
 	@Test

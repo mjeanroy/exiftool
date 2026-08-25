@@ -95,6 +95,13 @@ public class PoolStrategy implements ExecutionStrategy {
 	}
 
 	@Override
+	public void setConfigFilePath(String configPath) {
+		for (ExecutionStrategy executionStrategy : pool) {
+			executionStrategy.setConfigFilePath(configPath);
+		}
+	}
+
+	@Override
 	public boolean isRunning() {
 		return pool.size() < poolSize;
 	}

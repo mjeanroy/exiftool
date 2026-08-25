@@ -32,6 +32,8 @@ public final class TestConstants {
 
 	public static final File EXIF_TOOL;
 
+	public static final File EXIF_TOOL_CONFIG;
+
 	static {
 		final String osName = System.getProperty("os.name").toLowerCase();
 		final boolean isWindows = osName.contains("windows");
@@ -41,7 +43,11 @@ public final class TestConstants {
 		file.setExecutable(true);
 		file.setReadable(true);
 
+		final File configFile = new File(AbstractExifToolImgIT.class.getResource("/exiftool.config").getFile());
+		file.setReadable(true);
+
 		IS_WINDOWS = isWindows;
 		EXIF_TOOL = file;
+		EXIF_TOOL_CONFIG = configFile;
 	}
 }
