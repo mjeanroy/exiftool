@@ -30,96 +30,73 @@ import static com.thebuzzmedia.exiftool.core.schedulers.SchedulerDuration.millis
 import static com.thebuzzmedia.exiftool.core.schedulers.SchedulerDuration.seconds;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Default implementation for {@code exiftool} {@link com.thebuzzmedia.exiftool.Scheduler}.
- *
- * <br>
- *
- * This scheduler will execute a task in a specified amount of time:
- *
- * <ul>
- *   <li>Time must be specified during construction.</li>
- *   <li>Time unit (milliseconds, seconds, hours, etc.) may be defined during construction.</li>
- * </ul>
- *
- * <strong>Note:</strong> This scheduler will stop pending task when instance is
- * garbage collected. This is just a small security but we cannot guarantee when
- * instance will be garbage collected. For this reason, it should be up to the caller
- * to stop this scheduler when it is not needed anymore.
- */
+/// Default implementation for `exiftool` [com.thebuzzmedia.exiftool.Scheduler].
+///
+/// This scheduler will execute a task in a specified amount of time:
+/// - Time must be specified during construction.
+/// - Time unit (milliseconds, seconds, hours, etc.) may be defined during construction.
+///
+/// **Note:** This scheduler will stop pending task when instance is
+/// garbage collected. This is just a small security but we cannot guarantee when
+/// instance will be garbage collected. For this reason, it should be up to the caller
+/// to stop this scheduler when it is not needed anymore.
 public class DefaultScheduler implements Scheduler {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(DefaultScheduler.class);
 
-	/**
-	 * Delay before task execution.
-	 */
+	/// Delay before task execution.
 	private final SchedulerDuration executionDelay;
 
-	/**
-	 * Delay to wait for scheduler termination.
-	 */
+	/// Delay to wait for scheduler termination.
 	private final SchedulerDuration terminationDelay;
 
-	/**
-	 * Executor used to defer task execution.
-	 * This withExecutor will produce instance of {@link RunnableFuture} tasks.
-	 */
+	/// Executor used to defer task execution.
+	/// This withExecutor will produce instance of [RunnableFuture] tasks.
 	private final ScheduledThreadPoolExecutor executor;
 
-	/**
-	 * Create new scheduler.
-	 * Default time unit is {@link TimeUnit#MILLISECONDS}.
-	 * A default withExecutor will be created.
-	 *
-	 * @param delay Delay.
-	 * @throws IllegalArgumentException If {@code delay} is less than or equal to zero.
-	 * @deprecated Use {@link #DefaultScheduler(SchedulerDuration)} instead.
-	 */
+	/// Create new scheduler.
+	/// Default time unit is [TimeUnit#MILLISECONDS].
+	/// A default withExecutor will be created.
+	///
+	/// @param delay Delay.
+	/// @throws IllegalArgumentException If `delay` is less than or equal to zero.
+	/// @deprecated Use [#DefaultScheduler(SchedulerDuration)] instead.
 	@Deprecated
 	public DefaultScheduler(long delay) {
 		this(millis(delay));
 	}
 
-	/**
-	 * Create new scheduler.
-	 * A default withExecutor will be created.
-	 *
-	 * @param delay Delay.
-	 * @param timeUnit Time Unit.
-	 * @throws NullPointerException If {@code timeUnit} is {@code null}.
-	 * @throws IllegalArgumentException If {@code delay} is less than or equal to zero.
-	 * @deprecated Use {@link #DefaultScheduler(SchedulerDuration)} instead.
-	 */
+	/// Create new scheduler.
+	/// A default withExecutor will be created.
+	///
+	/// @param delay Delay.
+	/// @param timeUnit Time Unit.
+	/// @throws NullPointerException If `timeUnit` is `null`.
+	/// @throws IllegalArgumentException If `delay` is less than or equal to zero.
+	/// @deprecated Use [#DefaultScheduler(SchedulerDuration)] instead.
 	@Deprecated
 	public DefaultScheduler(long delay, TimeUnit timeUnit) {
 		this(duration(delay, timeUnit));
 	}
 
-	/**
-	 * Create new scheduler.
-	 * Default time unit is {@link TimeUnit#MILLISECONDS}.
-	 * A default withExecutor will be created.
-	 *
-	 * @param executionDelay The delay between execution.
-	 * @throws IllegalArgumentException If {@code delay} is less than or equal to zero.
-	 */
+	/// Create new scheduler.
+	/// Default time unit is [TimeUnit#MILLISECONDS].
+	/// A default withExecutor will be created.
+	///
+	/// @param executionDelay The delay between execution.
+	/// @throws IllegalArgumentException If `delay` is less than or equal to zero.
 	public DefaultScheduler(SchedulerDuration executionDelay) {
 		this(executionDelay, seconds(5));
 	}
 
-	/**
-	 * Create new scheduler.
-	 * A default withExecutor will be created.
-	 *
-	 * @param executionDelay The delay between scheduler execution.
-	 * @param terminationDelay The delay to use to wait for termination when scheduler is shutting down.
-	 * @throws NullPointerException If {@code timeUnit} is {@code null}.
-	 * @throws IllegalArgumentException If {@code delay} is less than or equal to zero.
-	 */
+	/// Create new scheduler.
+	/// A default withExecutor will be created.
+	///
+	/// @param executionDelay The delay between scheduler execution.
+	/// @param terminationDelay The delay to use to wait for termination when scheduler is shutting down.
+	/// @throws NullPointerException If `timeUnit` is `null`.
+	/// @throws IllegalArgumentException If `delay` is less than or equal to zero.
 	public DefaultScheduler(SchedulerDuration executionDelay, SchedulerDuration terminationDelay) {
 		this.executionDelay = requireNonNull(executionDelay, "Execution delay must not be null");
 		this.terminationDelay = requireNonNull(terminationDelay, "Termination delay must not be null");

@@ -17,16 +17,12 @@
 
 package com.thebuzzmedia.exiftool.commons.gc;
 
-/**
- * Wrapper for cleaner implementation.
- */
+/// Wrapper for cleaner implementation.
 public interface Cleaner {
 
-	/**
-	 * Register cleanup task, to be run once an object is garbage collected.
-	 *
-	 * @param ref Object reference to track.
-	 * @param cleanupTask The cleanup task.
-	 */
+	/// Register cleanup task, to be run once an object is garbage collected.
+	///
+	/// @param ref Object reference to track.
+	/// @param cleanupTask The cleanup task.
 	void register(Object ref, Runnable cleanupTask);
 }

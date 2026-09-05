@@ -19,23 +19,17 @@ package com.thebuzzmedia.exiftool.logs;
 
 import org.apache.logging.log4j.LogManager;
 
-/**
- * Implementation of logger using log4j2 as
- * internal implementation.
- */
+/// Implementation of logger using log4j2 as
+/// internal implementation.
 class LoggerLog4j2 implements Logger {
 
-	/**
-	 * Internal Logger.
-	 */
+	/// Internal Logger.
 	private final org.apache.logging.log4j.Logger log;
 
-	/**
-	 * Create logger.
-	 * This constructor should be called by {@link LoggerFactory} only.
-	 *
-	 * @param name Logger name.
-	 */
+	/// Create logger.
+	/// This constructor should be called by [LoggerFactory] only.
+	///
+	/// @param name Logger name.
 	LoggerLog4j2(Class<?> name) {
 		this.log = LogManager.getLogger(name);
 	}

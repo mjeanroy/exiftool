@@ -20,34 +20,24 @@ package com.thebuzzmedia.exiftool.core.strategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Task that will shutdown {@link com.thebuzzmedia.exiftool.ExecutionStrategy} when
- * lock is released.
- */
+/// Task that will shutdown [com.thebuzzmedia.exiftool.ExecutionStrategy] when
+/// lock is released.
 class ShutdownTask implements Runnable {
 	private static final Logger log = LoggerFactory.getLogger(ShutdownTask.class);
 
-	/**
-	 * Task identifier, used for debug logging.
-	 */
+	/// Task identifier, used for debug logging.
 	private final int id;
 
-	/**
-	 * Pool strategy.
-	 */
+	/// Pool strategy.
 	private final PoolStrategy pool;
 
-	/**
-	 * Exception that may be thrown during {@link #pool#close()} operation.
-	 */
+	/// Exception that may be thrown during [#pool#close()] operation.
 	private Exception thrown;
 
-	/**
-	 * Create task.
-	 *
-	 * @param id Identifier.
-	 * @param pool Pool.
-	 */
+	/// Create task.
+	///
+	/// @param id Identifier.
+	/// @param pool Pool.
 	ShutdownTask(int id, PoolStrategy pool) {
 		this.id = id;
 		this.pool = pool;

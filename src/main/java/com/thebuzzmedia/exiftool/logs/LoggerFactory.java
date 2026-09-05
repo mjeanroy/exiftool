@@ -24,30 +24,22 @@ import static com.thebuzzmedia.exiftool.commons.reflection.DependencyUtils.isLog
 import static com.thebuzzmedia.exiftool.commons.reflection.DependencyUtils.isLog4jAvailable;
 import static com.thebuzzmedia.exiftool.commons.reflection.DependencyUtils.isSlf4jAvailable;
 
-/**
- * Factory to use to create {@link com.thebuzzmedia.exiftool.logs.Logger} instances.
- *
- * <br>
- *
- * Appropriate implementation will be used depending on classpath.
- * Verification is done in the following order:
- * <ul>
- *   <li>Check from {@link LoggerProvider} registered using Java Service Provider Interface (see {@link ServiceLoader}).</li>
- *   <li>If slf4j is defined, then it will be used.</li>
- *   <li>If slf4j is defined, then it will be used.</li>
- *   <li>If log4j is defined, it will be used.</li>
- *   <li>Finally, instance of {@link com.thebuzzmedia.exiftool.logs.DefaultLogger} is used.</li>
- * </ul>
- */
+/// Factory to use to create [com.thebuzzmedia.exiftool.logs.Logger] instances.
+///
+/// Appropriate implementation will be used depending on classpath.
+/// Verification is done in the following order:
+///   - Check from [LoggerProvider] registered using Java Service Provider Interface (see [ServiceLoader]).
+///   - If slf4j is defined, then it will be used.
+///   - If slf4j is defined, then it will be used.
+///   - If log4j is defined, it will be used.
+///   - Finally, instance of [com.thebuzzmedia.exiftool.logs.DefaultLogger] is used.
 public final class LoggerFactory {
 
 	// Ensure non instantiation.
 	private LoggerFactory() {
 	}
 
-	/**
-	 * The custom logger provider provided using the Service Provider Interface.
-	 */
+	/// The custom logger provider provided using the Service Provider Interface.
 	private static final LoggerProvider loggerProvider;
 
 	static {
@@ -57,12 +49,10 @@ public final class LoggerFactory {
 		loggerProvider = it.hasNext() ? it.next() : null;
 	}
 
-	/**
-	 * Return a logger named corresponding to the class passed as parameter,
-	 *
-	 * @param klass the returned logger will be named after clazz.
-	 * @return Logger implementation.
-	 */
+	/// Return a logger named corresponding to the class passed as parameter,
+	///
+	/// @param klass the returned logger will be named after clazz.
+	/// @return Logger implementation.
 	public static Logger getLogger(Class<?> klass) {
 		// First, discover using the ServiceProvider API.
 		if (loggerProvider != null) {

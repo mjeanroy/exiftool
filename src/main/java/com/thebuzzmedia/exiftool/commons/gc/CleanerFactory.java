@@ -19,20 +19,16 @@ package com.thebuzzmedia.exiftool.commons.gc;
 
 import com.thebuzzmedia.exiftool.commons.reflection.ClassUtils;
 
-/**
- * Factory for {@link Cleaner}.
- */
+/// Factory for [Cleaner].
 public final class CleanerFactory {
 
 	// Ensure non instantiation.
 	private CleanerFactory() {
 	}
 
-	/**
-	 * Create GC cleaner using the best available implementation.
-	 *
-	 * @return Cleaner instance.
-	 */
+	/// Create GC cleaner using the best available implementation.
+	///
+	/// @return Cleaner instance.
 	public static Cleaner createCleaner() {
 		if (ClassUtils.isPresent("java.lang.ref.Cleaner")) {
 			return JdkCleaner.create();

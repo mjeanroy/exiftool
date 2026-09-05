@@ -27,26 +27,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Task that will execute strategy with given parameters when internal
- * lock is released.
- */
+/// Task that will execute strategy with given parameters when internal
+/// lock is released.
 class ExecuteTask implements Runnable {
 	private static final Logger log = LoggerFactory.getLogger(ExecuteTask.class);
 
-	/**
-	 * Internal identifier, used for debug logging.
-	 */
+	/// Internal identifier, used for debug logging.
 	private final int id;
 
-	/**
-	 * Internal lock.
-	 */
+	/// Internal lock.
 	private final CountDownLatch lock;
 
-	/**
-	 * Pool strategy.
-	 */
+	/// Pool strategy.
 	private final PoolStrategy pool;
 
 	// Arguments of pool.execute method.

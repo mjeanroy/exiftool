@@ -121,18 +121,14 @@ abstract class AbstractVersionCacheTest<T extends VersionCache> {
 		assertThat(size(cache)).isZero();
 	}
 
-	/**
-	 * Create the cache implementation.
-	 *
-	 * @return Cache implemetation.
-	 */
+	/// Create the cache implementation.
+	///
+	/// @return Cache implementation.
 	abstract T create();
 
-	/**
-	 * Get cache size.
-	 *
-	 * @param cache Cache implementation.
-	 * @return The cache size.
-	 */
+	/// Get cache size.
+	///
+	/// @param cache Cache implementation.
+	/// @return The cache size.
 	abstract long size(VersionCache cache) throws Exception;
 }

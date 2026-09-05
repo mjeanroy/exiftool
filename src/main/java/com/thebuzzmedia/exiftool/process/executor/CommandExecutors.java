@@ -21,25 +21,19 @@ import com.thebuzzmedia.exiftool.logs.Logger;
 import com.thebuzzmedia.exiftool.logs.LoggerFactory;
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
 
-/**
- * Executor Factory.
- */
+/// Executor Factory.
 public final class CommandExecutors {
 
-	/**
-	 * Class logger.
-	 */
+	/// Class logger.
 	private static final Logger log = LoggerFactory.getLogger(CommandExecutors.class);
 
 	// Ensure non instantiation.
 	private CommandExecutors() {
 	}
 
-	/**
-	 * Create a fresh new withExecutor.
-	 *
-	 * @return Executor.
-	 */
+	/// Create a fresh new withExecutor.
+	///
+	/// @return Executor.
 	public static CommandExecutor newExecutor() {
 		log.debug("Create new default command withExecutor");
 		return new DefaultCommandExecutor();

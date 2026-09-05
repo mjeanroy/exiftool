@@ -19,30 +19,22 @@ package com.thebuzzmedia.exiftool.core.handlers;
 
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
-/**
- * Check if line means it is the end of the stream.
- *
- * End is detected if:
- * <ul>
- *   <li>Line is {@code null}.</li>
- *   <li>Output is strictly equals to {@code {ready}}.</li>
- * </ul>
- *
- * This handler is thread safe, stateless and is implemented as
- * a singleton.
- */
+/// Check if line means it is the end of the stream.
+/// End is detected if:
+///
+///   - Line is `null`.
+///   - Output is strictly equals to `{ready}`.
+///
+/// This handler is thread safe, stateless and is implemented as
+/// a singleton.
 public class StopHandler implements OutputHandler {
 
-	/**
-	 * Singleton instance.
-	 */
+	/// Singleton instance.
 	private static final StopHandler INSTANCE = new StopHandler();
 
-	/**
-	 * Get instance.
-	 *
-	 * @return Singleton instance.
-	 */
+	/// Get instance.
+	///
+	/// @return Singleton instance.
 	public static StopHandler stopHandler() {
 		return INSTANCE;
 	}

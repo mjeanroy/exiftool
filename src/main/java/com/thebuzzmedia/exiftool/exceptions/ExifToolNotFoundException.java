@@ -21,59 +21,45 @@ import com.thebuzzmedia.exiftool.process.CommandResult;
 
 import java.io.IOException;
 
-/**
- * Exception thrown when exiftool program is missing.
- */
+/// Exception thrown when exiftool program is missing.
 public class ExifToolNotFoundException extends AbstractExifException {
 
-	/**
-	 * ExifTool path defined during command execution.
-	 */
+	/// ExifTool path defined during command execution.
 	private final String path;
 
-	/**
-	 * The result triggered during command execution.
-	 */
+	/// The result triggered during command execution.
 	private final CommandResult result;
 
-	/**
-	 * Create exception.
-	 *
-	 * @param path ExifTool path defined during command execution.
-	 * @param result The result triggered during command execution.
-	 */
+	/// Create exception.
+	///
+	/// @param path ExifTool path defined during command execution.
+	/// @param result The result triggered during command execution.
 	public ExifToolNotFoundException(String path, CommandResult result) {
 		super(message(path));
 		this.path = path;
 		this.result = result;
 	}
 
-	/**
-	 * Create exception.
-	 *
-	 * @param ex The original exception.
-	 * @param path ExifTool path defined during command execution.
-	 */
+	/// Create exception.
+	///
+	/// @param ex The original exception.
+	/// @param path ExifTool path defined during command execution.
 	public ExifToolNotFoundException(IOException ex, String path) {
 		super(ex);
 		this.path = path;
 		this.result = null;
 	}
 
-	/**
-	 * Get ExifTool path defined during command execution.
-	 *
-	 * @return ExifTool path defined during command execution.
-	 */
+	/// Get ExifTool path defined during command execution.
+	///
+	/// @return ExifTool path defined during command execution.
 	public String getPath() {
 		return path;
 	}
 
-	/**
-	 * Get result triggered during command execution.
-	 *
-	 * @return The result triggered during command execution.
-	 */
+	/// Get result triggered during command execution.
+	///
+	/// @return The result triggered during command execution.
 	public CommandResult getResult() {
 		return result;
 	}

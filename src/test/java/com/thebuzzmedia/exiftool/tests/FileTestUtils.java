@@ -26,12 +26,10 @@ public final class FileTestUtils {
 	private FileTestUtils() {
 	}
 
-	/**
-	 * Copy file to a destination directory.
-	 *
-	 * @param src File to copy.
-	 * @param dstFolder Destination.
-	 */
+	/// Copy file to a destination directory.
+	///
+	/// @param src File to copy.
+	/// @param dstFolder Destination.
 	public static File copy(File src, File dstFolder) {
 		try {
 			File dst = new File(dstFolder, src.getName());

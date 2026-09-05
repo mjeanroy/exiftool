@@ -17,9 +17,7 @@
 
 package com.thebuzzmedia.exiftool.commons.gc;
 
-/**
- * Void implementation of {@link Cleaner}.
- */
+/// Void implementation of [Cleaner].
 final class NoOpCleaner implements Cleaner {
 
 	static NoOpCleaner create() {

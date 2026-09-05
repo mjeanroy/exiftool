@@ -17,23 +17,17 @@
 
 package com.thebuzzmedia.exiftool.logs;
 
-/**
- * Implementation of logger using slf4j as
- * internal implementation.
- */
+/// Implementation of logger using slf4j as
+/// internal implementation.
 class LoggerSlf4j implements Logger {
 
-	/**
-	 * Internal Logger.
-	 */
+	/// Internal Logger.
 	private final org.slf4j.Logger log;
 
-	/**
-	 * Create logger.
-	 * This constructor should be called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory} only.
-	 *
-	 * @param name Logger name.
-	 */
+	/// Create logger.
+	/// This constructor should be called by [com.thebuzzmedia.exiftool.logs.LoggerFactory] only.
+	///
+	/// @param name Logger name.
 	LoggerSlf4j(Class<?> name) {
 		this.log = org.slf4j.LoggerFactory.getLogger(name);
 	}

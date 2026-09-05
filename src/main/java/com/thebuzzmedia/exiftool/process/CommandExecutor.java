@@ -19,42 +19,34 @@ package com.thebuzzmedia.exiftool.process;
 
 import java.io.IOException;
 
-/**
- * Command Executor.
- */
+/// Command Executor.
 public interface CommandExecutor {
 
-	/**
-	 * Execute command and build the result.
-	 *
-	 * **NOTE:** Execution is synchronous.
-	 *
-	 * @param command Command input.
-	 * @return Result of execution.
-	 * @throws IOException If an error occurred during execution.
-	 */
+	/// Execute command and build the result.
+	/// **NOTE:** Execution is synchronous.
+	///
+	/// @param command Command input.
+	/// @return Result of execution.
+	/// @throws IOException If an error occurred during execution.
 	CommandResult execute(Command command) throws IOException;
 
-	/**
-	 * Execute command and build the result.
-	 * **NOTE:** Execution is synchronous.
-	 *
-	 * @param command Command.
-	 * @param handler Custom output handler.
-	 * @return Result of execution.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Execute command and build the result.
+	/// **NOTE:** Execution is synchronous.
+	///
+	/// @param command Command.
+	/// @param handler Custom output handler.
+	/// @return Result of execution.
+	/// @throws java.io.IOException If an error occurred during operation.
 	CommandResult execute(Command command, OutputHandler handler) throws IOException;
 
-	/**
-	 * Start command line and return associated process.
-	 * This process will be used to:
-	 * - Read output.
-	 * - Write arguments.
-	 *
-	 * @param command Command.
-	 * @return Process.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Start command line and return associated process.
+	///
+	/// This process will be used to:
+	/// - Read output.
+	/// - Write arguments.
+	///
+	/// @param command Command.
+	/// @return Process.
+	/// @throws java.io.IOException If an error occurred during operation.
 	CommandProcess start(Command command) throws IOException;
 }

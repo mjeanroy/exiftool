@@ -19,33 +19,21 @@ package com.thebuzzmedia.exiftool.process;
 
 import java.util.List;
 
-/**
- * Command Line interface.
- *
- * <br>
- *
- * A command line is defined by:
- * <ul>
- *   <li>Executable path (or executable name if it is globally available).</li>
- *   <li>List of arguments: may be empty.</li>
- * </ul>
- *
- * Each of these should be returned in the {@link #getArguments()} method:
- * <ul>
- *   <li>First element is the executable value.</li>
- *   <li>Next elements are the executable arguments.</li>
- * </ul>
- */
+/// Command Line interface.
+///
+/// A command line is defined by:
+///   - Executable path (or executable name if it is globally available).
+///   - List of arguments: may be empty.
+///
+/// Each of these should be returned in the [#getArguments()] method:
+///   - First element is the executable value.
+///   - Next elements are the executable arguments.
 public interface Command {
 
-	/**
-	 * Command arguments:
-	 * <ul>
-	 *   <li>First item should be the command line executable value.</li>
-	 *   <li>Next items should be the command line arguments.</li>
-	 * </ul>
-	 *
-	 * @return Command arguments.
-	 */
+	/// Command arguments:
+	///   - First item should be the command line executable value.
+	///   - Next items should be the command line arguments.
+	///
+	/// @return Command arguments.
 	List<String> getArguments();
 }

@@ -20,31 +20,25 @@ package com.thebuzzmedia.exiftool.logs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * Static Logger Utilities.
- */
+/// Static Logger Utilities.
 final class LogUtils {
 
 	// Ensure non instantiation.
 	private LogUtils() {
 	}
 
-	/**
-	 * Turn SLF4J String to a string that can be used to format messages using {@link String#format(String, Object...)} method.
-	 *
-	 * @param message Input message.
-	 * @return Output message.
-	 */
+	/// Turn SLF4J String to a string that can be used to format messages using [String#format(String, Object...)] method.
+	///
+	/// @param message Input message.
+	/// @return Output message.
 	static String fromSlf4jStyle(String message) {
 		return message.replace("{}", "%s");
 	}
 
-	/**
-	 * Get stacktrace of a given exception as a String.
-	 *
-	 * @param ex The exception.
-	 * @return The associated stacktrace.
-	 */
+	/// Get stacktrace of a given exception as a String.
+	///
+	/// @param ex The exception.
+	/// @return The associated stacktrace.
 	static String getStackTrace(Throwable ex) {
 		StringWriter errors = new StringWriter();
 		ex.printStackTrace(new PrintWriter(errors));

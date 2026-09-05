@@ -17,17 +17,13 @@
 
 package com.thebuzzmedia.exiftool.logs;
 
-/**
- * A provider for {@link Logger} instance, that can be used with the Service Provider
- * Interface (see {@link java.util.ServiceLoader}.
- */
+/// A provider for [Logger] instance, that can be used with the Service Provider
+/// Interface (see [java.util.ServiceLoader].
 public interface LoggerProvider {
 
-	/**
-	 * Create the logger.
-	 *
-	 * @param klass The logger name.
-	 * @return The logger instance.
-	 */
+	/// Create the logger.
+	///
+	/// @param klass The logger name.
+	/// @return The logger instance.
 	Logger getLogger(Class<?> klass);
 }

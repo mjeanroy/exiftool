@@ -22,39 +22,27 @@ import java.io.File;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Create a mock instance of {@link java.io.File}.
- */
+/// Create a mock instance of [java.io.File].
 public class FileBuilder {
 
-	/**
-	 * File name (this is the name, not the full withPath).
-	 * Must be initialized on construction.
-	 */
+	/// File name (this is the name, not the full withPath).
+	/// Must be initialized on construction.
 	private final String name;
 
-	/**
-	 * Full withPath of file.
-	 * Default is `/tmp`.
-	 */
+	/// Full withPath of file.
+	/// Default is `/tmp`.
 	private String path;
 
-	/**
-	 * Flag to know if file is readable.
-	 * Default is `true`.
-	 */
+	/// Flag to know if file is readable.
+	/// Default is `true`.
 	private boolean canRead;
 
-	/**
-	 * Flag to know if file is writable.
-	 * Default is `true`.
-	 */
+	/// Flag to know if file is writable.
+	/// Default is `true`.
 	private boolean canWrite;
 
-	/**
-	 * Flag to know if file exists.
-	 * Default is `true`.
-	 */
+	/// Flag to know if file exists.
+	/// Default is `true`.
 	private boolean exists;
 
 	public FileBuilder(String name) {
@@ -65,56 +53,46 @@ public class FileBuilder {
 		this.path = "/tmp";
 	}
 
-	/**
-	 * Update `write` flag.
-	 *
-	 * @param canWrite Value of `write` flag.
-	 * @return Current builder.
-	 */
+	/// Update `write` flag.
+	///
+	/// @param canWrite Value of `write` flag.
+	/// @return Current builder.
 	public FileBuilder canWrite(boolean canWrite) {
 		this.canWrite = canWrite;
 		return this;
 	}
 
-	/**
-	 * Update `read` flag.
-	 *
-	 * @param canRead Value of `read` flag.
-	 * @return Current builder.
-	 */
+	/// Update `read` flag.
+	///
+	/// @param canRead Value of `read` flag.
+	/// @return Current builder.
 	public FileBuilder canRead(boolean canRead) {
 		this.canRead = canRead;
 		return this;
 	}
 
-	/**
-	 * Update file `withPath`.
-	 *
-	 * @param path New withPath.
-	 * @return Current builder.
-	 */
+	/// Update file `withPath`.
+	///
+	/// @param path New withPath.
+	/// @return Current builder.
 	public FileBuilder path(String path) {
 		this.path = path;
 		return this;
 	}
 
-	/**
-	 * Update `exists` flag.
-	 *
-	 * @param exists New value of `exists` flag.
-	 * @return Current builder.
-	 */
+	/// Update `exists` flag.
+	///
+	/// @param exists New value of `exists` flag.
+	/// @return Current builder.
 	public FileBuilder exists(boolean exists) {
 		this.exists = exists;
 		return this;
 	}
 
-	/**
-	 * Create file instance.
-	 * **NOTE:** A mock (created with mockito) is returned, not a real file.
-	 *
-	 * @return Mock of file.
-	 */
+	/// Create file instance.
+	/// \*\*NOTE:\*\* A mock (created with mockito) is returned, not a real file.
+	///
+	/// @return Mock of file.
 	public File build() {
 		File file = mock(File.class);
 		when(file.getName()).thenReturn(name);

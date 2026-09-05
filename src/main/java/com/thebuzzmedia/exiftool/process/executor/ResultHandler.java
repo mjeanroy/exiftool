@@ -20,26 +20,19 @@ package com.thebuzzmedia.exiftool.process.executor;
 import com.thebuzzmedia.exiftool.Constants;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
-/**
- * Simple command handler that just read output line by line
- * and append each one in a {@link StringBuilder} instance.
- * When current line is null, handler will return false.
- *
- * <p />
- *
- * <strong>Note:</strong> that this handler is not thread safe and should be
- * synchronized if needed.
- */
+/// Simple command handler that just read output line by line
+/// and append each one in a [StringBuilder] instance.
+///
+/// When current line is null, handler will return false.
+///
+/// **Note:** that this handler is not thread safe and should be
+/// synchronized if needed.
 class ResultHandler implements OutputHandler {
 
-	/**
-	 * Current output.
-	 */
+	/// Current output.
 	private final StringBuilder output;
 
-	/**
-	 * Create new handler.
-	 */
+	/// Create new handler.
 	ResultHandler() {
 		this.output = new StringBuilder();
 	}
@@ -57,11 +50,9 @@ class ResultHandler implements OutputHandler {
 		return line != null;
 	}
 
-	/**
-	 * Get full output.
-	 *
-	 * @return Command line output.
-	 */
+	/// Get full output.
+	///
+	/// @return Command line output.
 	public String getOutput() {
 		return output.toString();
 	}

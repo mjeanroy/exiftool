@@ -21,53 +21,41 @@ import com.thebuzzmedia.exiftool.Version;
 
 import static java.lang.String.format;
 
-/**
- * Class used to define an exception that occurs when the caller attempts to
- * use a feature that the underlying native ExifTool install does
- * not support (i.e. the version isn't new enough).
- *
- * @author Riyad Kalla (software@thebuzzmedia.com)
- * @author Mickael Jeanroy
- * @since 1.1
- */
+/// Class used to define an exception that occurs when the caller attempts to
+/// use a feature that the underlying native ExifTool install does
+/// not support (i.e. the version isn't new enough).
+///
+/// @author Riyad Kalla (software@thebuzzmedia.com)
+/// @author Mickael Jeanroy
+/// @since 1.1
 public class UnsupportedFeatureException extends AbstractExifException {
 
-	/**
-	 * Exif Version (this version do not support feature).
-	 */
+	/// Exif Version (this version do not support feature).
 	private final Version version;
 
-	/**
-	 * ExifTool path.
-	 */
+	/// ExifTool path.
 	private final String path;
 
-	/**
-	 * Create exception.
-	 *
-	 * @param path ExifTool path.
-	 * @param version Exif Version.
-	 */
+	/// Create exception.
+	///
+	/// @param path ExifTool path.
+	/// @param version Exif Version.
 	public UnsupportedFeatureException(String path, Version version) {
 		super(message(path, version));
 		this.version = version;
 		this.path = path;
 	}
 
-	/**
-	 * Gets {@link #path}.
-	 *
-	 * @return {@link #path}.
-	 */
+	/// Gets [#path].
+	///
+	/// @return [#path].
 	public String getPath() {
 		return path;
 	}
 
-	/**
-	 * Gets {@link #version}.
-	 *
-	 * @return {@link #version}.
-	 */
+	/// Gets [#version].
+	///
+	/// @return [#version].
 	public Version getVersion() {
 		return version;
 	}

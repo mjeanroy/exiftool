@@ -31,34 +31,24 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
-/**
- * Execute {@code exiftool} command to get associated version
- * and return the result.
- */
+/// Execute `exiftool` command to get associated version
+/// and return the result.
 class VersionCallable implements Callable<Version> {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(VersionCallable.class);
 
-	/**
-	 * Path of {@code exiftool} executable.
-	 */
+	/// Path of `exiftool` executable.
 	private final String exifTool;
 
-	/**
-	 * Executor used to execute {@code exiftool} command.
-	 */
+	/// Executor used to execute `exiftool` command.
 	// Use a weak reference to let GC garbage collect executor as soon as possible.
 	private final WeakReference<CommandExecutor> executor;
 
-	/**
-	 * Create task.
-	 *
-	 * @param exifTool Path of {@code exiftool} executable.
-	 * @param executor Executor used to execute {@code exiftool} command.
-	 */
+	/// Create task.
+	///
+	/// @param exifTool Path of `exiftool` executable.
+	/// @param executor Executor used to execute `exiftool` command.
 	VersionCallable(String exifTool, CommandExecutor executor) {
 		this.exifTool = exifTool;
 		this.executor = new WeakReference<>(executor);

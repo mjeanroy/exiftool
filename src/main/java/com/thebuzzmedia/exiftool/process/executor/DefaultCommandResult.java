@@ -23,38 +23,25 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
-/**
- * Default result object.
- *
- * <br>
- *
- * Result is defined by:
- *
- * <ul>
- *   <li>An exit status: a zero means a success, otherwise it is a failure.</li>
- *   <li>Command output.</li>
- * </ul>
- *
- * <strong>Note:</strong> this implementation is immutable and thread safe.
- */
+/// Default result object.
+///
+/// Result is defined by:
+///   - An exit status: a zero means a success, otherwise it is a failure.
+///   - Command output.
+///
+/// **Note:** this implementation is immutable and thread safe.
 public final class DefaultCommandResult implements CommandResult {
 
-	/**
-	 * Exit status, result of command execution.
-	 */
+	/// Exit status, result of command execution.
 	private final int exitStatus;
 
-	/**
-	 * Standard output.
-	 */
+	/// Standard output.
 	private final String output;
 
-	/**
-	 * Create new result.
-	 *
-	 * @param exitStatus Exit status.
-	 * @param output Standard output.
-	 */
+	/// Create new result.
+	///
+	/// @param exitStatus Exit status.
+	/// @param output Standard output.
 	public DefaultCommandResult(int exitStatus, String output) {
 		this.exitStatus = exitStatus;
 		this.output = output;

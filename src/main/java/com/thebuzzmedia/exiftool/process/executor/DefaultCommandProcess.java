@@ -34,54 +34,36 @@ import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Default implementation for {@link CommandProcess} interface.
- *
- * <br>
- *
- * This implementation used instance of {@link InputStream} to handle
- * read operation and instance of {@link OutputStream} to handle write
- * operation. These streams may come from instance of {@link Process} for instance.
- *
- * <br>
- *
- * <strong>Note:</strong> This implementation is not thread safe.
- */
+/// Default implementation for [CommandProcess] interface.
+///
+/// This implementation used instance of [InputStream] to handle
+/// read operation and instance of [OutputStream] to handle write
+/// operation. These streams may come from instance of [Process] for instance.
+///
+/// **Note:** This implementation is not thread safe.
 public class DefaultCommandProcess implements CommandProcess {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(DefaultCommandProcess.class);
 
-	/**
-	 * Instance of {@link InputStream}.
-	 * This stream will be used to handle read operation.
-	 */
+	/// Instance of [InputStream].
+	/// This stream will be used to handle read operation.
 	private final InputStream is;
 
-	/**
-	 * Output stream.
-	 * This stream will be used to handle write operation.
-	 */
+	/// Output stream.
+	/// This stream will be used to handle write operation.
 	private final OutputStream os;
 
-	/**
-	 * Error Stream.
-	 */
+	/// Error Stream.
 	private final InputStream err;
 
-	/**
-	 * Flag to know if a given process has been closed.
-	 */
+	/// Flag to know if a given process has been closed.
 	private boolean close;
 
-	/**
-	 * Create process.
-	 * @param is Input stream.
-	 * @param os Output stream.
-	 * @param err Error stream.
-	 */
+	/// Create process.
+	/// @param is Input stream.
+	/// @param os Output stream.
+	/// @param err Error stream.
 	public DefaultCommandProcess(InputStream is, OutputStream os, InputStream err) {
 		this.is = requireNonNull(is, "Input stream should not be null");
 		this.os = requireNonNull(os, "Output stream should not be null");

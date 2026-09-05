@@ -22,29 +22,22 @@ import static com.thebuzzmedia.exiftool.core.handlers.StopHandler.stopHandler;
 import com.thebuzzmedia.exiftool.Constants;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
-/**
- * An {@link OutputHandler} implementation that collects the raw output produced by ExifTool.
- * <p>
- *   Each line is appended to the output as-is, with {@link Constants#BR} inserted between
- *   consecutive lines.
- * </p>
- *
- * Reading stops when the end of the output is detected.
- * This occurs when either:
- * <ul>
- *   <li>the input line is {@code null}, indicating the end of the stream, or</li>
- *   <li>the input line is exactly {@code "{ready}"}, indicating the end of the output when ExifTool's {@code stay_open} feature is enabled.</li>
- * </ul>
- *
- * The terminating line is not included in the collected output.
- */
+/// An [OutputHandler] implementation that collects the raw output produced by ExifTool.
+///
+/// Each line is appended to the output as-is, with [Constants#BR] inserted between
+/// consecutive lines.
+///
+/// Reading stops when the end of the output is detected.
+/// This occurs when either:
+/// - the input line is `null`, indicating the end of the stream, or
+/// - the input line is exactly `"{ready}"`, indicating the end of the output when ExifTool's `stay_open` feature is enabled.
+///
+/// The terminating line is not included in the collected output.
 public class RawOutputHandler implements OutputHandler {
 
 	private final StringBuilder output;
 
-	/**
-	 * Creates a new empty raw output handler.
-	 */
+	/// Creates a new empty raw output handler.
 	public RawOutputHandler() {
 		this.output = new StringBuilder();
 	}
@@ -66,10 +59,9 @@ public class RawOutputHandler implements OutputHandler {
 		return true;
 	}
 
-	/**
-	 * Returns the raw output collected from ExifTool.
-	 * @return the collected raw output
-	 */
+	/// Returns the raw output collected from ExifTool.
+	///
+	/// @return the collected raw output
 	public String getOutput() {
 		// output the raw string that exiftool outputs
 		return output.toString();

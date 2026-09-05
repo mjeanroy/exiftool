@@ -19,33 +19,25 @@ package com.thebuzzmedia.exiftool.logs;
 
 import static com.thebuzzmedia.exiftool.logs.LogUtils.fromSlf4jStyle;
 
-/**
- * Default logger implementation.
- * This implementation should be used if and only if no
- * external logging tool is available.
- *
- * <br>
- *
- * This logger will only log to the standard output.
- *
- * Log level will be detected using `exiftool.debug` system property.
- * This system property can be set on startup with:
- * <ul>
- *   <li>{@code -Dexiftool.debug=true}</li>
- *   <li>or by calling {@link System#setProperty(String, String)} before this class is loaded.</li>
- * </ul>
- *
- * Default value is {@code false}.
- */
+/// Default logger implementation.
+///
+/// This implementation should be used if and only if no
+/// external logging tool is available.
+///
+/// This logger will only log to the standard output.
+/// Log level will be detected using `exiftool.debug` system property.
+/// This system property can be set on startup with:
+///   - `-Dexiftool.debug=true`
+///   - or by calling [System#setProperty(String, String)] before this class is loaded.
+///
+/// Default value is `false`.
 class DefaultLogger implements Logger {
 
 	private enum Level {
 		TRACE, DEBUG, INFO, WARN, ERROR
 	}
 
-	/**
-	 * Logger level.
-	 */
+	/// Logger level.
 	private final Level level;
 
 	DefaultLogger(boolean debug) {

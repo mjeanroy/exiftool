@@ -27,32 +27,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-/**
- * Static Input/Output Utilities.
- */
+/// Static Input/Output Utilities.
 public final class IOs {
 
-	/**
-	 * Class logger.
-	 */
+	/// Class logger.
 	private static final Logger log = LoggerFactory.getLogger(IOs.class);
 
-	/**
-	 * Encoding.
-	 */
+	/// Encoding.
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	// Ensure non instantiation.
 	private IOs() {
 	}
 
-	/**
-	 * Read input and continue until {@link StreamVisitor#readLine(String)} returns {@code false}.
-	 *
-	 * @param is Input stream.
-	 * @param visitor Result handler.
-	 * @throws IOException If an error occurred during read operation.
-	 */
+	/// Read input and continue until [StreamVisitor#readLine(String)] returns `false`.
+	///
+	/// @param is Input stream.
+	/// @param visitor Result handler.
+	/// @throws IOException If an error occurred during read operation.
 	public static void readInputStream(InputStream is, StreamVisitor visitor) throws IOException {
 		log.trace("Read input stream");
 
@@ -81,13 +73,12 @@ public final class IOs {
 		}
 	}
 
-	/**
-	 * Close instance of {@link Closeable} object (stream, reader, writer, etc.).
-	 * If an {@link IOException} occurs during the close operation, then it is logged but it
-	 * will not fail by throwing another exception.
-	 *
-	 * @param closeable Closeable instance.
-	 */
+	/// Close instance of [Closeable] object (stream, reader, writer, etc.).
+	///
+	/// If an [IOException] occurs during the close operation, then it is logged but it
+	/// will not fail by throwing another exception.
+	///
+	/// @param closeable Closeable instance.
 	public static void closeQuietly(Closeable closeable) {
 		try {
 			closeable.close();

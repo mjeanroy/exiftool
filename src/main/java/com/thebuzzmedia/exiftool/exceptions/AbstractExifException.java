@@ -17,26 +17,20 @@
 
 package com.thebuzzmedia.exiftool.exceptions;
 
-/**
- * Basic Exception.
- * Should be extended.
- */
+/// Basic Exception.
+/// Should be extended.
 class AbstractExifException extends RuntimeException {
 
-	/**
-	 * Create exception with custom message.
-	 *
-	 * @param message Error message.
-	 */
+	/// Create exception with custom message.
+	///
+	/// @param message Error message.
 	AbstractExifException(String message) {
 		super(message);
 	}
 
-	/**
-	 * Create exception with the causing exception.
-	 *
-	 * @param cause The original cause.
-	 */
+	/// Create exception with the causing exception.
+	///
+	/// @param cause The original cause.
 	AbstractExifException(Throwable cause) {
 		super(cause);
 	}

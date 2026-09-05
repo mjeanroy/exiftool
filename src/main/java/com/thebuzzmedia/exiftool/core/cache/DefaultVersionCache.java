@@ -31,22 +31,16 @@ import java.util.concurrent.FutureTask;
 
 import static com.thebuzzmedia.exiftool.commons.exceptions.Exceptions.launderThrowable;
 
-/**
- * Default implementation for {@link VersionCache}.
- * Internally, this implementation use a {@link ConcurrentHashMap}.
- */
+/// Default implementation for [VersionCache].
+/// Internally, this implementation use a [ConcurrentHashMap].
 class DefaultVersionCache implements VersionCache {
 
-	/**
-	 * Cache of computed results.
-	 * Key is the path to the exiftool executable, value is the computed
-	 * version.
-	 */
+	/// Cache of computed results.
+	/// Key is the path to the exiftool executable, value is the computed
+	/// version.
 	private final ConcurrentMap<String, Future<Version>> cache;
 
-	/**
-	 * Create default cache.
-	 */
+	/// Create default cache.
 	DefaultVersionCache() {
 		super();
 		this.cache = new ConcurrentHashMap<>();

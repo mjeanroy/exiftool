@@ -33,9 +33,7 @@ import static com.thebuzzmedia.exiftool.tests.TestConstants.IS_WINDOWS;
 
 public final class ProcessLeakDetectorExtension implements BeforeEachCallback, AfterEachCallback {
 
-	/**
-	 * The namespace in which extension data will be stored.
-	 */
+	/// The namespace in which extension data will be stored.
 	private static final Namespace NAMESPACE = Namespace.create(ProcessLeakDetectorExtension.class.getName());
 
 	private static final String KEY = "processes";
@@ -64,12 +62,10 @@ public final class ProcessLeakDetectorExtension implements BeforeEachCallback, A
 		}
 	}
 
-	/**
-	 * Get the internal store from the test context.
-	 *
-	 * @param context The test context.
-	 * @return The internal store.
-	 */
+	/// Get the internal store from the test context.
+	///
+	/// @param context The test context.
+	/// @return The internal store.
 	private static Store getStore(ExtensionContext context) {
 		return context.getStore(NAMESPACE);
 	}

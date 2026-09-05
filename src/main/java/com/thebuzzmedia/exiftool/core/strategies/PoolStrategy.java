@@ -34,41 +34,31 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 
-/**
- * Implementation of {@link ExecutionStrategy} using a pool of
- * strategies.
- *
- * Each time {{@link #execute(CommandExecutor, String, List, OutputHandler)} method
- * is called, an internal strategy from the pool is picked and return to the pool once work
- * is finished.
- *
- * This strategy should be used in a multithreaded environment, when application need to
- * extract exif data from images in parallel.
- */
+/// Implementation of [ExecutionStrategy] using a pool of
+/// strategies.
+///
+/// Each time {[#execute(CommandExecutor, String, List, OutputHandler)] method
+/// is called, an internal strategy from the pool is picked and return to the pool once work
+/// is finished.
+///
+/// This strategy should be used in a multithreaded environment, when application need to
+/// extract exif data from images in parallel.
 public class PoolStrategy implements ExecutionStrategy {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(PoolStrategy.class);
 
-	/**
-	 * Pool size (i.e number of available slot).
-	 */
+	/// Pool size (i.e number of available slot).
 	private final int poolSize;
 
-	/**
-	 * Pool list.
-	 */
+	/// Pool list.
 	private final BlockingQueue<ExecutionStrategy> pool;
 
-	/**
-	 * Create the pool.
-	 *
-	 * @param strategies Internal strategies.
-	 * @throws NullPointerException If {@code strategies} is {@code null}.
-	 * @throws IllegalArgumentException If {@code strategies} is empty.
-	 */
+	/// Create the pool.
+	///
+	/// @param strategies Internal strategies.
+	/// @throws NullPointerException If `strategies` is `null`.
+	/// @throws IllegalArgumentException If `strategies` is empty.
 	public PoolStrategy(Collection<ExecutionStrategy> strategies) {
 		notEmpty(strategies, "Pool must not be empty");
 

@@ -32,40 +32,29 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Execution strategy that use {@code exiftool} with the {@code stay_open} feature.
- */
+/// Execution strategy that use `exiftool` with the `stay_open` feature.
 public class StayOpenStrategy implements ExecutionStrategy {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(StayOpenStrategy.class);
 
-	/**
-	 * Minimum version of {@code exiftool} supporting {@code stay_open} feature.
-	 */
+	/// Minimum version of `exiftool` supporting `stay_open` feature.
 	private static final Version V8_36 = new Version("8.36");
 
-	/**
-	 * Scheduler: will be used to perform automatic cleanup.
-	 * If automatic cleanup is disabled (if delay is equal or less than zero),
-	 * then it will be set to {@code null}.
-	 */
+	/// Scheduler: will be used to perform automatic cleanup.
+	///
+	/// If automatic cleanup is disabled (if delay is equal or less than zero),
+	/// then it will be set to `null`.
 	private final Scheduler scheduler;
 
-	/**
-	 * Process opened when the first execution is called.
-	 * This process will remain open until a call to {@link #close} is made.
-	 */
+	/// Process opened when the first execution is called.
+	/// This process will remain open until a call to [#close] is made.
 	private CommandProcess process;
 
-	/**
-	 * Create strategy.
-	 * Scheduler provided in parameter will be used to clean resources (exiftool process).
-	 *
-	 * @param scheduler Delay between automatic cleanup.
-	 */
+	/// Create strategy.
+	/// Scheduler provided in parameter will be used to clean resources (exiftool process).
+	///
+	/// @param scheduler Delay between automatic cleanup.
 	public StayOpenStrategy(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
@@ -131,10 +120,8 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		shutdownScheduler();
 	}
 
-	/**
-	 * Close pending cleanup task and stop scheduler.
-	 * This scheduler may be re-used if necessary.
-	 */
+	/// Close pending cleanup task and stop scheduler.
+	/// This scheduler may be re-used if necessary.
 	private synchronized void closeScheduler() {
 		// Try to stop cleanup task
 		// Note: If task is not stopped, it may be executed later
@@ -152,10 +139,8 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		}
 	}
 
-	/**
-	 * Close pending cleanup task and stop scheduler.
-	 * This scheduler may be re-used if necessary.
-	 */
+	/// Close pending cleanup task and stop scheduler.
+	/// This scheduler may be re-used if necessary.
 	private synchronized void shutdownScheduler() {
 		// Try to stop cleanup task
 		// Note: If task is not stopped, it may be executed later
@@ -173,12 +158,10 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		}
 	}
 
-	/**
-	 * Close ExifTool process.
-	 * Process may be re-used if necessary.
-	 *
-	 * @throws Exception If an error occurs during the close operation.
-	 */
+	/// Close ExifTool process.
+	/// Process may be re-used if necessary.
+	///
+	/// @throws Exception If an error occurs during the close operation.
 	private synchronized void closeProcess() throws Exception {
 		try {
 			// If ExifTool was used in stayOpen mode but getImageMeta was never
@@ -205,12 +188,11 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		}
 	}
 
-	/**
-	 * This is exactly the same operation as {@link #close} but catch
-	 * all exceptions and log stacktrace.
-	 * This method should be used internally to perform a close operation
-	 * without catching or propagate exceptions.
-	 */
+	/// This is exactly the same operation as [#close] but catch
+	/// all exceptions and log stacktrace.
+	///
+	/// This method should be used internally to perform a close operation
+	/// without catching or propagate exceptions.
 	private synchronized void safeClose() {
 		try {
 			close();

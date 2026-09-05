@@ -23,42 +23,31 @@ import java.util.Objects;
 
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notBlank;
 
-/**
- * Define a version number with:
- * <ul>
- *   <li>A major identifier.</li>
- *   <li>A minor identifier.</li>
- *   <li>A patch identifier.</li>
- * </ul>
- */
+/// Define a version number with:
+///
+///   - A major identifier.
+///   - A minor identifier.
+///   - A patch identifier.
 public final class Version implements Comparable<Version> {
 
-	/**
-	 * Major Version Identifier.
-	 */
+	/// Major Version Identifier.
 	private final int major;
 
-	/**
-	 * Minor Version Identifier.
-	 */
+	/// Minor Version Identifier.
 	private final int minor;
 
-	/**
-	 * Patch Version Identifier.
-	 */
+	/// Patch Version Identifier.
 	private final int patch;
 
-	/**
-	 * Create new version number from a given string formatted
-	 * such as: {@code [major].[minor].[patch]}.
-	 *
-	 * Major identifier is mandatory, other elements are optional and will be initialized
-	 * to zero by default.
-	 *
-	 * Valid format: 1.1.0 / 1.1 / 1
-	 *
-	 * @param version Version number.
-	 */
+	/// Create new version number from a given string formatted
+	/// such as: `[major].[minor].[patch]`.
+	///
+	/// Major identifier is mandatory, other elements are optional and will be initialized
+	/// to zero by default.
+	///
+	/// Valid format: 1.1.0 / 1.1 / 1
+	///
+	/// @param version Version number.
 	public Version(String version) {
 		notBlank(version, "Version number should be set");
 
@@ -69,29 +58,23 @@ public final class Version implements Comparable<Version> {
 
 	}
 
-	/**
-	 * Gets {@link #major}.
-	 *
-	 * @return {@link #major}.
-	 */
+	/// Gets [#major].
+	///
+	/// @return [#major].
 	public int getMajor() {
 		return major;
 	}
 
-	/**
-	 * Gets {@link #minor}.
-	 *
-	 * @return {@link #minor}.
-	 */
+	/// Gets [#minor].
+	///
+	/// @return [#minor].
 	public int getMinor() {
 		return minor;
 	}
 
-	/**
-	 * Gets {@link #patch}.
-	 *
-	 * @return {@link #patch}.
-	 */
+	/// Gets [#patch].
+	///
+	/// @return [#patch].
 	public int getPatch() {
 		return patch;
 	}

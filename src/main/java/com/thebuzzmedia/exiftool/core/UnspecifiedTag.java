@@ -26,29 +26,22 @@ import java.util.regex.Pattern;
 
 import static com.thebuzzmedia.exiftool.Constants.SEPARATOR;
 
-/**
- * Class that can represent any tag, not just the standard tags.
- * <p>
- * Since the type of value is unknown, typed parsing is not possible,
- * and the tag does not know whether multiple values are expected or not.
- * Consequently, when parsing, it returns a String[] regardless of whether
- * the tag will ever have multiple values. Further parsing is then up to the caller.
- *
- * @author David Edwards (david@more.fool.me.uk)
- */
-
+/// Class that can represent any tag, not just the standard tags.
+///
+/// Since the type of value is unknown, typed parsing is not possible,
+/// and the tag does not know whether multiple values are expected or not.
+/// Consequently, when parsing, it returns a String[] regardless of whether
+/// the tag will ever have multiple values. Further parsing is then up to the caller.
+///
+/// @author David Edwards (david@more.fool.me.uk)
 public final class UnspecifiedTag implements Tag {
 
-	/**
-	 * The tag name.
-	 */
+	/// The tag name.
 	private final String name;
 
-	/**
-	 * Create tag.
-	 *
-	 * @param name Tag name.
-	 */
+	/// Create tag.
+	///
+	/// @param name Tag name.
 	public UnspecifiedTag(String name) {
 		this.name = name;
 	}

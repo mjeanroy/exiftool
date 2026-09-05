@@ -25,72 +25,56 @@ import java.util.List;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notBlank;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 
-/**
- * Command builder.
- * This builder should be used to create immutable instance of {@link com.thebuzzmedia.exiftool.process.Command}.
- */
+/// Command builder.
+/// This builder should be used to create immutable instance of [com.thebuzzmedia.exiftool.process.Command].
 public class CommandBuilder {
 
-	/**
-	 * Get new builder.
-	 *
-	 * <br>
-	 *
-	 * Note: Use {@link #builder(String, int)} to optimize the creation of the argument list.
-	 *
-	 * @param executable Executable value.
-	 * @return The new builder.
-	 * @throws NullPointerException If executable is null.
-	 * @throws IllegalArgumentException If executable is empty or blank.
-	 */
+	/// Get new builder.
+	///
+	/// Note: Use [#builder(String, int)] to optimize the creation of the argument list.
+	///
+	/// @param executable Executable value.
+	/// @return The new builder.
+	/// @throws NullPointerException If executable is null.
+	/// @throws IllegalArgumentException If executable is empty or blank.
 	public static CommandBuilder builder(String executable) {
 		return builder(executable, 10);
 	}
 
-	/**
-	 * Get new builder.
-	 *
-	 * @param executable Executable value.
-	 * @param nbArgs The expected number of arguments.
-	 * @return The new builder.
-	 * @throws NullPointerException If executable is null.
-	 * @throws IllegalArgumentException If executable is empty or blank.
-	 */
+	/// Get new builder.
+	///
+	/// @param executable Executable value.
+	/// @param nbArgs The expected number of arguments.
+	/// @return The new builder.
+	/// @throws NullPointerException If executable is null.
+	/// @throws IllegalArgumentException If executable is empty or blank.
 	public static CommandBuilder builder(String executable, int nbArgs) {
 		return new CommandBuilder(executable, nbArgs);
 	}
 
-	/**
-	 * Command Line Executable.
-	 */
+	/// Command Line Executable.
 	private final String executable;
 
-	/**
-	 * Command Line Arguments (will be appended next to the executable value).
-	 */
+	/// Command Line Arguments (will be appended next to the executable value).
 	private final List<String> arguments;
 
-	/**
-	 * Create builder.
-	 *
-	 * @param executable Executable value.
-	 * @throws NullPointerException If executable is {@code null}.
-	 * @throws IllegalArgumentException If executable is empty or blank.
-	 */
+	/// Create builder.
+	///
+	/// @param executable Executable value.
+	/// @throws NullPointerException If executable is `null`.
+	/// @throws IllegalArgumentException If executable is empty or blank.
 	private CommandBuilder(String executable, int size) {
 		this.executable = notBlank(executable, "Command line executable should be defined");
 		this.arguments = new ArrayList<>(size);
 	}
 
-	/**
-	 * Add new argument to the command line.
-	 *
-	 * @param arg First argument.
-	 * @param args Next optional arguments.
-	 * @return The builder.
-	 * @throws NullPointerException If one of the arguments is {@code null}.
-	 * @throws IllegalArgumentException If one of the arguments is empty or blank.
-	 */
+	/// Add new argument to the command line.
+	///
+	/// @param arg First argument.
+	/// @param args Next optional arguments.
+	/// @return The builder.
+	/// @throws NullPointerException If one of the arguments is `null`.
+	/// @throws IllegalArgumentException If one of the arguments is empty or blank.
 	public CommandBuilder addArgument(String arg, String... args) {
 		add(arg);
 
@@ -103,14 +87,12 @@ public class CommandBuilder {
 		return this;
 	}
 
-	/**
-	 * Add all arguments to the command line.
-	 *
-	 * @param arguments All arguments.
-	 * @return The builder.
-	 * @throws NullPointerException If arguments is {@code null}.
-	 * @throws IllegalArgumentException If arguments is empty.
-	 */
+	/// Add all arguments to the command line.
+	///
+	/// @param arguments All arguments.
+	/// @return The builder.
+	/// @throws NullPointerException If arguments is `null`.
+	/// @throws IllegalArgumentException If arguments is empty.
 	public CommandBuilder addAll(Iterable<String> arguments) {
 		notEmpty(arguments, "Arguments should not be empty");
 		for (String arg : arguments) {
@@ -120,11 +102,9 @@ public class CommandBuilder {
 		return this;
 	}
 
-	/**
-	 * Build the command line.
-	 *
-	 * @return Command Line instance.
-	 */
+	/// Build the command line.
+	///
+	/// @return Command Line instance.
 	public Command build() {
 		return new DefaultCommand(executable, arguments);
 	}

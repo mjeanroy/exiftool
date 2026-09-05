@@ -152,18 +152,14 @@ abstract class AbstractLoggerTest {
 		verifyException(out, "WARN", ex);
 	}
 
-	/**
-	 * Create default logger to test.
-	 *
-	 * @return Logger.
-	 */
+	/// Create default logger to test.
+	///
+	/// @return Logger.
 	abstract Logger getLogger();
 
-	/**
-	 * Create logger, with debug disabled, to test.
-	 *
-	 * @return Logger.
-	 */
+	/// Create logger, with debug disabled, to test.
+	///
+	/// @return Logger.
 	abstract Logger getLoggerWithoutDebug();
 
 	private void verifyOutput(SystemOut sysOut, String level, String message) {

@@ -29,29 +29,21 @@ import java.util.Set;
 
 import static java.util.Collections.addAll;
 
-/**
- * Clear system property before each test, and restore value
- * after each test.
- */
+/// Clear system property before each test, and restore value
+/// after each test.
 public class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 
-	/**
-	 * The namespace in which extension data will be stored.
-	 */
+	/// The namespace in which extension data will be stored.
 	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ProcessLeakDetectorExtension.class.getName());
 
 	private static final String KEY = "SYSTEM_ENV";
 
-	/**
-	 * Property names.
-	 */
+	/// Property names.
 	private final Set<String> props;
 
-	/**
-	 * Create rule with property name.
-	 *
-	 * @param prop Property name.
-	 */
+	/// Create rule with property name.
+	///
+	/// @param prop Property name.
 	public SystemPropertyExtension(String prop, String... other) {
 		props = new HashSet<>();
 		props.add(prop);
@@ -87,12 +79,10 @@ public class SystemPropertyExtension implements BeforeEachCallback, AfterEachCal
 		env.clear();
 	}
 
-	/**
-	 * Get the internal store from the test context.
-	 *
-	 * @param context The test context.
-	 * @return The internal store.
-	 */
+	/// Get the internal store from the test context.
+	///
+	/// @param context The test context.
+	/// @return The internal store.
 	private static Store getStore(ExtensionContext context) {
 		return context.getStore(NAMESPACE);
 	}

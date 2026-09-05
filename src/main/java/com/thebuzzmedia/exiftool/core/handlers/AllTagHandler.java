@@ -20,20 +20,14 @@ package com.thebuzzmedia.exiftool.core.handlers;
 import com.thebuzzmedia.exiftool.Tag;
 import com.thebuzzmedia.exiftool.core.UnspecifiedTag;
 
-/**
- * Read all tags line by line.
- *
- * <br>
- *
- * This class is not thread-safe and should be used to
- * read exiftool output from one thread (should not be shared across
- * several threads).
- */
+/// Read all tags line by line.
+///
+/// This class is not thread-safe and should be used to
+/// read exiftool output from one thread (should not be shared across
+/// several threads).
 public class AllTagHandler extends BaseTagHandler {
 
-	/**
-	 * Create new {@link AllTagHandler}
-	 */
+	/// Create new [AllTagHandler]
 	public AllTagHandler() {
 	}
 

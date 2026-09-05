@@ -19,86 +19,62 @@ package com.thebuzzmedia.exiftool.process;
 
 import java.io.IOException;
 
-/**
- * Process interface.
- *
- * <br>
- *
- * A process will define some methods to:
- * <ul>
- *   <li>Read output until a condition returns {@code false}.</li>
- *   <li>Send input stream to the opened process.</li>
- *   <li>Check if process is closed or still opened.</li>
- * </ul>
- */
+/// Process interface.
+///
+/// A process will define some methods to:
+///   - Read output until a condition returns `false`.
+///   - Send input stream to the opened process.
+///   - Check if process is closed or still opened.
 public interface CommandProcess extends AutoCloseable {
 
-	/**
-	 * Read output until a null line is read.
-	 *
-	 * <br>
-	 *
-	 * Since command process will not be closed, a simple string
-	 * is returned (an exit status cannot be computed).
-	 *
-	 * @return Command result.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Read output until a null line is read.
+	///
+	/// Since command process will not be closed, a simple string
+	/// is returned (an exit status cannot be computed).
+	///
+	/// @return Command result.
+	/// @throws java.io.IOException If an error occurred during operation.
 	String read() throws IOException;
 
-	/**
-	 * Read output until:
-	 * <ul>
-	 *   <li>A null line is read.</li>
-	 *   <li>Handler returns false when line is read.</li>
-	 * </ul>
-	 *
-	 * Since command process will not be closed, a simple string
-	 * is returned (an exit status cannot be computed).
-	 *
-	 * @param handler Output handler.
-	 * @return Full output.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Read output until:
+	///   - A null line is read.
+	///   - Handler returns false when line is read.
+	///
+	/// Since command process will not be closed, a simple string
+	/// is returned (an exit status cannot be computed).
+	///
+	/// @param handler Output handler.
+	/// @return Full output.
+	/// @throws java.io.IOException If an error occurred during operation.
 	String read(OutputHandler handler) throws IOException;
 
-	/**
-	 * Write input string to the current process.
-	 *
-	 * @param input Input.
-	 * @param others Other inputs.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Write input string to the current process.
+	///
+	/// @param input Input.
+	/// @param others Other inputs.
+	/// @throws java.io.IOException If an error occurred during operation.
 	void write(String input, String... others) throws IOException;
 
-	/**
-	 * Write set of inputs to the current process.
-	 *
-	 * @param inputs Collection of inputs.
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Write set of inputs to the current process.
+	///
+	/// @param inputs Collection of inputs.
+	/// @throws java.io.IOException If an error occurred during operation.
 	void write(Iterable<String> inputs) throws IOException;
 
-	/**
-	 * Flush pending write operations.
-	 *
-	 * @throws java.io.IOException If an error occurred during operation.
-	 */
+	/// Flush pending write operations.
+	///
+	/// @throws java.io.IOException If an error occurred during operation.
 	void flush() throws IOException;
 
-	/**
-	 * Check if current process is still opened.
-	 * If this method returns {@code true}, then {@link #isClosed()} should return {@code false}.
-	 *
-	 * @return {@code true} if process is open, {@code false} otherwise.
-	 */
+	/// Check if current process is still opened.
+	/// If this method returns `true`, then [#isClosed()] should return `false`.
+	///
+	/// @return `true` if process is open, `false` otherwise.
 	boolean isRunning();
 
-	/**
-	 * Check if current process has been closed.
-	 * If this method returns {@code true}, then {@link #isRunning()} should return {@code false}.
-	 *
-	 * @return {@code true} if process is closed, {@code false} otherwise.
-	 */
+	/// Check if current process has been closed.
+	/// If this method returns `true`, then [#isRunning()] should return `false`.
+	///
+	/// @return `true` if process is closed, `false` otherwise.
 	boolean isClosed();
 }

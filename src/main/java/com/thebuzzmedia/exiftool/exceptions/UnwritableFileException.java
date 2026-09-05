@@ -19,35 +19,28 @@ package com.thebuzzmedia.exiftool.exceptions;
 
 import java.io.File;
 
-/**
- * Exception thrown when a file cannot be written.
- * A file cannot be written because:
- * - It does not exist.
- * - It is corrupted and cannot be updated.
- */
+/// Exception thrown when a file cannot be written.
+///
+/// A file cannot be written because:
+/// - It does not exist.
+/// - It is corrupted and cannot be updated.
 public class UnwritableFileException extends AbstractExifException {
 
-	/**
-	 * Unwritable file.
-	 */
+	/// Unwritable file.
 	private final File file;
 
-	/**
-	 * Create exception.
-	 *
-	 * @param file Unwritable file.
-	 * @param message Error message.
-	 */
+	/// Create exception.
+	///
+	/// @param file Unwritable file.
+	/// @param message Error message.
 	public UnwritableFileException(File file, String message) {
 		super(message);
 		this.file = file;
 	}
 
-	/**
-	 * Get {@link #file}
-	 *
-	 * @return {@link #file}
-	 */
+	/// Get [#file]
+	///
+	/// @return [#file]
 	public File getFile() {
 		return file;
 	}

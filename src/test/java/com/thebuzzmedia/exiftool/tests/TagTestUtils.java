@@ -22,19 +22,16 @@ import com.thebuzzmedia.exiftool.Tag;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Static utilities for tags.
- */
+/// Static utilities for tags.
 public final class TagTestUtils {
 
 	private TagTestUtils() {
 	}
 
-	/**
-	 * Parse tag results into a map of tag names to parsed values
-	 * @param tags map of tags to values
-	 * @return map of tag names to parsed values
-	 */
+	/// Parse tag results into a map of tag names to parsed values
+	///
+	/// @param tags map of tags to values
+	/// @return map of tag names to parsed values
 	public static Map<String, Object> parseTags(Map<Tag, String> tags) {
 		final Map<String, Object> map = new HashMap<>(tags.size());
 		for (Map.Entry<Tag, String> entry : tags.entrySet()) {

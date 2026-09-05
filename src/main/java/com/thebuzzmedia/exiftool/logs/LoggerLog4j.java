@@ -21,23 +21,17 @@ import org.apache.log4j.Level;
 
 import static com.thebuzzmedia.exiftool.logs.LogUtils.fromSlf4jStyle;
 
-/**
- * Implementation of logger using log4j as
- * internal implementation.
- */
+/// Implementation of logger using log4j as
+/// internal implementation.
 class LoggerLog4j implements Logger {
 
-	/**
-	 * Internal Logger.
-	 */
+	/// Internal Logger.
 	private final org.apache.log4j.Logger log;
 
-	/**
-	 * Create logger.
-	 * This constructor should be called by {@link com.thebuzzmedia.exiftool.logs.LoggerFactory} only.
-	 *
-	 * @param name Logger name.
-	 */
+	/// Create logger.
+	/// This constructor should be called by [com.thebuzzmedia.exiftool.logs.LoggerFactory] only.
+	///
+	/// @param name Logger name.
 	LoggerLog4j(Class<?> name) {
 		this.log = org.apache.log4j.Logger.getLogger(name);
 	}

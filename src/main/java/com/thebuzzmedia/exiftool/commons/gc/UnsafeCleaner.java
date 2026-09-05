@@ -24,28 +24,21 @@ import static com.thebuzzmedia.exiftool.commons.reflection.ClassUtils.invokeStat
 import static com.thebuzzmedia.exiftool.commons.reflection.ClassUtils.lookupClass;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Implementation of {@link Cleaner} using {@code sun.misc.Cleaner} implementation.
- *
- * This cleaner is created using reflection, as {@code sun.misc.Cleaner} does not exist in Java >= 9.
- * Once this library will support java >= 9 only, this implementation will be removed.
- */
+/// Implementation of [Cleaner] using `sun.misc.Cleaner` implementation.
+/// This cleaner is created using reflection, as `sun.misc.Cleaner` does not exist in Java >= 9.
+/// Once this library will support java >= 9 only, this implementation will be removed.
 final class UnsafeCleaner implements Cleaner {
 
-	/**
-	 * Create "unsafe" cleaner.
-	 *
-	 * @return Cleaner, using {@code sun.misc.Cleaner} available with Java < 9.
-	 */
+	/// Create "unsafe" cleaner.
+	///
+	/// @return Cleaner, using `sun.misc.Cleaner` available with Java < 9.
 	static UnsafeCleaner create() {
 		Class<?> cleanerClass = lookupClass("sun.misc.Cleaner");
 		MethodHandle register = findStaticMethod(cleanerClass, "create", cleanerClass, Object.class, Runnable.class);
 		return new UnsafeCleaner(register);
 	}
 
-	/**
-	 * Static register method on {@code sun.misc.Cleaner} class.
-	 */
+	/// Static register method on `sun.misc.Cleaner` class.
 	private final MethodHandle register;
 
 	private UnsafeCleaner(MethodHandle register) {

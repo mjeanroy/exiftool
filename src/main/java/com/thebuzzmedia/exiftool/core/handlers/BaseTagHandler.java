@@ -28,37 +28,25 @@ import java.util.regex.Pattern;
 import static com.thebuzzmedia.exiftool.core.handlers.StopHandler.stopHandler;
 import static java.util.Collections.unmodifiableMap;
 
-/**
- * Read tags line by line.
- *
- * <br>
- *
- * This class is not thread-safe and should be used to
- * read exiftool output from one thread (should not be shared across
- * several threads).
- */
+/// Read tags line by line.
+///
+/// This class is not thread-safe and should be used to
+/// read exiftool output from one thread (should not be shared across
+/// several threads).
 public abstract class BaseTagHandler implements TagHandler {
 
-	/**
-	 * Class logger.
-	 */
+	/// Class logger.
 	private static final Logger log = LoggerFactory.getLogger(BaseTagHandler.class);
 
-	/**
-	 * Compiled {@link Pattern} of {@code ": "} used to split compact output from
-	 * ExifTool evenly into name/value pairs.
-	 */
+	/// Compiled [Pattern] of `": "` used to split compact output from
+	/// ExifTool evenly into name/value pairs.
 	private static final Pattern TAG_VALUE_PATTERN = Pattern.compile(": ");
 
-	/**
-	 * Map of tags found.
-	 * Each tags will be added one by one during line processing.
-	 */
+	/// Map of tags found.
+	/// Each tags will be added one by one during line processing.
 	private final Map<Tag, String> tags = new HashMap<>();
 
-	/**
-	 * Create new {@link BaseTagHandler}
-	 */
+	/// Create new [BaseTagHandler]
 	public BaseTagHandler() {
 	}
 
@@ -94,10 +82,9 @@ public abstract class BaseTagHandler implements TagHandler {
 		return true;
 	}
 
-	/**
-	 * Get a {@link Tag} for the given exif name
-	 * @param name the name of the tag
-	 */
+	/// Get a [Tag] for the given exif name.
+	///
+	/// @param name the name of the tag
 	abstract Tag toTag(String name);
 
 	@Override

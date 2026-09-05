@@ -17,19 +17,16 @@
 
 package com.thebuzzmedia.exiftool.commons.io;
 
-/**
- * Visitor used to read lines of {@link java.io.InputStream} during
- * read operation.
- */
+/// Visitor used to read lines of [java.io.InputStream] during
+/// read operation.
 public interface StreamVisitor {
 
-	/**
-	 * Read line.
-	 * Result is a boolean and should indicate if instance of {@link java.io.InputStream}
-	 * has a next line to read.
-	 *
-	 * @param line Line.
-	 * @return {@code true} if next line should be read, {@code false} otherwise.
-	 */
+	/// Read line.
+	///
+	/// Result is a boolean and should indicate if instance of [java.io.InputStream]
+	/// has a next line to read.
+	///
+	/// @param line Line.
+	/// @return `true` if next line should be read, `false` otherwise.
 	boolean readLine(String line);
 }

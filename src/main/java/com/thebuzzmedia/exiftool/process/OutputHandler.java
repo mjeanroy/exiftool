@@ -19,31 +19,22 @@ package com.thebuzzmedia.exiftool.process;
 
 import com.thebuzzmedia.exiftool.commons.io.StreamVisitor;
 
-/**
- * Handler that should be used to handle command line output.
- *
- * <br>
- *
- * Each line is give to the {@link #readLine(String)} method.
- * This method should return:
- * <ul>
- *   <li>
- *     {@code true} if next line should be read. For instance, if current line is {@code null}, it probably
- *     means that no more output is available. This may let handlers to implement a custom
- *     logic.
- *   </li>
- *   <li>{@code false} if next line should not be read (end of output).</li>
- * </ul>
- */
+/// Handler that should be used to handle command line output.
+///
+/// Each line is give to the [#readLine(String)] method.
+/// This method should return:
+///   - `true` if next line should be read. For instance, if current line is `null`, it probably
+///     means that no more output is available. This may let handlers to implement a custom
+///     logic.
+///   - `false` if next line should not be read (end of output).
 public interface OutputHandler extends StreamVisitor {
 
-	/**
-	 * Read a line from command output.
-	 * Returned value is a boolean: it should indicate if next line should be
-	 * read or if output is finished.
-	 *
-	 * @param line Line output.
-	 * @return Boolean indicating if next line should be read.
-	 */
+	/// Read a line from command output.
+	///
+	/// Returned value is a boolean: it should indicate if next line should be
+	/// read or if output is finished.
+	///
+	/// @param line Line output.
+	/// @return Boolean indicating if next line should be read.
 	boolean readLine(String line);
 }

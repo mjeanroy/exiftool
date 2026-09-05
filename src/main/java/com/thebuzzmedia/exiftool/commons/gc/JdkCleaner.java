@@ -26,19 +26,15 @@ import static com.thebuzzmedia.exiftool.commons.reflection.ClassUtils.invokeStat
 import static com.thebuzzmedia.exiftool.commons.reflection.ClassUtils.lookupClass;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Implementation of {@link Cleaner} using {@code java.lang.ref.Cleaner} implementation.
- *
- * This cleaner is created using reflection, once this library will support Java >= 9 only, we'll be
- * able to get rid of Reflection.
- */
+/// Implementation of [Cleaner] using `java.lang.ref.Cleaner` implementation.
+///
+/// This cleaner is created using reflection, once this library will support Java >= 9 only, we'll be
+/// able to get rid of Reflection.
 final class JdkCleaner implements Cleaner {
 
-	/**
-	 * Create JDK cleaner.
-	 *
-	 * @return Cleaner, using {@code java.lang.ref.Cleaner} available since Java >= 9.
-	 */
+	/// Create JDK cleaner.
+	///
+	/// @return Cleaner, using `java.lang.ref.Cleaner` available since Java >= 9.
 	static JdkCleaner create() {
 		Class<?> cleanerClass = lookupClass("java.lang.ref.Cleaner");
 		Class<?> cleanableClass = lookupClass("java.lang.ref.Cleaner$Cleanable");
@@ -49,14 +45,10 @@ final class JdkCleaner implements Cleaner {
 		return new JdkCleaner(cleaner, register);
 	}
 
-	/**
-	 * Cleaner instance (instance of {@code java.lang.ref.Cleaner}.
-	 */
+	/// Cleaner instance (instance of `java.lang.ref.Cleaner`.
 	private final Object cleaner;
 
-	/**
-	 * Register method on cleaner instance.
-	 */
+	/// Register method on cleaner instance.
 	private final MethodHandle register;
 
 	private JdkCleaner(Object cleaner, MethodHandle register) {

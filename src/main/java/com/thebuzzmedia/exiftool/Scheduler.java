@@ -17,40 +17,28 @@
 
 package com.thebuzzmedia.exiftool;
 
-/**
- * Scheduler interface.
- *
- * Each implementation should provide implementation for:
- * <ul>
- *   <li>{@link #start(Runnable)} method: should schedule task in a specified amount of time.</li>
- *   <li>{@link #stop()} method: should cancel future task.</li>
- * </ul>
- *
- * Note that this interface does not guarantee that scheduled task will
- * effectively be executed.
- */
+/// Scheduler interface.
+///
+/// Each implementation should provide implementation for:
+/// - [#start(Runnable)] method: should schedule task in a specified amount of time.
+/// - [#stop()] method: should cancel future task.
+///
+/// Note that this interface does not guarantee that scheduled task will
+/// effectively be executed.
 public interface Scheduler {
 
-	/**
-	 * Schedule task.
-	 *
-	 * <br>
-	 *
-	 * Task should not run immediately, instead it should run
-	 * in a specified amount of time (implementation dependent).
-	 *
-	 * @param runnable Task to run.
-	 */
+	/// Schedule task.
+	///
+	/// Task should not run immediately, instead it should run
+	/// in a specified amount of time (implementation dependent).
+	///
+	/// @param runnable Task to run.
 	void start(Runnable runnable);
 
-	/**
-	 * Stop pending task.
-	 */
+	/// Stop pending task.
 	void stop();
 
-	/**
-	 * Shutdown scheduler: once done, the scheduler will not be usable
-	 * anymore.
-	 */
+	/// Shutdown scheduler: once done, the scheduler will not be usable
+	/// anymore.
 	void shutdown();
 }

@@ -17,24 +17,20 @@
 
 package com.thebuzzmedia.exiftool.commons.lang;
 
-/**
- * Static Objects Utilities.
- */
+/// Static Objects Utilities.
 public final class Objects {
 
 	// Ensure non instantiation.
 	private Objects() {
 	}
 
-	/**
-	 * Returns the first of two given parameters that is not {@code null}.
-	 *
-	 * @param val1 First value.
-	 * @param val2 Second value.
-	 * @param others Other value.
-	 * @param <T> Type of parameters.
-	 * @return First parameter if it is not {@code null}, second parameter otherwise.
-	 */
+	/// Returns the first of two given parameters that is not `null`.
+	///
+	/// @param val1 First value.
+	/// @param val2 Second value.
+	/// @param others Other value.
+	/// @param <T> Type of parameters.
+	/// @return First parameter if it is not `null`, second parameter otherwise.
 	@SafeVarargs
 	public static <T> T firstNonNull(T val1, T val2, T... others) {
 		if (val1 != null) {

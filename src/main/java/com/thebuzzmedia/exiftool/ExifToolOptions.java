@@ -17,16 +17,12 @@
 
 package com.thebuzzmedia.exiftool;
 
-/**
- * ExifTool options wrapper that can be serialized as list of arguments.
- */
+/// ExifTool options wrapper that can be serialized as list of arguments.
 public interface ExifToolOptions {
 
-	/**
-	 * Serialize exiftool options as a collection of arguments that will be sent to the command
-	 * line.
-	 *
-	 * @return List of arguments.
-	 */
+	/// Serialize exiftool options as a collection of arguments that will be sent to the command
+	/// line.
+	///
+	/// @return List of arguments.
 	Iterable<String> serialize();
 }

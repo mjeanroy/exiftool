@@ -40,159 +40,107 @@ import static com.thebuzzmedia.exiftool.commons.lang.Strings.isNotEmpty;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 
-/**
- * Support options from exiftool binary. Most options are documented
- * here: <a href="https://linux.die.net/man/1/exiftool">https://linux.die.net/man/1/exiftool</a>.
- */
+/// Support options from exiftool binary. Most options are documented
+/// here: [https://linux.die.net/man/1/exiftool](https://linux.die.net/man/1/exiftool).
 public final class StandardOptions implements ExifToolOptions {
 
-	/**
-	 * Create builder.
-	 *
-	 * @return Builder for {@link StandardOptions}.
-	 */
+	/// Create builder.
+	///
+	/// @return Builder for [StandardOptions].
 	public static Builder builder() {
 		return new Builder();
 	}
 
-	/**
-	 * Set output format.
-	 */
+	/// Set output format.
 	private final Format format;
 
-	/**
-	 * Ignore minor errors and warnings.
-	 */
+	/// Ignore minor errors and warnings.
 	private final boolean ignoreMinorErrors;
 
-	/**
-	 * Set format for GPS coordinates.
-	 *
-	 * <br>
-	 *
-	 * Examples:
-	 *
-	 * <ul>
-	 *   <li>"%d deg %d' %.2f" --> 54 deg 59' 22.80"  (default for reading)</li>
-	 *   <li>"%d %d %.8f" --> 54 59 22.80000000  (default for copying)</li>
-	 *   <li>"%d deg %.4f min" --> 54 deg 59.3800 min</li>
-	 *   <li>"%.6f degrees" --> 54.989667 degrees$</li>
-	 * </ul>
-	 */
+	/// Set format for GPS coordinates.
+	///
+	/// Examples:
+	/// - "%d deg %d' %.2f" --> 54 deg 59' 22.80"  (default for reading)
+	/// - "%d %d %.8f" --> 54 59 22.80000000  (default for copying)
+	/// - "%d deg %.4f min" --> 54 deg 59.3800 min
+	/// - "%.6f degrees" --> 54.989667 degrees$
 	private final String coordFormat;
 
-	/**
-	 * Set format for date/time values. Consult the "strftime" man page on your system for details
-	 * on the supported format.
-	 *
-	 * <br>
-	 *
-	 * The default format is equivalent to "%Y:%m:%d %H:%M:%S".
-	 */
+	/// Set format for date/time values. Consult the "strftime" man page on your system for details
+	/// on the supported format.
+	///
+	/// The default format is equivalent to "%Y:%m:%d %H:%M:%S".
 	private final String dateFormat;
 
-	/**
-	 * Specify encoding for special characters.
-	 */
+	/// Specify encoding for special characters.
 	private final List<String> charsets;
 
-	/**
-	 * Password for processing protected files.
-	 */
+	/// Password for processing protected files.
 	private final String password;
 
-	/**
-	 * Escape values for HTML.
-	 */
+	/// Escape values for HTML.
 	private final boolean escapeHtml;
 
-	/**
-	 * Escape values for XML.
-	 */
+	/// Escape values for XML.
 	private final boolean escapeXml;
 
-	/**
-	 * Add features from plug-in module.
-	 */
+	/// Add features from plug-in module.
 	private final List<String> modules;
 
-	/**
-	 * Set current language for tag descriptions and converted values. LANG is "de", "fr", "ja", etc.
-	 *
-	 * Note that tag/group names are always English, independent of the lang setting,
-	 * and translation of warning/error messages has not yet been implemented.
-	 */
+	/// Set current language for tag descriptions and converted values. LANG is "de", "fr", "ja", etc.
+	/// Note that tag/group names are always English, independent of the lang setting,
+	/// and translation of warning/error messages has not yet been implemented.
 	private final String lang;
 
-	/**
-	 * Allow or suppress duplicate tag names to be extracted.
-	 */
+	/// Allow or suppress duplicate tag names to be extracted.
 	private final boolean duplicates;
 
-	/**
-	 * Extract information from embedded documents in EPS and PDF files, embedded MPF images in JPEG and MPO files,
-	 * streaming metadata in AVCHD videos, and the resource fork of Mac OS files.
-	 */
+	/// Extract information from embedded documents in EPS and PDF files, embedded MPF images in JPEG and MPO files,
+	/// streaming metadata in AVCHD videos, and the resource fork of Mac OS files.
 	private final boolean extractEmbedded;
 
-	/**
-	 * Extract values of unknown tags.
-	 * Add another -u to also extract unknown information from binary data blocks.
-	 * This option applies to tags with numerical tag ID's, and causes tag names like "Exif_0xc5d9" to be generated for unknown information.
-	 * It has no effect on information types which have human-readable tag ID's (such as XMP), since unknown tags are extracted automatically from these formats.
-	 */
+	/// Extract values of unknown tags.
+	/// Add another -u to also extract unknown information from binary data blocks.
+	/// This option applies to tags with numerical tag ID's, and causes tag names like "Exif\_0xc5d9" to be generated for unknown information.
+	/// It has no effect on information types which have human-readable tag ID's (such as XMP), since unknown tags are extracted automatically from these formats.
 	private final boolean extractUnknown;
 
-	/**
-	 * Avoid extracting composite tags.
-	 */
+	/// Avoid extracting composite tags.
 	private final boolean noCompositeTags;
 
-	/**
-	 * Wether or not to override original file when writing information to an image. Caution: This option should only
-	 * be used if you already have separate backup copies of your image files.
-	 *
-	 * Two mode are available:
-	 * <ul>
-	 *   <li>
-	 *     Renaming a temporary file to replace the original. This deletes the original file and replaces it with the
-	 *     edited version in a single operation.
-	 *   </li>
-	 *   <li>
-	 *     Similar to -overwrite_original except that an extra step is added to allow the original file attributes to be preserved.
-	 *     For example, on a Mac this causes the original file creation date, ownership, type, creator, label color and icon to be preserved.
-	 *     This is implemented by opening the original file in update mode and replacing its data with a copy of a temporary file before
-	 *     deleting the temporary. The extra step results in slower performance, so the first mode should be used instead unless necessary.
-	 *   </li>
-	 * </ul>
-	 */
+	/// Whether or not to override original file when writing information to an image. Caution: This option should only
+	/// be used if you already have separate backup copies of your image files.
+	///
+	/// Two mode are available:
+	///   - Renaming a temporary file to replace the original. This deletes the original file and replaces it with the
+	///     edited version in a single operation.
+	///   - Similar to -overwrite\_original except that an extra step is added to allow the original file attributes to be preserved.
+	///     For example, on a Mac this causes the original file creation date, ownership, type, creator, label color and icon to be preserved.
+	///     This is implemented by opening the original file in update mode and replacing its data with a copy of a temporary file before
+	///     deleting the temporary. The extra step results in slower performance, so the first mode should be used instead unless necessary.
 	private final OverwriteMode overwriteOriginal;
 
-	/**
-	 * Output information in the form of exiftool arguments, suitable for use with the -@ option when writing.
-	 */
+	/// Output information in the form of exiftool arguments, suitable for use with the -@ option when writing.
 	private final boolean useArgsFormat;
 
-	/**
-	 * Create options.
-	 *
-	 * @param format Output format.
-	 * @param ignoreMinorErrors Ignore minor errors and warnings.
-	 * @param coordFormat Format for GPS coordinates.
-	 * @param dateFormat Format for date/time values.
-	 * @param charsets Specify encoding for special characters.
-	 * @param password Password for processing protected files.
-	 * @param modules Add features from plug-in module.
-	 * @param escapeHtml Escape values for HTML.
-	 * @param escapeXml Escape values for XML.
-	 * @param lang Lang.
-	 * @param duplicates Allow or suppress duplicate tag names to be extracted.
-	 * @param extractEmbedded Extract information from embedded documents.
-	 * @param extractUnknown Extract unknown tags.
-	 * @param noCompositeTags Do not extract composite tags.
-	 * @param overwriteMode The overwrite mode.
-	 * @param useArgsFormat Output information in the form of exiftool arguments.
-	 */
+	/// Create options.
+	///
+	/// @param format Output format.
+	/// @param ignoreMinorErrors Ignore minor errors and warnings.
+	/// @param coordFormat Format for GPS coordinates.
+	/// @param dateFormat Format for date/time values.
+	/// @param charsets Specify encoding for special characters.
+	/// @param password Password for processing protected files.
+	/// @param modules Add features from plug-in module.
+	/// @param escapeHtml Escape values for HTML.
+	/// @param escapeXml Escape values for XML.
+	/// @param lang Lang.
+	/// @param duplicates Allow or suppress duplicate tag names to be extracted.
+	/// @param extractEmbedded Extract information from embedded documents.
+	/// @param extractUnknown Extract unknown tags.
+	/// @param noCompositeTags Do not extract composite tags.
+	/// @param overwriteMode The overwrite mode.
+	/// @param useArgsFormat Output information in the form of exiftool arguments.
 	private StandardOptions(
 			Format format,
 			boolean ignoreMinorErrors,
@@ -309,58 +257,46 @@ public final class StandardOptions implements ExifToolOptions {
 		return arguments;
 	}
 
-	/**
-	 * Get {@link #format}
-	 *
-	 * @return {@link #format}
-	 */
+	/// Get [#format]
+	///
+	/// @return [#format]
 	public Format getFormat() {
 		return format;
 	}
 
-	/**
-	 * Get {@link #ignoreMinorErrors}
-	 *
-	 * @return {@link #ignoreMinorErrors}
-	 */
+	/// Get [#ignoreMinorErrors]
+	///
+	/// @return [#ignoreMinorErrors]
 	public boolean isIgnoreMinorErrors() {
 		return ignoreMinorErrors;
 	}
 
-	/**
-	 * Get {@link #coordFormat}
-	 *
-	 * @return {@link #coordFormat}
-	 */
+	/// Get [#coordFormat]
+	///
+	/// @return [#coordFormat]
 	public String getCoordFormat() {
 		return coordFormat;
 	}
 
-	/**
-	 * Get {@link #dateFormat}
-	 *
-	 * @return {@link #dateFormat}
-	 */
+	/// Get [#dateFormat]
+	///
+	/// @return [#dateFormat]
 	public String getDateFormat() {
 		return dateFormat;
 	}
 
-	/**
-	 * Get {@link #charsets}
-	 *
-	 * @return {@link #charsets}
-	 */
+	/// Get [#charsets]
+	///
+	/// @return [#charsets]
 	public List<String> getCharsets() {
 		return unmodifiableList(charsets);
 	}
 
-	/**
-	 * Here for backward compatibility, will be removed
-	 * in the next major release.
-	 *
-	 * @return First valid Charset.
-	 * @deprecated Use {@link #getCharsets()} instead.
-	 */
+	/// Here for backward compatibility, will be removed
+	/// in the next major release.
+	///
+	/// @return First valid Charset.
+	/// @deprecated Use [#getCharsets()] instead.
 	@Deprecated
 	public Charset getCharset() {
 		for (String charset : charsets) {
@@ -372,121 +308,95 @@ public final class StandardOptions implements ExifToolOptions {
 		return null;
 	}
 
-	/**
-	 * Get {@link #password}
-	 *
-	 * @return {@link #password}
-	 */
+	/// Get [#password]
+	///
+	/// @return [#password]
 	public String getPassword() {
 		return password;
 	}
 
-	/**
-	 * Get {@link #modules}
-	 *
-	 * @return {@link #modules}
-	 */
+	/// Get [#modules]
+	///
+	/// @return [#modules]
 	public List<String> getModules() {
 		return modules;
 	}
 
-	/**
-	 * Get {@link #escapeHtml}
-	 *
-	 * @return {@link #escapeHtml}
-	 */
+	/// Get [#escapeHtml]
+	///
+	/// @return [#escapeHtml]
 	public boolean isEscapeHtml() {
 		return escapeHtml;
 	}
 
-	/**
-	 * Get {@link #escapeXml}
-	 *
-	 * @return {@link #escapeXml}
-	 */
+	/// Get [#escapeXml]
+	///
+	/// @return [#escapeXml]
 	public boolean isEscapeXml() {
 		return escapeXml;
 	}
 
-	/**
-	 * Get {@link #lang}
-	 *
-	 * @return {@link #lang}
-	 */
+	/// Get [#lang]
+	///
+	/// @return [#lang]
 	public String getLang() {
 		return lang;
 	}
 
-	/**
-	 * Get {@link #duplicates}
-	 *
-	 * @return {@link #duplicates}
-	 */
+	/// Get [#duplicates]
+	///
+	/// @return [#duplicates]
 	public boolean isDuplicates() {
 		return duplicates;
 	}
 
-	/**
-	 * Get {@link #extractEmbedded}
-	 *
-	 * @return {@link #extractEmbedded}
-	 */
+	/// Get [#extractEmbedded]
+	///
+	/// @return [#extractEmbedded]
 	public boolean isExtractEmbedded() {
 		return extractEmbedded;
 	}
 
-	/**
-	 * Get {@link #extractUnknown}
-	 *
-	 * @return {@link #extractUnknown}
-	 */
+	/// Get [#extractUnknown]
+	///
+	/// @return [#extractUnknown]
 	public boolean isExtractUnknown() {
 		return extractUnknown;
 	}
 
-	/**
-	 * Get {@link #noCompositeTags}
-	 *
-	 * @return {@link #noCompositeTags}
-	 */
+	/// Get [#noCompositeTags]
+	///
+	/// @return [#noCompositeTags]
 	public boolean isWithoutCompositeTags() {
 		return noCompositeTags;
 	}
 
-	/**
-	 * Check if writing metadata will overwrite original file <strong>(not in place)</strong>.
-	 *
-	 * @return {@code true} if writing to file will overwrite it, {@code false otherwise}.
-	 * @see #isOverwriteOriginalInPlace()
-	 */
+	/// Check if writing metadata will overwrite original file **(not in place)**.
+	///
+	/// @return `true` if writing to file will overwrite it, `false otherwise`.
+	/// @see #isOverwriteOriginalInPlace()
 	public boolean isOverwriteOriginal() {
 		return overwriteOriginal == OverwriteMode.COPY;
 	}
 
-	/**
-	 * Check if writing metadata will overwrite original file <strong>in place</strong>.
-	 *
-	 * @return {@code true} if writing to file will overwrite it in place, {@code false otherwise}.
-	 * @see #isOverwriteOriginal()
-	 */
+	/// Check if writing metadata will overwrite original file **in place**.
+	///
+	/// @return `true` if writing to file will overwrite it in place, `false otherwise`.
+	/// @see #isOverwriteOriginal()
 	public boolean isOverwriteOriginalInPlace() {
 		return overwriteOriginal == OverwriteMode.IN_PLACE;
 	}
 
-	/**
-	 * Get {@link #useArgsFormat}
-	 *
-	 * @return {@link #useArgsFormat}
-	 */
+	/// Get [#useArgsFormat]
+	///
+	/// @return [#useArgsFormat]
 	public boolean isUseArgsFormat() {
 		return useArgsFormat;
 	}
 
-	/**
-	 * Re-Create builder from given options.
-	 *
-	 * @return Builder.
-	 */
+	/// Re-Create builder from given options.
+	///
+	/// @return Builder.
 	public Builder toBuilder() {
 		return new Builder()
 				.withFormat(format)
@@ -580,119 +490,85 @@ public final class StandardOptions implements ExifToolOptions {
 				.build();
 	}
 
-	/**
-	 * Builder for {@link StandardOptions}.
-	 */
+	/// Builder for [StandardOptions].
 	public static class Builder {
 
-		/**
-		 * Set output format.
-		 *
-		 * @see StandardOptions#format
-		 */
+		/// Set output format.
+		///
+		/// @see StandardOptions#format
 		private Format format;
 
-		/**
-		 * Ignore minor errors and warnings.
-		 *
-		 * @see StandardOptions#ignoreMinorErrors
-		 */
+		/// Ignore minor errors and warnings.
+		///
+		/// @see StandardOptions#ignoreMinorErrors
 		private boolean ignoreMinorErrors;
 
-		/**
-		 * Set format for GPS coordinates.
-		 *
-		 * @see StandardOptions#coordFormat
-		 */
+		/// Set format for GPS coordinates.
+		///
+		/// @see StandardOptions#coordFormat
 		private String coordFormat;
 
-		/**
-		 * Set format for date/time values.
-		 *
-		 * @see StandardOptions#dateFormat
-		 */
+		/// Set format for date/time values.
+		///
+		/// @see StandardOptions#dateFormat
 		private String dateFormat;
 
-		/**
-		 * Specify encoding for special characters.
-		 *
-		 * @see StandardOptions#charsets
-		 */
+		/// Specify encoding for special characters.
+		///
+		/// @see StandardOptions#charsets
 		private final Set<String> charsets;
 
-		/**
-		 * Password for processing protected files.
-		 *
-		 * @see StandardOptions#password
-		 */
+		/// Password for processing protected files.
+		///
+		/// @see StandardOptions#password
 		private String password;
 
-		/**
-		 * Escape values for HTML.
-		 *
-		 * @see StandardOptions#escapeHtml
-		 */
+		/// Escape values for HTML.
+		///
+		/// @see StandardOptions#escapeHtml
 		private boolean escapeHtml;
 
-		/**
-		 * Escape values for XML.
-		 *
-		 * @see StandardOptions#escapeXml
-		 */
+		/// Escape values for XML.
+		///
+		/// @see StandardOptions#escapeXml
 		private boolean escapeXml;
 
-		/**
-		 * Add features from plug-in module.
-		 *
-		 * @see StandardOptions#modules
-		 */
+		/// Add features from plug-in module.
+		///
+		/// @see StandardOptions#modules
 		private final Set<String> modules;
 
-		/**
-		 * ExifTool lang.
-		 *
-		 * @see StandardOptions#lang
-		 */
+		/// ExifTool lang.
+		///
+		/// @see StandardOptions#lang
 		private String lang;
 
-		/**
-		 * Allow or suppress duplicate tag names to be extracted.
-		 *
-		 * @see StandardOptions#duplicates
-		 */
+		/// Allow or suppress duplicate tag names to be extracted.
+		///
+		/// @see StandardOptions#duplicates
 		private boolean duplicates;
 
-		/**
-		 * Extract information from embedded documents.
-		 *
-		 * @see StandardOptions#extractEmbedded
-		 */
+		/// Extract information from embedded documents.
+		///
+		/// @see StandardOptions#extractEmbedded
 		private boolean extractEmbedded;
 
-		/**
-		 * Extract values of unknown tags.
-		 *
-		 * @see StandardOptions#extractUnknown
-		 */
+		/// Extract values of unknown tags.
+		///
+		/// @see StandardOptions#extractUnknown
 		private boolean extractUnknown;
 
-		/**
-		 * Do not extract composite tags.
-		 *
-		 * @see StandardOptions#noCompositeTags
-		 */
+		/// Do not extract composite tags.
+		///
+		/// @see StandardOptions#noCompositeTags
 		private boolean noCompositeTags;
 
-		/**
-		 * Overwrite original file mode.
-		 *
-		 * @see StandardOptions#overwriteOriginal
-		 */
+		/// Overwrite original file mode.
+		///
+		/// @see StandardOptions#overwriteOriginal
 		private OverwriteMode overwriteOriginal;
 
-		/**
-		 * Output information in the form of exiftool arguments.
-		 */
+		/// Output information in the form of exiftool arguments.
 		private boolean useArgsFormat;
 
 		private Builder() {
@@ -714,100 +590,82 @@ public final class StandardOptions implements ExifToolOptions {
 			this.useArgsFormat = false;
 		}
 
-		/**
-		 * Update {@link #format}
-		 *
-		 * @param format New {@link #format}
-		 * @return The builder.
-		 */
+		/// Update [#format]
+		///
+		/// @param format New [#format]
+		/// @return The builder.
 		public Builder withFormat(Format format) {
 			this.format = format;
 			return this;
 		}
 
-		/**
-		 * Update {@link #ignoreMinorErrors}
-		 *
-		 * @param ignoreMinorErrors New {@link #ignoreMinorErrors}
-		 * @return The builder.
-		 */
+		/// Update [#ignoreMinorErrors]
+		///
+		/// @param ignoreMinorErrors New [#ignoreMinorErrors]
+		/// @return The builder.
 		public Builder withIgnoreMinorErrors(boolean ignoreMinorErrors) {
 			this.ignoreMinorErrors = ignoreMinorErrors;
 			return this;
 		}
 
-		/**
-		 * Update {@link #coordFormat}
-		 *
-		 * @param coordFormat New {@link #coordFormat}
-		 * @return The builder.
-		 */
+		/// Update [#coordFormat]
+		///
+		/// @param coordFormat New [#coordFormat]
+		/// @return The builder.
 		public Builder withCoordFormat(String coordFormat) {
 			this.coordFormat = coordFormat;
 			return this;
 		}
 
-		/**
-		 * Update {@link #dateFormat}
-		 *
-		 * @param dateFormat New {@link #dateFormat}
-		 * @return The builder.
-		 */
+		/// Update [#dateFormat]
+		///
+		/// @param dateFormat New [#dateFormat]
+		/// @return The builder.
 		public Builder withDateFormat(String dateFormat) {
 			this.dateFormat = dateFormat;
 			return this;
 		}
 
-		/**
-		 * Update {@link #charsets}
-		 *
-		 * @param charset New {@link #charsets}
-		 * @return The builder.
-		 */
+		/// Update [#charsets]
+		///
+		/// @param charset New [#charsets]
+		/// @return The builder.
 		public Builder withCharset(Charset charset) {
 			return withCharset(charset.displayName());
 		}
 
-		/**
-		 * Update {@link #charsets}
-		 *
-		 * @param charset New {@link #charsets}
-		 * @return The builder.
-		 */
+		/// Update [#charsets]
+		///
+		/// @param charset New [#charsets]
+		/// @return The builder.
 		public Builder withCharset(String charset) {
 			this.charsets.add(notBlank(charset, "charset must be set"));
 			return this;
 		}
 
-		/**
-		 * Update {@link #charsets}
-		 *
-		 * @param charsets New {@link #charsets}
-		 * @return The builder.
-		 */
+		/// Update [#charsets]
+		///
+		/// @param charsets New [#charsets]
+		/// @return The builder.
 		public Builder withCharsets(Collection<String> charsets) {
 			this.charsets.addAll(charsets);
 			return this;
 		}
 
-		/**
-		 * Update {@link #password}
-		 *
-		 * @param password New {@link #password}
-		 * @return The builder.
-		 */
+		/// Update [#password]
+		///
+		/// @param password New [#password]
+		/// @return The builder.
 		public Builder withPassword(String password) {
 			this.password = password;
 			return this;
 		}
 
-		/**
-		 * Add new exiftool module.
-		 *
-		 * @param module Module name.
-		 * @param others Other (optional) module names.
-		 * @return The builder.
-		 */
+		/// Add new exiftool module.
+		///
+		/// @param module Module name.
+		/// @param others Other (optional) module names.
+		/// @return The builder.
 		public Builder useModules(String module, String... others) {
 			List<String> modules = new ArrayList<>(1 + others.length);
 			modules.add(module);
@@ -815,209 +673,167 @@ public final class StandardOptions implements ExifToolOptions {
 			return useModules(modules);
 		}
 
-		/**
-		 * Add new exiftool modules.
-		 *
-		 * @param modules Module names.
-		 * @return The builder.
-		 */
+		/// Add new exiftool modules.
+		///
+		/// @param modules Module names.
+		/// @return The builder.
 		public Builder useModules(Collection<String> modules) {
 			this.modules.addAll(modules);
 			return this;
 		}
 
-		/**
-		 * Update {@link #escapeHtml}
-		 *
-		 * @param escapeHtml New {@link #escapeHtml}
-		 * @return The builder.
-		 */
+		/// Update [#escapeHtml]
+		///
+		/// @param escapeHtml New [#escapeHtml]
+		/// @return The builder.
 		public Builder withEscapeHtml(boolean escapeHtml) {
 			this.escapeHtml = escapeHtml;
 			return this;
 		}
 
-		/**
-		 * Update {@link #escapeXml}
-		 *
-		 * @param escapeXml New {@link #escapeXml}
-		 * @return The builder.
-		 */
+		/// Update [#escapeXml]
+		///
+		/// @param escapeXml New [#escapeXml]
+		/// @return The builder.
 		public Builder withEscapeXml(boolean escapeXml) {
 			this.escapeXml = escapeXml;
 			return this;
 		}
 
-		/**
-		 * Update {@link #format} with {@link StandardFormat#NUMERIC}.
-		 *
-		 * @return The builder.
-		 */
+		/// Update [#format] with [StandardFormat#NUMERIC].
+		///
+		/// @return The builder.
 		public Builder withNumericFormat() {
 			this.format = StandardFormat.NUMERIC;
 			return this;
 		}
 
-		/**
-		 * Update {@link #format} with {@link StandardFormat#HUMAN_READABLE}.
-		 *
-		 * @return The builder.
-		 */
+		/// Update [#format] with [StandardFormat#HUMAN_READABLE].
+		///
+		/// @return The builder.
 		public Builder withHumanReadableFormat() {
 			this.format = StandardFormat.HUMAN_READABLE;
 			return this;
 		}
 
-		/**
-		 * Update {@link #lang}
-		 *
-		 * @param lang New {@link #lang}
-		 * @return The builder.
-		 */
+		/// Update [#lang]
+		///
+		/// @param lang New [#lang]
+		/// @return The builder.
 		public Builder withLang(String lang) {
 			this.lang = lang;
 			return this;
 		}
 
-		/**
-		 * Update {@link #duplicates}
-		 *
-		 * @param duplicates {@link #duplicates}
-		 * @return The builder.
-		 */
+		/// Update [#duplicates]
+		///
+		/// @param duplicates [#duplicates]
+		/// @return The builder.
 		public Builder withDuplicates(boolean duplicates) {
 			this.duplicates = duplicates;
 			return this;
 		}
 
-		/**
-		 * Update {@link #extractEmbedded}
-		 *
-		 * @param extractEmbedded New {@link #extractEmbedded}
-		 * @return The builder.
-		 */
+		/// Update [#extractEmbedded]
+		///
+		/// @param extractEmbedded New [#extractEmbedded]
+		/// @return The builder.
 		public Builder withExtractEmbedded(boolean extractEmbedded) {
 			this.extractEmbedded = extractEmbedded;
 			return this;
 		}
 
-		/**
-		 * Update {@link #noCompositeTags}
-		 *
-		 * @param noCompositeTags New {@link #noCompositeTags}
-		 * @return The builder.
-		 */
+		/// Update [#noCompositeTags]
+		///
+		/// @param noCompositeTags New [#noCompositeTags]
+		/// @return The builder.
 		public Builder withoutCompositeTags(boolean noCompositeTags) {
 			this.noCompositeTags = noCompositeTags;
 			return this;
 		}
 
-		/**
-		 * Do not overwrite original file.
-		 *
-		 * @return The builder.
-		 * @deprecated Use {@link #doNotOverwriteOriginal()} instead.
-		 */
+		/// Do not overwrite original file.
+		///
+		/// @return The builder.
+		/// @deprecated Use [#doNotOverwriteOriginal()] instead.
 		@Deprecated
 		public Builder doNotOverwiteOriginal() {
 			return doNotOverwriteOriginal();
 		}
 
-		/**
-		 * Do not overwrite original file.
-		 *
-		 * @return The builder.
-		 */
+		/// Do not overwrite original file.
+		///
+		/// @return The builder.
 		public Builder doNotOverwriteOriginal() {
 			return withOverwriteMode(OverwriteMode.NONE);
 		}
 
-		/**
-		 * Overwrite original file.
-		 *
-		 * @return The builder.
-		 * @deprecated Use {@link #withOverwriteOriginal()} instead.
-		 */
+		/// Overwrite original file.
+		///
+		/// @return The builder.
+		/// @deprecated Use [#withOverwriteOriginal()] instead.
 		@Deprecated
 		public Builder withOverwiteOriginal() {
 			return withOverwriteOriginal();
 		}
 
-		/**
-		 * Overwrite original file.
-		 *
-		 * @return The builder.
-		 */
+		/// Overwrite original file.
+		///
+		/// @return The builder.
 		public Builder withOverwriteOriginal() {
 			return withOverwriteMode(OverwriteMode.COPY);
 		}
 
-		/**
-		 * Overwrite original file in place.
-		 *
-		 * <br>
-		 *
-		 * Caution: this may cause some performance issues, prefer {@link #withOverwiteOriginal()} if possible.
-		 *
-		 * @return The builder.
-		 * @deprecated Use {@link #withOverwriteOriginalInPlace()} instead.
-		 */
+		/// Overwrite original file in place.
+		///
+		/// Caution: this may cause some performance issues, prefer [#withOverwiteOriginal()] if possible.
+		///
+		/// @return The builder.
+		/// @deprecated Use [#withOverwriteOriginalInPlace()] instead.
 		@Deprecated
 		public Builder withOverwiteOriginalInPlace() {
 			return withOverwriteOriginalInPlace();
 		}
 
-		/**
-		 * Overwrite original file in place.
-		 *
-		 * <br>
-		 *
-		 * Caution: this may cause some performance issues, prefer {@link #withOverwiteOriginal()} if possible.
-		 *
-		 * @return The builder.
-		 */
+		/// Overwrite original file in place.
+		///
+		/// Caution: this may cause some performance issues, prefer [#withOverwiteOriginal()] if possible.
+		///
+		/// @return The builder.
 		public Builder withOverwriteOriginalInPlace() {
 			return withOverwriteMode(OverwriteMode.IN_PLACE);
 		}
 
-		/**
-		 * Update overwrite mode.
-		 *
-		 * @param mode The mode.
-		 * @return The builder.
-		 */
+		/// Update overwrite mode.
+		///
+		/// @param mode The mode.
+		/// @return The builder.
 		private Builder withOverwriteMode(OverwriteMode mode) {
 			this.overwriteOriginal = mode;
 			return this;
 		}
 
-		/**
-		 * Update {@link #extractUnknown}.
-		 *
-		 * @param extractUnknown The flag.
-		 * @return The builder.
-		 */
+		/// Update [#extractUnknown].
+		///
+		/// @param extractUnknown The flag.
+		/// @return The builder.
 		public Builder withExtractUnknown(boolean extractUnknown) {
 			this.extractUnknown = extractUnknown;
 			return this;
 		}
 
-		/**
-		 * Update {@link #useArgsFormat}.
-		 *
-		 * @param useArgsFormat The flag.
-		 * @return The builder.
-		 */
+		/// Update [#useArgsFormat].
+		///
+		/// @param useArgsFormat The flag.
+		/// @return The builder.
 		public Builder withUseArgsFormat(boolean useArgsFormat) {
 			this.useArgsFormat = useArgsFormat;
 			return this;
 		}
 
-		/**
-		 * Build ExifTool options.
-		 *
-		 * @return Options.
-		 */
+		/// Build ExifTool options.
+		///
+		/// @return Options.
 		public StandardOptions build() {
 			return new StandardOptions(
 					format,
@@ -1039,58 +855,46 @@ public final class StandardOptions implements ExifToolOptions {
 			);
 		}
 
-		/**
-		 * Get {@link #format}
-		 *
-		 * @return {@link #format}
-		 */
+		/// Get [#format]
+		///
+		/// @return [#format]
 		public Format getFormat() {
 			return format;
 		}
 
-		/**
-		 * Get {@link #ignoreMinorErrors}
-		 *
-		 * @return {@link #ignoreMinorErrors}
-		 */
+		/// Get [#ignoreMinorErrors]
+		///
+		/// @return [#ignoreMinorErrors]
 		public boolean isIgnoreMinorErrors() {
 			return ignoreMinorErrors;
 		}
 
-		/**
-		 * Get {@link #coordFormat}
-		 *
-		 * @return {@link #coordFormat}
-		 */
+		/// Get [#coordFormat]
+		///
+		/// @return [#coordFormat]
 		public String getCoordFormat() {
 			return coordFormat;
 		}
 
-		/**
-		 * Get {@link #dateFormat}
-		 *
-		 * @return {@link #dateFormat}
-		 */
+		/// Get [#dateFormat]
+		///
+		/// @return [#dateFormat]
 		public String getDateFormat() {
 			return dateFormat;
 		}
 
-		/**
-		 * Get {@link #charsets}
-		 *
-		 * @return {@link #charsets}
-		 */
+		/// Get [#charsets]
+		///
+		/// @return [#charsets]
 		public Set<String> getCharsets() {
 			return unmodifiableSet(charsets);
 		}
 
-		/**
-		 * Here for backward compatibility, will be removed
-		 * in the next major release.
-		 *
-		 * @return First valid Charset.
-		 * @deprecated Use {@link #getCharsets()} instead.
-		 */
+		/// Here for backward compatibility, will be removed
+		/// in the next major release.
+		///
+		/// @return First valid Charset.
+		/// @deprecated Use [#getCharsets()] instead.
 		@Deprecated
 		public Charset getCharset() {
 			for (String charset : charsets) {
@@ -1102,112 +906,88 @@ public final class StandardOptions implements ExifToolOptions {
 			return null;
 		}
 
-		/**
-		 * Get {@link #password}
-		 *
-		 * @return {@link #password}
-		 */
+		/// Get [#password]
+		///
+		/// @return [#password]
 		public String getPassword() {
 			return password;
 		}
 
-		/**
-		 * Get {@link #escapeHtml}
-		 *
-		 * @return {@link #escapeHtml}
-		 */
+		/// Get [#escapeHtml]
+		///
+		/// @return [#escapeHtml]
 		public boolean isEscapeHtml() {
 			return escapeHtml;
 		}
 
-		/**
-		 * Get {@link #escapeXml}
-		 *
-		 * @return {@link #escapeXml}
-		 */
+		/// Get [#escapeXml]
+		///
+		/// @return [#escapeXml]
 		public boolean isEscapeXml() {
 			return escapeXml;
 		}
 
-		/**
-		 * Get {@link #modules}
-		 *
-		 * @return {@link #modules}
-		 */
+		/// Get [#modules]
+		///
+		/// @return [#modules]
 		public Set<String> getModules() {
 			return unmodifiableSet(modules);
 		}
 
-		/**
-		 * Get {@link #lang}
-		 *
-		 * @return {@link #lang}
-		 */
+		/// Get [#lang]
+		///
+		/// @return [#lang]
 		public String getLang() {
 			return lang;
 		}
 
-		/**
-		 * Get {@link #duplicates}
-		 *
-		 * @return {@link #duplicates}
-		 */
+		/// Get [#duplicates]
+		///
+		/// @return [#duplicates]
 		public boolean isDuplicates() {
 			return duplicates;
 		}
 
-		/**
-		 * Get {@link #extractEmbedded}
-		 *
-		 * @return {@link #extractEmbedded}
-		 */
+		/// Get [#extractEmbedded]
+		///
+		/// @return [#extractEmbedded]
 		public boolean isExtractEmbedded() {
 			return extractEmbedded;
 		}
 
-		/**
-		 * Get {@link #extractUnknown}
-		 *
-		 * @return {@link #extractUnknown}
-		 */
+		/// Get [#extractUnknown]
+		///
+		/// @return [#extractUnknown]
 		public boolean isExtractUnknown() {
 			return extractUnknown;
 		}
 
-		/**
-		 * Get {@link #noCompositeTags}
-		 *
-		 * @return {@link #noCompositeTags}
-		 */
+		/// Get [#noCompositeTags]
+		///
+		/// @return [#noCompositeTags]
 		public boolean isWithoutCompositeTags() {
 			return noCompositeTags;
 		}
 
-		/**
-		 * Check if writing metadata will overwrite original file <strong>(not in place)</strong>.
-		 *
-		 * @return {@code true} if writing to file will overwrite it, {@code false otherwise}.
-		 * @see #isOverwriteOriginalInPlace()
-		 */
+		/// Check if writing metadata will overwrite original file **(not in place)**.
+		///
+		/// @return `true` if writing to file will overwrite it, `false otherwise`.
+		/// @see #isOverwriteOriginalInPlace()
 		public boolean isOverwriteOriginal() {
 			return overwriteOriginal == OverwriteMode.COPY;
 		}
 
-		/**
-		 * Check if writing metadata will overwrite original file <strong>in place</strong>.
-		 *
-		 * @return {@code true} if writing to file will overwrite it in place, {@code false otherwise}.
-		 * @see #isOverwriteOriginal()
-		 */
+		/// Check if writing metadata will overwrite original file **in place**.
+		///
+		/// @return `true` if writing to file will overwrite it in place, `false otherwise`.
+		/// @see #isOverwriteOriginal()
 		public boolean isOverwriteOriginalInPlace() {
 			return overwriteOriginal == OverwriteMode.IN_PLACE;
 		}
 
-		/**
-		 * Get {@link #useArgsFormat}
-		 *
-		 * @return {@link #useArgsFormat}
-		 */
+		/// Get [#useArgsFormat]
+		///
+		/// @return [#useArgsFormat]
 		public boolean isUseArgsFormat() {
 			return useArgsFormat;
 		}

@@ -32,19 +32,13 @@ import static com.thebuzzmedia.exiftool.commons.io.IOs.closeQuietly;
 import static com.thebuzzmedia.exiftool.commons.io.IOs.readInputStream;
 import static java.util.Objects.requireNonNull;
 
-/**
- * Default Executor.
- */
+/// Default Executor.
 public class DefaultCommandExecutor implements CommandExecutor {
 
-	/**
-	 * Class logger.
-	 */
+	/// Class logger.
 	private static final Logger log = LoggerFactory.getLogger(DefaultCommandExecutor.class);
 
-	/**
-	 * Create default executor.
-	 */
+	/// Create default executor.
 	public DefaultCommandExecutor() {
 	}
 

@@ -23,83 +23,60 @@ import com.thebuzzmedia.exiftool.process.OutputHandler;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * ExifTool execution strategy.
- *
- * <br>
- *
- * For instance:
- * <ul>
- *   <li>Execution using a one-shot process.</li>
- *   <li>
- *     Execution using {@code stay_open} flag: this strategy means that a
- *     process is started and re-used for next executions.
- *   </li>
- * </ul>
- *
- * Each implementation will define the main logic for reading and
- * writing metadata (this is the main purpose for the {@link #execute} method.
- *
- * <br>
- *
- * Implementation should also define a close method: this method
- * will be used to stop remaining process and clean previous execution.
- * Calling {@link #close} method should not prevent instances to be used
- * for a next execution.
- */
+/// ExifTool execution strategy.
+///
+/// For instance:
+/// - Execution using a one-shot process.
+/// - Execution using `stay_open` flag: this strategy means that a
+///   process is started and re-used for next executions.
+///
+/// Each implementation will define the main logic for reading and
+/// writing metadata (this is the main purpose for the [#execute] method.
+///
+/// Implementation should also define a close method: this method
+/// will be used to stop remaining process and clean previous execution.
+///
+/// Calling [#close] method should not prevent instances to be used
+/// for a next execution.
 public interface ExecutionStrategy extends AutoCloseable {
 
-	/**
-	 * Execute exiftool command.
-	 *
-	 * @param executor ExifTool withExecutor.
-	 * @param exifTool ExifTool withPath.
-	 * @param arguments Command line arguments.
-	 * @param handler Handler to read command output.
-	 * @throws IOException If an error occurred during execution.
-	 */
+	/// Execute exiftool command.
+	///
+	/// @param executor ExifTool withExecutor.
+	/// @param exifTool ExifTool withPath.
+	/// @param arguments Command line arguments.
+	/// @param handler Handler to read command output.
+	/// @throws IOException If an error occurred during execution.
 	void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException;
 
-	/**
-	 * Check if exiftool process is currently running.
-	 * This method is important especially if {@code stay_open} flag has been enabled.
-	 *
-	 * @return {@code true} if {@code exiftool} process is currently open, {@code false} otherwise.
-	 */
+	/// Check if exiftool process is currently running.
+	/// This method is important especially if `stay_open` flag has been enabled.
+	///
+	/// @return `true` if `exiftool` process is currently open, `false` otherwise.
 	boolean isRunning();
 
-	/**
-	 * Check if this strategy should is supported with this specific version.
-	 *
-	 * @param version ExifTool Version.
-	 * @return {@code true} if this strategy may be used safely with this specific version, {@code false} otherwise.
-	 */
+	/// Check if this strategy should is supported with this specific version.
+	///
+	/// @param version ExifTool Version.
+	/// @return `true` if this strategy may be used safely with this specific version, `false` otherwise.
 	boolean isSupported(Version version);
 
-	/**
-	 * This method should be used to:
-	 * <ul>
-	 *   <li>Close remaining process (if any).</li>
-	 *   <li>Clean previous executions.</li>
-	 * </ul>
-	 *
-	 * For instance, with the {@code stay_open} flag, this method should:
-	 * <ul>
-	 *   <li>Close opened process.</li>
-	 *   <li>Stop task used to automatically close process.</li>
-	 * </ul>
-	 *
-	 * Once closed, ExifTool should still be able to use this strategy
-	 * if a call to {@link #execute} is made.
-	 *
-	 * @throws Exception If an error occurred while stopping exiftool client.
-	 */
+	/// This method should be used to:
+	/// - Close remaining process (if any).
+	/// - Clean previous executions.
+	///
+	/// For instance, with the `stay_open` flag, this method should:
+	/// - Close opened process.
+	/// - Stop task used to automatically close process.
+	///
+	/// Once closed, ExifTool should still be able to use this strategy
+	/// if a call to [#execute] is made.
+	///
+	/// @throws Exception If an error occurred while stopping exiftool client.
 	void close() throws Exception;
 
-	/**
-	 * Shutdown the strategy.
-	 *
-	 * @throws Exception If an error occurred while stopping exiftool client.
-	 */
+	/// Shutdown the strategy.
+	///
+	/// @throws Exception If an error occurred while stopping exiftool client.
 	void shutdown() throws Exception;
 }

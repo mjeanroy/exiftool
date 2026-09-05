@@ -25,27 +25,19 @@ import java.util.Map;
 
 import static java.util.Collections.unmodifiableMap;
 
-/**
- * Read specified input tags line by line.
- *
- * <br>
- *
- * This class is not thread-safe and should be used to
- * read exiftool output from one thread (should not be shared across
- * several threads).
- */
+/// Read specified input tags line by line.
+///
+/// This class is not thread-safe and should be used to
+/// read exiftool output from one thread (should not be shared across
+/// several threads).
 public class StandardTagHandler extends BaseTagHandler {
 
-	/**
-	 * List of expected inputs.
-	 */
+	/// List of expected inputs.
 	private final Map<String, Tag> inputs;
 
-	/**
-	 * Create handler with expected list of tags to parse.
-	 *
-	 * @param tags Expected list of tags.
-	 */
+	/// Create handler with expected list of tags to parse.
+	///
+	/// @param tags Expected list of tags.
 	public StandardTagHandler(Collection<? extends Tag> tags) {
 		Map<String, Tag> inputs = new HashMap<>();
 		for (Tag tag : tags) {

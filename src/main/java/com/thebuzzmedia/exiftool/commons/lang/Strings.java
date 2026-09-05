@@ -19,31 +19,25 @@ package com.thebuzzmedia.exiftool.commons.lang;
 
 import java.util.Optional;
 
-/**
- * Static String Utilities.
- */
+/// Static String Utilities.
 public final class Strings {
 
 	// Ensure non instantiation.
 	private Strings() {
 	}
 
-	/**
-	 * Check that given string is not {@code null} or empty.
-	 *
-	 * @param value Given string to check.
-	 * @return {@code true} if {@code value} is {@code null} or empty.
-	 */
+	/// Check that given string is not `null` or empty.
+	///
+	/// @param value Given string to check.
+	/// @return `true` if `value` is `null` or empty.
 	public static boolean isNotEmpty(String value) {
 		return value != null && !value.isEmpty();
 	}
 
 
-	/**
-	 * Try to parse a string as an Integer and return the value if valid, or an Optional empty if not.
-	 * @param value The string to convert to an Integer
-	 * @return Optional Integer which will be poresent if valid, and empty if not.
-	 */
+	/// Try to parse a string as an Integer and return the value if valid, or an Optional empty if not.
+	/// @param value The string to convert to an Integer
+	/// @return Optional Integer which will be present if valid, and empty if not.
 	public static Optional<Integer> tryParseInt(String value) {
 		try {
 			return Optional.of(Integer.parseInt(value));

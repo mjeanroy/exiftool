@@ -19,35 +19,28 @@ package com.thebuzzmedia.exiftool.exceptions;
 
 import java.io.File;
 
-/**
- * Exception thrown when a file cannot be read.
- * A file cannot be read because:
- * - It does not exist.
- * - It is corrupted and cannot be read.
- */
+/// Exception thrown when a file cannot be read.
+///
+/// A file cannot be read because:
+/// - It does not exist.
+/// - It is corrupted and cannot be read.
 public class UnreadableFileException extends AbstractExifException {
 
-	/**
-	 * Unreadable file.
-	 */
+	/// Unreadable file.
 	private final File file;
 
-	/**
-	 * Create exception.
-	 *
-	 * @param file Unreadable file.
-	 * @param message Error message.
-	 */
+	/// Create exception.
+	///
+	/// @param file Unreadable file.
+	/// @param message Error message.
 	public UnreadableFileException(File file, String message) {
 		super(message);
 		this.file = file;
 	}
 
-	/**
-	 * Get {@link #file}
-	 *
-	 * @return {@link #file}
-	 */
+	/// Get [#file]
+	///
+	/// @return [#file]
 	public File getFile() {
 		return file;
 	}

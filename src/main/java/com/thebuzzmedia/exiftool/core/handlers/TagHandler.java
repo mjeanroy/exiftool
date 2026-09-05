@@ -22,20 +22,16 @@ import com.thebuzzmedia.exiftool.process.OutputHandler;
 
 import java.util.Map;
 
-/**
- * Handle tags line by line and store output.
- */
+/// Handle tags line by line and store output.
 public interface TagHandler extends OutputHandler {
 
-	/**
-	 * Get all tags that have been extracted.
-	 * @return map of tags to their values
-	 */
+	/// Get all tags that have been extracted.
+	///
+	/// @return map of tags to their values
 	Map<Tag, String> getTags();
 
-	/**
-	 * Get the number of tags extracted.
-	 * @return number of tags
-	 */
+	/// Get the number of tags extracted.
+	///
+	/// @return number of tags
 	int size();
 }

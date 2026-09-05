@@ -25,77 +25,59 @@ import java.util.concurrent.TimeUnit;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.isPositive;
 import static java.util.Objects.requireNonNull;
 
-/**
- * A duration, represented by a delay and a time unit.
- */
+/// A duration, represented by a delay and a time unit.
 public final class SchedulerDuration {
 
-	/**
-	 * Create new duration in seconds.
-	 *
-	 * @param delay The delay, in seconds.
-	 * @return The duration.
-	 */
+	/// Create new duration in seconds.
+	///
+	/// @param delay The delay, in seconds.
+	/// @return The duration.
 	public static SchedulerDuration seconds(long delay) {
 		return new SchedulerDuration(delay, TimeUnit.SECONDS);
 	}
 
-	/**
-	 * Create new duration in millis.
-	 *
-	 * @param delay The delay, in millis.
-	 * @return The duration.
-	 */
+	/// Create new duration in millis.
+	///
+	/// @param delay The delay, in millis.
+	/// @return The duration.
 	public static SchedulerDuration millis(long delay) {
 		return new SchedulerDuration(delay, TimeUnit.MILLISECONDS);
 	}
 
-	/**
-	 * Create new duration in millis.
-	 *
-	 * @param delay The delay, in millis.
-	 * @param timeUnit The time unit.
-	 * @return The duration.
-	 */
+	/// Create new duration in millis.
+	///
+	/// @param delay The delay, in millis.
+	/// @param timeUnit The time unit.
+	/// @return The duration.
 	public static SchedulerDuration duration(long delay, TimeUnit timeUnit) {
 		return new SchedulerDuration(delay, timeUnit);
 	}
 
-	/**
-	 * The duration delay.
-	 */
+	/// The duration delay.
 	private final long delay;
 
-	/**
-	 * The duration time unit.
-	 */
+	/// The duration time unit.
 	private final TimeUnit timeUnit;
 
-	/**
-	 * Create new duration.
-	 *
-	 * @param delay Duration delay.
-	 * @param timeUnit Duration unit.
-	 */
+	/// Create new duration.
+	///
+	/// @param delay Duration delay.
+	/// @param timeUnit Duration unit.
 	private SchedulerDuration(long delay, TimeUnit timeUnit) {
 		this.delay = isPositive(delay, "Delay should be a strictly positive value");
 		this.timeUnit = requireNonNull(timeUnit, "Time Unit should not be null");
 	}
 
-	/**
-	 * Get the duration delay.
-	 *
-	 * @return The delay.
-	 */
+	/// Get the duration delay.
+	///
+	/// @return The delay.
 	public long getDelay() {
 		return delay;
 	}
 
-	/**
-	 * Get the duration time unit.
-	 *
-	 * @return The time unit.
-	 */
+	/// Get the duration time unit.
+	///
+	/// @return The time unit.
 	public TimeUnit getTimeUnit() {
 		return timeUnit;
 	}

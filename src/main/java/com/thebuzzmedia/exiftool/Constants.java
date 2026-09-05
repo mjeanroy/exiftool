@@ -17,24 +17,19 @@
 
 package com.thebuzzmedia.exiftool;
 
-/**
- * List of constants used with Exiftool.
- */
+/// List of constants used with Exiftool.
 public final class Constants {
 
 	// Ensure non instantiation.
 	private Constants() {
 	}
 
-	/**
-	 * Separator used to separate values.
-	 * This separator should be enough to split values and be sure it is not
-	 * reused anywhere.
-	 */
+	/// Separator used to separate values.
+	///
+	/// This separator should be enough to split values and be sure it is not
+	/// reused anywhere.
 	public static final String SEPARATOR = "|>☃";
 
-	/**
-	 * OS independent line break.
-	 */
+	/// OS independent line break.
 	public static final String BR = System.getProperty("line.separator");
 }

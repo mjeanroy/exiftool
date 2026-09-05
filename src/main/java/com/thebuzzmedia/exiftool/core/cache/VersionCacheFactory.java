@@ -21,20 +21,16 @@ import com.thebuzzmedia.exiftool.VersionCache;
 
 import static com.thebuzzmedia.exiftool.commons.reflection.DependencyUtils.isGuavaAvailable;
 
-/**
- * {@link VersionCache} factory.
- */
+/// [VersionCache] factory.
 public final class VersionCacheFactory {
 
 	// Ensure non instantiation.
 	private VersionCacheFactory() {
 	}
 
-	/**
-	 * Create new cache for exiftool version.
-	 *
-	 * @return New instance of {@link VersionCache}.
-	 */
+	/// Create new cache for exiftool version.
+	///
+	/// @return New instance of [VersionCache].
 	public static VersionCache newCache() {
 		return isGuavaAvailable() ? new GuavaVersionCache() : new DefaultVersionCache();
 	}

@@ -25,36 +25,26 @@ import java.util.List;
 import static java.util.Collections.addAll;
 import static java.util.Collections.unmodifiableList;
 
-/**
- * Composite handler.
- *
- * <p />
- *
- * Run each internal handler and return false if one of them returns
- * false during line processing.
- *
- * This class should only be used internally (to compose handlers during
- * command execution).
- *
- * <p />
- *
- * <strong>Note:</strong> this class is thread safe if (and only if)
- * internal handlers are thread safe.
- */
+/// Composite handler.
+///
+/// Run each internal handler and return false if one of them returns
+/// false during line processing.
+///
+/// This class should only be used internally (to compose handlers during
+/// command execution).
+///
+/// **Note:** this class is thread safe if (and only if)
+/// internal handlers are thread safe.
 class CompositeHandler implements OutputHandler {
 
-	/**
-	 * List of internal handlers.
-	 * Each one will be processed in order.
-	 * Once created, this list is unmodifiable.
-	 */
+	/// List of internal handlers.
+	/// Each one will be processed in order.
+	/// Once created, this list is unmodifiable.
 	private final List<OutputHandler> handlers;
 
-	/**
-	 * Create handler.
-	 *
-	 * @param handlers List of handlers.
-	 */
+	/// Create handler.
+	///
+	/// @param handlers List of handlers.
 	CompositeHandler(OutputHandler... handlers) {
 		List<OutputHandler> list = new ArrayList<>(handlers.length);
 		if (handlers.length > 0) {

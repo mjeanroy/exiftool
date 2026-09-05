@@ -25,46 +25,33 @@ import java.util.TimerTask;
 import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.isPositive;
 
-/**
- * Scheduler using {@link java.util.Timer} as internal task scheduler.
- *
- * <br>
- *
- * This scheduler should be used only for compatibility reason (this was the very first kind of scheduler
- * available), instead instance of {@link com.thebuzzmedia.exiftool.core.schedulers.DefaultScheduler} should
- * be used.
- */
+/// Scheduler using [java.util.Timer] as internal task scheduler.
+///
+/// This scheduler should be used only for compatibility reason (this was the very first kind of scheduler
+/// available), instead instance of [com.thebuzzmedia.exiftool.core.schedulers.DefaultScheduler] should
+/// be used.
 public class TimerScheduler implements Scheduler {
 
-	/**
-	 * Name of timer thread.
-	 */
+	/// Name of timer thread.
 	private final String name;
 
-	/**
-	 * Schedule delay.
-	 * This delay must be strictly positive.
-	 */
+	/// Schedule delay.
+	/// This delay must be strictly positive.
 	private final long delay;
 
-	/**
-	 * Timer Scheduler.
-	 */
+	/// Timer Scheduler.
 	private final Timer timer;
 
-	/**
-	 * Pending task.
-	 * This task should be cancel with {@link #stop()} method before any
-	 * call to {@link #start(Runnable)} method.
-	 */
+	/// Pending task.
+	/// This task should be cancel with [#stop()] method before any
+	/// call to [#start(Runnable)] method.
 	private TimerTask pendingTask;
 
-	/**
-	 * Create scheduler.
-	 * @param name Thread name.
-	 * @param delay Delay before task execution.
-	 * @throws IllegalArgumentException If {@code delay} is not strictly positive.
-	 */
+	/// Create scheduler.
+	///
+	/// @param name Thread name.
+	/// @param delay Delay before task execution.
+	/// @throws IllegalArgumentException If `delay` is not strictly positive.
 	public TimerScheduler(String name, long delay) {
 		this.name = firstNonNull(name, "ExifTool Cleanup Timer");
 		this.delay = isPositive(delay, "Delay must be strictly positive");

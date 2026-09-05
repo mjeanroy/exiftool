@@ -17,9 +17,7 @@
 
 package com.thebuzzmedia.exiftool.commons.reflection;
 
-/**
- * Static Dependency Utilities.
- */
+/// Static Dependency Utilities.
 public final class DependencyUtils {
 
 	// Ensure non instantiation.
@@ -38,38 +36,30 @@ public final class DependencyUtils {
 	private static final String LOG4J2_FQN = "org.apache.logging.log4j.Logger";
 	private static final boolean LOG4J2_AVAILABLE = ClassUtils.isPresent(LOG4J2_FQN);
 
-	/**
-	 * Check if Guava is available on the classpath.
-	 *
-	 * @return {@code true} if guava is available, {@code false} otherwise.
-	 */
+	/// Check if Guava is available on the classpath.
+	///
+	/// @return `true` if guava is available, `false` otherwise.
 	public static boolean isGuavaAvailable() {
 		return GUAVA_AVAILABLE;
 	}
 
-	/**
-	 * Check if slf4j is available on the classpath.
-	 *
-	 * @return {@code true} if slf4j is available, {@code false} otherwise.
-	 */
+	/// Check if slf4j is available on the classpath.
+	///
+	/// @return `true` if slf4j is available, `false` otherwise.
 	public static boolean isSlf4jAvailable() {
 		return SLF4J_AVAILABLE;
 	}
 
-	/**
-	 * Check if log4j is available on the classpath.
-	 *
-	 * @return {@code true} if log4j is available, {@code false} otherwise.
-	 */
+	/// Check if log4j is available on the classpath.
+	///
+	/// @return `true` if log4j is available, `false` otherwise.
 	public static boolean isLog4jAvailable() {
 		return LOG4J_AVAILABLE;
 	}
 
-	/**
-	 * Check if log4j2 is available on the classpath.
-	 *
-	 * @return {@code true} if log4j2 is available, {@code false} otherwise.
-	 */
+	/// Check if log4j2 is available on the classpath.
+	///
+	/// @return `true` if log4j2 is available, `false` otherwise.
 	public static boolean isLog4j2Available() {
 		return LOG4J2_AVAILABLE;
 	}

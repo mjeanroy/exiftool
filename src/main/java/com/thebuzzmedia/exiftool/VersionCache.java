@@ -19,30 +19,22 @@ package com.thebuzzmedia.exiftool;
 
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
 
-/**
- * Parse {@code exiftool} version and put it in a cache.
- */
+/// Parse `exiftool` version and put it in a cache.
 public interface VersionCache {
 
-	/**
-	 * Execute {@code exiftool} using given {@code executor} to get version
-	 * of {@code exiftool} executable and put results in a cache.
-	 *
-	 * @param exifTool Path of {@code exiftool} executable.
-	 * @param executor Executor used to execute {@code exiftool} command.
-	 * @return Version, {@code null} if version cannot be parsed.
-	 */
+	/// Execute `exiftool` using given `executor` to get version
+	/// of `exiftool` executable and put results in a cache.
+	///
+	/// @param exifTool Path of `exiftool` executable.
+	/// @param executor Executor used to execute `exiftool` command.
+	/// @return Version, `null` if version cannot be parsed.
 	Version load(String exifTool, CommandExecutor executor);
 
-	/**
-	 * Get current size of cache (a.k.a number of entries).
-	 *
-	 * @return Cache Size.
-	 */
+	/// Get current size of cache (a.k.a number of entries).
+	///
+	/// @return Cache Size.
 	long size();
 
-	/**
-	 * Invalidate all entries.
-	 */
+	/// Invalidate all entries.
 	void clear();
 }

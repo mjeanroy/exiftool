@@ -23,32 +23,24 @@ import java.util.Collection;
 
 import static java.util.Collections.unmodifiableCollection;
 
-/**
- * Error thrown when an error occurs with pool execution.
- */
+/// Error thrown when an error occurs with pool execution.
 public class PoolIOException extends IOException {
 
-	/**
-	 * Original exceptions.
-	 */
+	/// Original exceptions.
 	private final Collection<Exception> thrownExceptions;
 
-	/**
-	 * Create exception.
-	 *
-	 * @param message Error message.
-	 * @param thrownExceptions Original exceptions.
-	 */
+	/// Create exception.
+	///
+	/// @param message Error message.
+	/// @param thrownExceptions Original exceptions.
 	public PoolIOException(String message, Collection<Exception> thrownExceptions) {
 		super(message);
 		this.thrownExceptions = new ArrayList<>(thrownExceptions);
 	}
 
-	/**
-	 * Get {@link #thrownExceptions}, as an unmodifiable collection.
-	 *
-	 * @return {@link #thrownExceptions}
-	 */
+	/// Get [#thrownExceptions], as an unmodifiable collection.
+	///
+	/// @return [#thrownExceptions]
 	public Collection<Exception> getThrownExceptions() {
 		return unmodifiableCollection(thrownExceptions);
 	}

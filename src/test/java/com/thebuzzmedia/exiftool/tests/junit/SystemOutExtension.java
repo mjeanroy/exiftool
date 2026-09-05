@@ -29,14 +29,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-/**
- * Catch System.out logging and store in a buffer.
- */
+/// Catch System.out logging and store in a buffer.
 public class SystemOutExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	/**
-	 * The namespace in which extension data will be stored.
-	 */
+	/// The namespace in which extension data will be stored.
 	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ProcessLeakDetectorExtension.class.getName());
 
 	private static final String ORIGINAL_OUT_KEY = "original_out";
@@ -134,12 +130,10 @@ public class SystemOutExtension implements BeforeEachCallback, AfterEachCallback
 		}
 	}
 
-	/**
-	 * Get the internal store from the test context.
-	 *
-	 * @param context The test context.
-	 * @return The internal store.
-	 */
+	/// Get the internal store from the test context.
+	///
+	/// @param context The test context.
+	/// @return The internal store.
 	private static ExtensionContext.Store getStore(ExtensionContext context) {
 		return context.getStore(NAMESPACE);
 	}

@@ -27,29 +27,21 @@ import static com.thebuzzmedia.exiftool.commons.iterables.Collections.isEmpty;
 import static com.thebuzzmedia.exiftool.commons.iterables.Collections.size;
 import static java.util.Collections.unmodifiableList;
 
-/**
- * Default implementation for {@link Command} interface.
- * This implementation should only be used with {@link com.thebuzzmedia.exiftool.process.command.CommandBuilder} builder.
- */
+/// Default implementation for [Command] interface.
+/// This implementation should only be used with [com.thebuzzmedia.exiftool.process.command.CommandBuilder] builder.
 public final class DefaultCommand implements Command {
 
-	/**
-	 * List of arguments:
-	 * <ul>
-	 *   <li>First element is the executable.</li>
-	 *   <li>Next elements are the executable arguments (optional).</li>
-	 * </ul>
-	 *
-	 * Once created, this list will be unmodifiable.
-	 */
+	/// List of arguments:
+	///   - First element is the executable.
+	///   - Next elements are the executable arguments (optional).
+	///
+	/// Once created, this list will be unmodifiable.
 	private final List<String> cmd;
 
-	/**
-	 * Create command line.
-	 *
-	 * @param executable Executable value.
-	 * @param arguments List of optional arguments.
-	 */
+	/// Create command line.
+	///
+	/// @param executable Executable value.
+	/// @param arguments List of optional arguments.
 	public DefaultCommand(String executable, List<String> arguments) {
 		List<String> args = new ArrayList<>(size(arguments) + 1);
 

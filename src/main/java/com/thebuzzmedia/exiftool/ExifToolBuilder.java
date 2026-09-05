@@ -34,190 +34,152 @@ import java.util.List;
 import static com.thebuzzmedia.exiftool.core.schedulers.SchedulerDuration.millis;
 import static com.thebuzzmedia.exiftool.process.executor.CommandExecutors.newExecutor;
 
-/**
- * Builder for {@link ExifTool} instance.
- * This builder should be used to create instance of {@link com.thebuzzmedia.exiftool.ExifTool}.
- *
- * <h2>Settings</h2>
- *
- * <h3>Path</h3>
- *
- * Set the absolute withPath to the ExifTool executable on the host system running
- * this class as defined by the `exiftool.withPath` system property.
- *
- * If set, value will be used, otherwise, withPath will be read:
- * <ul>
- *   <li>
- *     From system property. This system property can be set on startup
- *     with {@code -Dexiftool.withPath=/withPath/to/exiftool} or by
- *     calling {@link System#setProperty(String, String)} before
- *     this class is loaded.
- *   </li>
- *   <li>
- *     Default value is {@code exiftool}. In this case, {@code exiftool}
- *     command must be globally available.
- *   </li>
- * </ul>
- *
- * If ExifTool is on your system withPath and running the command {@code exiftool}
- * successfully executes it, leaving this value unchanged will work fine on
- * any platform. If the ExifTool executable is named something else or not
- * in the system withPath, then this property will need to be set to point at it
- * before using this class.
- *
- * On Windows be sure to double-escape the withPath to the tool,
- * for example: {@code -Dexiftool.withPath=C:\\Tools\\exiftool.exe}.
- *
- * Default value is {@code exiftool}.
- *
- * Relative withPath values (e.g. {@code bin/tools/exiftool}) are executed with
- * relation to the base directory the VM process was started in. Essentially
- * the directory that {@code new File(".").getAbsolutePath()} points at
- * during runtime.
- *
- * <h4>Executor</h4>
- *
- * Executor is the component responsible for executing command line on the
- * system. Most of the time, the default should be fine, but if you want to tune
- * the used withExecutor, then this property is for you.
- * Custom withExecutor must implement {@link com.thebuzzmedia.exiftool.process.CommandExecutor} interface.
- *
- * <h4>Stay Open Strategy</h4>
- *
- * ExifTool <a href="http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,1402.msg12933.html#msg12933">8.36</a>
- * added a new persistent-process feature that allows ExifTool to stay
- * running in a daemon mode and continue accepting commands via a file or stdin.
- * This feature is disabled by default.
- *
- * <strong>NOTE:</strong> If {@code stay_open} flag is enabled, then an
- * instance of {@link com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException}
- * may be thrown during ExifTool creation.
- *
- * If this exception occurs, then you should probably:
- * <ul>
- *   <li>Update your ExifTool version.</li>
- *   <li>Create new ExifTool without this feature.</li>
- * </ul>.
- *
- * <strong>Usage:</strong>
- *
- * <pre><code>
- *     final ExifTool exifTool;
- *     try {
- *         exifTool = new ExifToolBuilder()
- *             .enableStayOpen()
- *             .build();
- *     }
- *     catch (UnsupportedFeatureException ex) {
- *         exifTool = new ExifToolBuilder().build();
- *     }
- * </code></pre>
- *
- * <h4>Custom Strategies</h4>
- *
- * If default strategies are not enough, you can easily provide your own using
- * the {@link #withStrategy} method.
- *
- * <strong>Usage:</strong>
- *
- * <pre><code>
- *   ExifTool exifTool = new ExifToolBuilder()
- *     .withStrategy(new MyCustomStrategy())
- *     .build();
- * </code></pre>
- */
+/// Builder for [ExifTool] instance.
+///
+/// This builder should be used to create instance of [com.thebuzzmedia.exiftool.ExifTool].
+///
+/// ## Settings
+///
+/// ### Path
+///
+/// Set the absolute withPath to the ExifTool executable on the host system running
+/// this class as defined by the `exiftool.withPath` system property.
+/// If set, value will be used, otherwise, withPath will be read:
+/// - From system property. This system property can be set on startup
+///   with `-Dexiftool.withPath=/withPath/to/exiftool` or by
+///   calling [System#setProperty(String, String)] before
+///   this class is loaded.
+/// - Default value is `exiftool`. In this case, `exiftool`
+///   command must be globally available.
+///
+/// If ExifTool is on your system withPath and running the command `exiftool`
+/// successfully executes it, leaving this value unchanged will work fine on
+/// any platform. If the ExifTool executable is named something else or not
+/// in the system withPath, then this property will need to be set to point at it
+/// before using this class.
+///
+/// On Windows be sure to double-escape the withPath to the tool,
+/// for example: `-Dexiftool.withPath=C:\\\\Tools\\\\exiftool.exe`.
+///
+/// Default value is `exiftool`.
+///
+/// Relative withPath values (e.g. `bin/tools/exiftool`) are executed with
+/// relation to the base directory the VM process was started in. Essentially
+/// the directory that `new File(".").getAbsolutePath()` points at
+/// during runtime.
+///
+/// #### Executor
+///
+/// Executor is the component responsible for executing command line on the
+/// system. Most of the time, the default should be fine, but if you want to tune
+/// the used withExecutor, then this property is for you.
+///
+/// Custom withExecutor must implement [com.thebuzzmedia.exiftool.process.CommandExecutor] interface.
+///
+/// #### Stay Open Strategy
+///
+/// ExifTool [8.36](http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,1402.msg12933.html#msg12933)
+/// added a new persistent-process feature that allows ExifTool to stay
+/// running in a daemon mode and continue accepting commands via a file or stdin.
+///
+/// This feature is disabled by default.
+///
+/// **NOTE:** If `stay_open` flag is enabled, then an
+/// instance of [com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException]
+/// may be thrown during ExifTool creation.
+///
+/// If this exception occurs, then you should probably:
+///   - Update your ExifTool version.
+///   - Create new ExifTool without this feature.
+///
+/// **Usage:**
+///
+/// ```
+///     final ExifTool exifTool;
+///     try {
+///         exifTool = new ExifToolBuilder()
+///             .enableStayOpen()
+///             .build();
+///     }
+///     catch (UnsupportedFeatureException ex) {
+///         exifTool = new ExifToolBuilder().build();
+///     }
+/// ```
+///
+/// #### Custom Strategies
+///
+/// If default strategies are not enough, you can easily provide your own using
+/// the [#withStrategy] method.
+///
+/// **Usage:**
+/// ```
+///   ExifTool exifTool = new ExifToolBuilder()
+///     .withStrategy(new MyCustomStrategy())
+///     .build();
+/// ```
 public class ExifToolBuilder {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(ExifToolBuilder.class);
 
-	/**
-	 * Function to get default path value.
-	 */
+	/// Function to get default path value.
 	private static final PathFunction PATH = new PathFunction();
 
-	/**
-	 * Function to get default cleanup interval.
-	 */
+	/// Function to get default cleanup interval.
 	private static final DelayFunction DELAY = new DelayFunction();
 
-	/**
-	 * Function to get default executor environment.
-	 */
+	/// Function to get default executor environment.
 	private static final ExecutorFunction EXECUTOR = new ExecutorFunction();
 
-	/**
-	 * ExifTool path.
-	 */
+	/// ExifTool path.
 	private String path;
 
-	/**
-	 * ExifTool executor.
-	 */
+	/// ExifTool executor.
 	private CommandExecutor executor;
 
-	/**
-	 * Check if {@code stay_open} flag should be enabled.
-	 */
+	/// Check if `stay_open` flag should be enabled.
 	private Boolean stayOpen;
 
-	/**
-	 * Cleanup Delay.
-	 */
+	/// Cleanup Delay.
 	private Long cleanupDelay;
 
-	/**
-	 * Custom execution strategy.
-	 */
+	/// Custom execution strategy.
 	private ExecutionStrategy strategy;
 
-	/**
-	 * Custom Scheduler.
-	 */
+	/// Custom Scheduler.
 	private Scheduler scheduler;
 
-	/**
-	 * Pool size.
-	 */
+	/// Pool size.
 	private int poolSize;
 
-	/**
-	 * Create builder with default settings.
-	 */
+	/// Create builder with default settings.
 	public ExifToolBuilder() {
 	}
 
-	/**
-	 * Override default path.
-	 * Default path is defined by the environment property {@code exiftool.path} or is
-	 * set with {@code exiftool} otherwise. Setting the path explicitly will disable automatic
-	 * lookup.
-	 *
-	 * @param path New path.
-	 * @return Current builder.
-	 */
+	/// Override default path.
+	/// Default path is defined by the environment property `exiftool.path` or is
+	/// set with `exiftool` otherwise. Setting the path explicitly will disable automatic
+	/// lookup.
+	///
+	/// @param path New path.
+	/// @return Current builder.
 	public ExifToolBuilder withPath(String path) {
 		log.debug("Set path: {}", path);
 		this.path = path;
 		return this;
 	}
 
-	/**
-	 * Override default path.
-	 * Default path is defined by the environment property {@code exiftool.path} or is
-	 * set with {@code exiftool} otherwise. Setting the path explicitly will disable automatic
-	 * lookup.
-	 *
-	 * <br>
-	 *
-	 * <strong>Note:</strong> If path is not an executable file, a warning
-	 * will be logged but it will not fail.
-	 *
-	 * @param path New path.
-	 * @return Current builder.
-	 */
+	/// Override default path.
+	///
+	/// Default path is defined by the environment property `exiftool.path` or is
+	/// set with `exiftool` otherwise. Setting the path explicitly will disable automatic
+	/// lookup.
+	///
+	/// **Note:** If path is not an executable file, a warning
+	/// will be logged but it will not fail.
+	///
+	/// @param path New path.
+	/// @return Current builder.
 	public ExifToolBuilder withPath(File path) {
 		log.debug("Set path: {}", path);
 
@@ -229,23 +191,19 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Override default exifTool executor.
-	 *
-	 * @param executor New withExecutor.
-	 * @return Current builder.
-	 */
+	/// Override default exifTool executor.
+	///
+	/// @param executor New withExecutor.
+	/// @return Current builder.
 	public ExifToolBuilder withExecutor(CommandExecutor executor) {
 		log.debug("Set withExecutor: {}", executor);
 		this.executor = executor;
 		return this;
 	}
 
-	/**
-	 * Enable {@code stay_open} feature.
-	 *
-	 * @return Current builder.
-	 */
+	/// Enable `stay_open` feature.
+	///
+	/// @return Current builder.
 	public ExifToolBuilder enableStayOpen() {
 		log.debug("Enable 'stay_open' feature");
 
@@ -258,25 +216,15 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Enable {@code stay_open} feature.
-	 *
-	 * <strong>Note:</strong>
-	 *
-	 * <ul>
-	 *   <li>
-	 *     If {link #withStrategy} is called, then calling this method
-	 *     is useless.
-	 *   </li>
-	 *   <li>
-	 *     If {link #enableStayOpen(scheduler} is called, then calling this method is
-	 *     useless.
-	 *   </li>
-	 * </ul>
-	 *
-	 * @param cleanupDelay Interval (in milliseconds) between automatic clean operation.
-	 * @return Current builder.
-	 */
+	/// Enable `stay_open` feature.
+	/// **Note:**
+	/// - If {link #withStrategy} is called, then calling this method
+	///   is useless.
+	/// - If {link #enableStayOpen(scheduler} is called, then calling this method is
+	///   useless.
+	///
+	/// @param cleanupDelay Interval (in milliseconds) between automatic clean operation.
+	/// @return Current builder.
 	public ExifToolBuilder enableStayOpen(long cleanupDelay) {
 		log.debug("Enable 'stay_open' feature");
 
@@ -293,22 +241,15 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Enable {@code stay_open} feature and perform cleanup task using given {@code scheduler}.
-	 *
-	 * <strong>Note:</strong>
-	 *
-	 * <ul>
-	 *   <li>If {@link #withStrategy} has already been called, then calling is useless.</li>
-	 *   <li>
-	 *     If {@link #enableStayOpen(long)} has already been called, then given {@code delay} will be
-	 *     ignored and the specified scheduler will be used.
-	 *   </li>
-	 * </ul>
-	 *
-	 * @param scheduler Scheduler used to process automatic cleanup task..
-	 * @return Current builder.
-	 */
+	/// Enable `stay_open` feature and perform cleanup task using given `scheduler`.
+	/// **Note:**
+	///
+	///   - If [#withStrategy] has already been called, then calling is useless.
+	///   - If [#enableStayOpen(long)] has already been called, then given `delay` will be
+	///     ignored and the specified scheduler will be used.
+	///
+	/// @param scheduler Scheduler used to process automatic cleanup task..
+	/// @return Current builder.
 	public ExifToolBuilder enableStayOpen(Scheduler scheduler) {
 		log.debug("Enable 'stay_open' feature");
 
@@ -324,15 +265,12 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Override default execution strategy.
-	 *
-	 * <strong>If {@link #enableStayOpen} has been called, then strategy associated with {@code stay_open} flag
-	 * will be ignored.</strong>
-	 *
-	 * @param strategy Strategy.
-	 * @return Current builder.
-	 */
+	/// Override default execution strategy.
+	/// **If [#enableStayOpen] has been called, then strategy associated with `stay_open` flag
+	/// will be ignored.**
+	///
+	/// @param strategy Strategy.
+	/// @return Current builder.
 	public ExifToolBuilder withStrategy(ExecutionStrategy strategy) {
 		log.debug("Overriding default strategy");
 
@@ -345,18 +283,14 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Override default execution strategy:
-	 *
-	 * <ul>
-	 *   <li>a pool of {@link StayOpenStrategy} with a size of {@code poolSize} will be used.</li>
-	 *   <li>Default scheduler instances will be used with a delay of {@code cleanupDelay}.</li>
-	 * </ul>
-	 *
-	 * @param poolSize Pool size.
-	 * @param cleanupDelay Cleanup delay for each scheduler of pool elements.
-	 * @return Current builder.
-	 */
+	/// Override default execution strategy:
+	///
+	///   - a pool of [StayOpenStrategy] with a size of `poolSize` will be used.
+	///   - Default scheduler instances will be used with a delay of `cleanupDelay`.
+	///
+	/// @param poolSize Pool size.
+	/// @param cleanupDelay Cleanup delay for each scheduler of pool elements.
+	/// @return Current builder.
 	public ExifToolBuilder withPoolSize(int poolSize, long cleanupDelay) {
 		log.debug("Overriding default strategy");
 
@@ -371,17 +305,13 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Override default execution strategy:
-	 *
-	 * <ul>
-	 *   <li>a pool of {@link StayOpenStrategy} with a size of {@code poolSize} will be used.</li>
-	 *   <li>No cleanup scheduler will be used (use {@link #withPoolSize(int, long)} instead.</li>
-	 * </ul>
-	 *
-	 * @param poolSize Pool size.
-	 * @return Current builder.
-	 */
+	/// Override default execution strategy:
+	///
+	///   - a pool of [StayOpenStrategy] with a size of `poolSize` will be used.
+	///   - No cleanup scheduler will be used (use [#withPoolSize(int, long)] instead.
+	///
+	/// @param poolSize Pool size.
+	/// @return Current builder.
 	public ExifToolBuilder withPoolSize(int poolSize) {
 		log.debug("Overriding default strategy");
 
@@ -396,11 +326,9 @@ public class ExifToolBuilder {
 		return this;
 	}
 
-	/**
-	 * Create exiftool instance with previous settings.
-	 *
-	 * @return Exiftool instance.
-	 */
+	/// Create exiftool instance with previous settings.
+	///
+	/// @return Exiftool instance.
 	public ExifTool build() {
 		String path = firstNonNull(this.path, PATH);
 		CommandExecutor executor = firstNonNull(this.executor, EXECUTOR);
@@ -418,46 +346,38 @@ public class ExifToolBuilder {
 		return new ExifTool(path, executor, strategy);
 	}
 
-	/**
-	 * Return first non null value:
-	 * <ul>
-	 * <li>If first parameter is not null, then it is returned.</li>
-	 * <li>Otherwise, result of function is returned.</li>
-	 * </ul>
-	 *
-	 * @param value First value.
-	 * @param factory Function used to get non null value.
-	 * @param <T> Type of values.
-	 * @return Non null value.
-	 */
+	/// Return first non null value:
+	///
+	///   - If first parameter is not null, then it is returned.
+	///   - Otherwise, result of function is returned.
+	///
+	/// @param value First value.
+	/// @param factory Function used to get non null value.
+	/// @param <T> Type of values.
+	/// @return Non null value.
 	private static <T> T firstNonNull(T value, FactoryFunction<T> factory) {
 		return value == null ? factory.apply() : value;
 	}
 
-	/**
-	 * Interface to return values.
-	 * This interface should be used by builder to lazily create
-	 * default settings parameters.
-	 *
-	 * @param <T> Type of settings.
-	 */
+	/// Interface to return values.
+	/// This interface should be used by builder to lazily create
+	/// default settings parameters.
+	///
+	/// @param <T> Type of settings.
 	private interface FactoryFunction<T> {
 		T apply();
 	}
 
-	/**
-	 * Return the absolute path to the ExifTool executable on the host system running
-	 * this class as defined by the {@code exiftool.path} system property.
-	 *
-	 * This system property can be set on startup with {@code -Dexiftool.path=/path/to/exiftool}
-	 * or by calling {@link System#setProperty(String, String)} before
-	 * this class is loaded.
-	 *
-	 * On Windows be sure to double-escape the path to the tool,
-	 * for example: {@code -Dexiftool.path=C:\\Tools\\exiftool.exe}.
-	 *
-	 * Default value is {@code exiftool}.
-	 */
+	/// Return the absolute path to the ExifTool executable on the host system running
+	/// this class as defined by the `exiftool.path` system property.
+	///
+	/// This system property can be set on startup with `-Dexiftool.path=/path/to/exiftool`
+	/// or by calling [System#setProperty(String, String)] before
+	/// this class is loaded.
+	///
+	/// On Windows be sure to double-escape the path to the tool,
+	/// for example: `-Dexiftool.path=C:\\\\Tools\\\\exiftool.exe`.
+	/// Default value is `exiftool`.
 	private static class PathFunction implements FactoryFunction<String> {
 		@Override
 		public String apply() {
@@ -465,31 +385,28 @@ public class ExifToolBuilder {
 		}
 	}
 
-	/**
-	 * Return the interval (in milliseconds) of inactivity before the cleanup thread wakes
-	 * up and cleans up the daemon ExifTool process and the read/write streams
-	 * used to communicate with it when the {@code stay_open} feature is
-	 * used.
-	 *
-	 * Ever time a call to {@link ExifTool#getImageMeta} is processed, the timer
-	 * keeping track of cleanup is reset; more specifically, this class has to
-	 * experience no activity for this duration of time before the cleanup
-	 * process is fired up and cleans up the host OS process and the stream
-	 * resources.
-	 *
-	 * Any subsequent calls to {@link ExifTool#getImageMeta} after a cleanup simply
-	 * re-initializes the resources.
-	 *
-	 * This system property can be set on startup with {@code -Dexiftool.processCleanupDelay=600000}
-	 * or by calling {@link System#setProperty(String, String)} before
-	 * this class is loaded.
-	 *
-	 * Setting this value to 0 disables the automatic cleanup thread completely
-	 * and the caller will need to manually cleanup the external ExifTool
-	 * process and read/write streams by calling {@link ExifTool#close} method.
-	 *
-	 * Default value is {@code 600, 000} (10 minutes).
-	 */
+	/// Return the interval (in milliseconds) of inactivity before the cleanup thread wakes
+	/// up and cleans up the daemon ExifTool process and the read/write streams
+	/// used to communicate with it when the `stay_open` feature is
+	/// used.
+	///
+	/// Ever time a call to [ExifTool#getImageMeta(File)] is processed, the timer
+	/// keeping track of cleanup is reset; more specifically, this class has to
+	/// experience no activity for this duration of time before the cleanup
+	/// process is fired up and cleans up the host OS process and the stream
+	/// resources.
+	///
+	/// Any subsequent calls to [ExifTool#getImageMeta(File)] after a cleanup simply
+	/// re-initializes the resources.
+	///
+	/// This system property can be set on startup with `-Dexiftool.processCleanupDelay=600000`
+	/// or by calling [System#setProperty(String, String)] before
+	/// this class is loaded.
+	///
+	/// Setting this value to 0 disables the automatic cleanup thread completely
+	/// and the caller will need to manually cleanup the external ExifTool
+	/// process and read/write streams by calling [ExifTool#close] method.
+	/// Default value is `600, 000` (10 minutes).
 	private static class DelayFunction implements FactoryFunction<Long> {
 		@Override
 		public Long apply() {
@@ -497,10 +414,8 @@ public class ExifToolBuilder {
 		}
 	}
 
-	/**
-	 * Returns the default executor for the created exifTool instance.
-	 * Default executor is the result of {@link CommandExecutors#newExecutor()} method.
-	 */
+	/// Returns the default executor for the created exifTool instance.
+	/// Default executor is the result of [CommandExecutors#newExecutor()] method.
 	private static class ExecutorFunction implements FactoryFunction<CommandExecutor> {
 		@Override
 		public CommandExecutor apply() {
@@ -508,14 +423,11 @@ public class ExifToolBuilder {
 		}
 	}
 
-	/**
-	 * Create scheduler used to perform automatic cleanup task.
-	 * Default scheduler will depend on the given {@code delay}:
-	 * <ul>
-	 * <li>If {@code delay} is less than or equal to zero, then an instance of {@link NoOpScheduler} will be returned.</li>
-	 * <li>If {@code delay} is greater than zero, then an instance of {@link DefaultScheduler} will be returned.</li>
-	 * </ul>
-	 */
+	/// Create scheduler used to perform automatic cleanup task.
+	/// Default scheduler will depend on the given `delay`:
+	///
+	///   - If `delay` is less than or equal to zero, then an instance of [NoOpScheduler] will be returned.
+	///   - If `delay` is greater than zero, then an instance of [DefaultScheduler] will be returned.
 	private static class SchedulerFunction implements FactoryFunction<Scheduler> {
 		private final Long delay;
 
@@ -533,18 +445,18 @@ public class ExifToolBuilder {
 		}
 	}
 
-	/**
-	 * Returns the {@link ExecutionStrategy} to use with {@link ExifTool} instances.
-	 *
-	 * <h3>Default</h3>
-	 * By default, a really simple strategy is used (instance of {@link DefaultStrategy}).
-	 *
-	 * <h3>StayOpen</h3>
-	 * If the {@code stay_open} has been enabled, then an instance of {@link StayOpenStrategy}
-	 * will be created. For this strategy, a scheduler will be created. This scheduler will be used to run
-	 * a task to clean resources used by this strategy. This task will run automatically after a specified
-	 * delay.
-	 */
+	/// Returns the [ExecutionStrategy] to use with [ExifTool] instances.
+	///
+	/// ### Default
+	///
+	/// By default, a really simple strategy is used (instance of [DefaultStrategy]).
+	///
+	/// ### StayOpen
+	///
+	/// If the `stay_open` has been enabled, then an instance of [StayOpenStrategy]
+	/// will be created. For this strategy, a scheduler will be created. This scheduler will be used to run
+	/// a task to clean resources used by this strategy. This task will run automatically after a specified
+	/// delay.
 	private static class StrategyFunction implements FactoryFunction<ExecutionStrategy> {
 		private final Boolean stayOpen;
 

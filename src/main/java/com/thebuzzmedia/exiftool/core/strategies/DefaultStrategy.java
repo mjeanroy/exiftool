@@ -30,28 +30,18 @@ import com.thebuzzmedia.exiftool.process.command.CommandBuilder;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * This is the default strategy.
- *
- * <br>
- *
- * For each execution, a one-shot process is:
- * <ul>
- *   <li>Created using withExecutor.</li>
- *   <li>Used to execute command line.</li>
- *   <li>Closed at the end of the execution.</li>
- * </ul>
- */
+/// This is the default strategy.
+///
+/// For each execution, a one-shot process is:
+/// - Created using withExecutor.
+/// - Used to execute command line.
+/// - Closed at the end of the execution.
 public class DefaultStrategy implements ExecutionStrategy {
 
-	/**
-	 * Class Logger.
-	 */
+	/// Class Logger.
 	private static final Logger log = LoggerFactory.getLogger(DefaultStrategy.class);
 
-	/**
-	 * Create strategy.
-	 */
+	/// Create strategy.
 	public DefaultStrategy() {
 	}
 

@@ -19,33 +19,27 @@ package com.thebuzzmedia.exiftool;
 
 import java.util.List;
 
-/**
- * Interface used to define different output formats.
- * For instance, default implementations defined by {@link com.thebuzzmedia.exiftool.core.StandardFormat}
- * values can be returned in: numeric or human-readable text.
- *
- * <br>
- *
- * ExifTool, via the {@code -n} command line arg, is capable of
- * returning most values in their raw numeric form (e.g.
- * Aperture="2.8010323841") as well as a more human-readable/friendly format
- * (e.g. Aperture="2.8").
- *
- * <br>
- *
- * @author Riyad Kalla (software@thebuzzmedia.com)
- * @author Mickael Jeanroy
- * @since 1.1
- */
+/// Interface used to define different output formats.
+///
+/// For instance, default implementations defined by [com.thebuzzmedia.exiftool.core.StandardFormat]
+/// values can be returned in: numeric or human-readable text.
+///
+/// ExifTool, via the `-n` command line arg, is capable of
+/// returning most values in their raw numeric form (e.g.
+/// Aperture="2.8010323841") as well as a more human-readable/friendly format
+/// (e.g. Aperture="2.8").
+///
+/// @author Riyad Kalla (software@thebuzzmedia.com)
+/// @author Mickael Jeanroy
+/// @since 1.1
 public interface Format {
 
-	/**
-	 * List of arguments to pass to {@code exiftool} command to return
-	 * associated format.
-	 * This method should not return {@code null}, but an empty list if no arguments
-	 * should be returned.
-	 *
-	 * @return List of arguments.
-	 */
+	/// List of arguments to pass to `exiftool` command to return
+	/// associated format.
+	///
+	/// This method should not return `null`, but an empty list if no arguments
+	/// should be returned.
+	///
+	/// @return List of arguments.
 	List<String> getArgs();
 }

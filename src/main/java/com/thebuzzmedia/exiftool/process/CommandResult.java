@@ -17,50 +17,36 @@
 
 package com.thebuzzmedia.exiftool.process;
 
-/**
- * Result of command execution.
- *
- * <br>
- *
- * Result is defined by:
- * <ul>
- *   <li>An exit status.</li>
- *   <li>Output.</li>
- *   <li>Status: success or failure.</li>
- * </ul>
- *
- * Most of the time, success and failure may be guess using exit status, but
- * this may more complex.
- */
+/// Result of command execution.
+///
+/// Result is defined by:
+///   - An exit status.
+///   - Output.
+///   - Status: success or failure.
+///
+/// Most of the time, success and failure may be guess using exit status, but
+/// this may more complex.
 public interface CommandResult {
 
-	/**
-	 * Exit status.
-	 *
-	 * @return Exit status.
-	 */
+	/// Exit status.
+	///
+	/// @return Exit status.
 	int getExitStatus();
 
-	/**
-	 * Check if command result is a success.
-	 * When command is a success, then it must not be a failure.
-	 *
-	 * @return {@code true} if command is a success, {@code false} otherwise.
-	 */
+	/// Check if command result is a success.
+	/// When command is a success, then it must not be a failure.
+	///
+	/// @return `true` if command is a success, `false` otherwise.
 	boolean isSuccess();
 
-	/**
-	 * Check if command result is a failure.
-	 * When command is a failure, then it must not be a success.
-	 *
-	 * @return {@code true} if command is a failure, {@code false} otherwise.
-	 */
+	/// Check if command result is a failure.
+	/// When command is a failure, then it must not be a success.
+	///
+	/// @return `true` if command is a failure, `false` otherwise.
 	boolean isFailure();
 
-	/**
-	 * Command output.
-	 *
-	 * @return Output.
-	 */
+	/// Command output.
+	///
+	/// @return Output.
 	String getOutput();
 }

@@ -22,75 +22,57 @@ import com.thebuzzmedia.exiftool.process.CommandResult;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Build to create mock instance of {@link com.thebuzzmedia.exiftool.process.CommandResult} class.
- */
+/// Build to create mock instance of [com.thebuzzmedia.exiftool.process.CommandResult] class.
 public class CommandResultBuilder {
 
-	/**
-	 * Exit Value.
-	 * Default is `0`.
-	 */
+	/// Exit Value.
+	/// Default is `0`.
 	private final int exitStatus;
 
-	/**
-	 * Command output.
-	 * Default is an empty string.
-	 */
+	/// Command output.
+	/// Default is an empty string.
 	private String output;
 
-	/**
-	 * Success flag.
-	 * Default is true if exit status is zero, false otherwise.
-	 */
+	/// Success flag.
+	/// Default is true if exit status is zero, false otherwise.
 	private boolean success;
 
-	/**
-	 * Create builder with zero as default value for {@link #exitStatus}.
-	 */
+	/// Create builder with zero as default value for [#exitStatus].
 	public CommandResultBuilder() {
 		this(0);
 	}
 
-	/**
-	 * Create builder with value for {@link #exitStatus}.
-	 *
-	 * @param exitStatus Value for {@link #exitStatus}.
-	 */
+	/// Create builder with value for [#exitStatus].
+	///
+	/// @param exitStatus Value for [#exitStatus].
 	public CommandResultBuilder(int exitStatus) {
 		this.exitStatus = exitStatus;
 		this.success = exitStatus == 0;
 		this.output = "";
 	}
 
-	/**
-	 * Update output value.
-	 *
-	 * @param output New output.
-	 * @return Current builder.
-	 */
+	/// Update output value.
+	///
+	/// @param output New output.
+	/// @return Current builder.
 	public CommandResultBuilder output(String output) {
 		this.output = output;
 		return this;
 	}
 
-	/**
-	 * Update success flag.
-	 *
-	 * @param success New success flag.
-	 * @return Current builder.
-	 */
+	/// Update success flag.
+	///
+	/// @param success New success flag.
+	/// @return Current builder.
 	public CommandResultBuilder success(boolean success) {
 		this.success = success;
 		return this;
 	}
 
-	/**
-	 * Build object.
-	 * **NOTE:** Returned object is a mock (created with mockito).
-	 *
-	 * @return Created instance.
-	 */
+	/// Build object.
+	/// \*\*NOTE:\*\* Returned object is a mock (created with mockito).
+	///
+	/// @return Created instance.
 	public CommandResult build() {
 		CommandResult result = mock(CommandResult.class);
 		when(result.getExitStatus()).thenReturn(exitStatus);

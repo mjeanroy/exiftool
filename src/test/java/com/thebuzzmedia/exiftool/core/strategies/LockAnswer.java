@@ -24,29 +24,21 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Implementation of Mockito Answer.
- * The answer method will block until internal lock is released.
- */
+/// Implementation of Mockito Answer.
+/// The answer method will block until internal lock is released.
 class LockAnswer implements Answer<Void> {
 	private static final Logger log = LoggerFactory.getLogger(LockAnswer.class);
 
-	/**
-	 * Id of answer, used for debug logging.
-	 */
+	/// Id of answer, used for debug logging.
 	private final int id;
 
-	/**
-	 * Internal lock.
-	 */
+	/// Internal lock.
 	private final CountDownLatch lock;
 
-	/**
-	 * Create answer.
-	 *
-	 * @param id Answer id.
-	 * @param lock Internal lock.
-	 */
+	/// Create answer.
+	///
+	/// @param id Answer id.
+	/// @param lock Internal lock.
 	LockAnswer(int id, CountDownLatch lock) {
 		this.lock = lock;
 		this.id = id;

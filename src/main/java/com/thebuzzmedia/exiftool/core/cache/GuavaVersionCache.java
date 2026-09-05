@@ -28,22 +28,16 @@ import java.util.concurrent.ExecutionException;
 
 import static com.thebuzzmedia.exiftool.commons.exceptions.Exceptions.launderThrowable;
 
-/**
- * Implementation of {@link VersionCache} using Guava as internal
- * implementation.
- */
+/// Implementation of [VersionCache] using Guava as internal
+/// implementation.
 class GuavaVersionCache implements VersionCache {
 
-	/**
-	 * Guava cache implementation.
-	 * Each value will be loaded using a callable task (we cannot use
-	 * a default loader implementation).
-	 */
+	/// Guava cache implementation.
+	/// Each value will be loaded using a callable task (we cannot use
+	/// a default loader implementation).
 	private final Cache<String, Version> cache;
 
-	/**
-	 * Create Guava Cache.
-	 */
+	/// Create Guava Cache.
 	GuavaVersionCache() {
 		this.cache = CacheBuilder.newBuilder()
 				.build();
