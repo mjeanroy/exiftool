@@ -97,6 +97,8 @@ Next version:
   enabled, it was previously applied to the first command only (list values of next commands were not split).
 - Output of the stay open process is read byte-exact (decoded as UTF-8, line terminators included), and output buffered
   by a read is no longer lost for the next one (new `OutputHandler#readRawLine` default method, and new `VerbatimOutputHandler`).
+- With stay open enabled, if the process stops before the end of a command, it is closed (and restarted on the next
+  command) instead of being reused in an unknown state.
 
 ### Examples
 

@@ -28,7 +28,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.stubbing.Answer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +38,13 @@ import static com.thebuzzmedia.exiftool.tests.ReflectionTestUtils.writePrivateFi
 import static com.thebuzzmedia.exiftool.tests.TestConstants.BR;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -65,6 +70,9 @@ class StayOpenStrategyTest {
 
 		// Mock withExecutor
 		when(executor.start(any(Command.class))).thenReturn(process);
+
+		// Mock process output
+		when(process.read(any(OutputHandler.class))).thenAnswer(output("{ready}\n"));
 
 		// Execution arguments
 		args = asList("-S", "-n", "-XArtist", "XComment", "-execute");
@@ -211,6 +219,76 @@ class StayOpenStrategyTest {
 	}
 
 	@Test
+	void it_should_read_whole_output_even_if_handler_stops_before() throws Exception {
+		when(process.read(any(OutputHandler.class))).thenAnswer(output("line 1\n", "line 2\n", "{ready}\n", "next\n"));
+
+		List<String> lines = new ArrayList<>();
+		OutputHandler handler = line -> {
+			lines.add(line);
+			return false;
+		};
+
+		strategy = new StayOpenStrategy(scheduler);
+		strategy.execute(executor, exifTool, args, handler);
+
+		assertThat(lines).containsExactly("line 1");
+		verify(process, never()).close();
+		assertThat(strategy).extracting("process").isSameAs(process);
+	}
+
+	@Test
+	void it_should_close_process_if_output_ends_before_ready_and_restart_it() throws Exception {
+		when(process.read(any(OutputHandler.class))).thenAnswer(output("partial output\n", null));
+
+		strategy = new StayOpenStrategy(scheduler);
+		assertThatThrownBy(() -> strategy.execute(executor, exifTool, args, outputHandler))
+				.isInstanceOf(IOException.class)
+				.hasMessage("ExifTool daemon process stopped before the end of the command output");
+
+		verify(process).write("-stay_open\nFalse\n");
+		verify(process).close();
+		assertThat(strategy).extracting("process").isNull();
+		assertThat(strategy.isRunning()).isFalse();
+
+		CommandProcess next = mock(CommandProcess.class);
+		when(next.read(any(OutputHandler.class))).thenAnswer(output("{ready}\n"));
+		when(executor.start(any(Command.class))).thenReturn(next);
+
+		strategy.execute(executor, exifTool, args, outputHandler);
+
+		verify(executor, times(2)).start(any(Command.class));
+		assertThat(strategy).extracting("process").isSameAs(next);
+	}
+
+	@Test
+	void it_should_close_process_if_output_cannot_be_read() throws Exception {
+		when(process.read(any(OutputHandler.class))).thenThrow(new IOException("Stream closed"));
+
+		strategy = new StayOpenStrategy(scheduler);
+		assertThatThrownBy(() -> strategy.execute(executor, exifTool, args, outputHandler))
+				.isInstanceOf(IOException.class)
+				.hasMessage("Stream closed");
+
+		verify(process).close();
+		assertThat(strategy).extracting("process").isNull();
+	}
+
+	@Test
+	void it_should_close_process_even_if_stop_command_cannot_be_written() throws Exception {
+		doThrow(new IOException("Broken pipe")).when(process).write("-stay_open\nFalse\n");
+
+		strategy = new StayOpenStrategy(scheduler);
+		strategy.execute(executor, exifTool, args, outputHandler);
+
+		assertThatThrownBy(() -> strategy.close())
+				.isInstanceOf(IOException.class)
+				.hasMessage("Broken pipe");
+
+		verify(process).close();
+		assertThat(strategy.isRunning()).isFalse();
+	}
+
+	@Test
 	void it_should_check_if_process_is_running() {
 		strategy = new StayOpenStrategy(scheduler);
 		assertThat(strategy.isRunning()).isFalse();
@@ -242,6 +320,23 @@ class StayOpenStrategyTest {
 					}
 				})
 				.isEqualTo(appendBr(args));
+	}
+
+	/// Emulate the output of a process: given raw lines are given to the handler, until it returns `false`.
+	///
+	/// @param rawLines Raw lines, `null` for the end of the stream.
+	/// @return The answer.
+	private static Answer<String> output(String... rawLines) {
+		return invocation -> {
+			OutputHandler handler = invocation.getArgument(0);
+			for (String rawLine : rawLines) {
+				if (!handler.readRawLine(rawLine)) {
+					break;
+				}
+			}
+
+			return "";
+		};
 	}
 
 	private List<String> appendBr(List<String> list) {

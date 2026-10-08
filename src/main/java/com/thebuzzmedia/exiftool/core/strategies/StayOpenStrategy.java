@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /// Execution strategy that use `exiftool` with the `stay_open` feature.
+///
+/// If an error occurs while a command is executed, the process is closed: it will be started again for the next execution.
 public class StayOpenStrategy implements ExecutionStrategy {
 
 	/// Class Logger.
@@ -40,6 +42,9 @@ public class StayOpenStrategy implements ExecutionStrategy {
 
 	/// Minimum version of `exiftool` supporting `stay_open` feature.
 	private static final Version V8_36 = new Version("8.36");
+
+	/// Marker printed by `exiftool` once a command terminated by `-execute` has been processed.
+	private static final String READY = "{ready}";
 
 	/// Scheduler: will be used to perform automatic cleanup.
 	///
@@ -82,14 +87,24 @@ public class StayOpenStrategy implements ExecutionStrategy {
 			scheduler.stop();
 			scheduler.start(this::safeClose);
 
+			ReadyHandler output = new ReadyHandler(handler);
+
 			try {
 				process.write(newArgs);
 				process.flush();
-				process.read(handler);
+				process.read(output);
 			}
 			catch (IOException ex) {
+				// The state of the process is unknown: it must not be re-used.
 				log.error(ex.getMessage(), ex);
+				safeCloseProcess();
 				throw ex;
+			}
+
+			if (!output.isComplete()) {
+				// The state of the process is unknown: it must not be re-used.
+				safeCloseProcess();
+				throw new IOException("ExifTool daemon process stopped before the end of the command output");
 			}
 		}
 	}
@@ -162,15 +177,25 @@ public class StayOpenStrategy implements ExecutionStrategy {
 	///
 	/// @throws Exception If an error occurs during the close operation.
 	private synchronized void closeProcess() throws Exception {
+		// Dot not forget to set it to null.
+		final CommandProcess current = process;
+		process = null;
+
 		try {
 			// If ExifTool was used in stayOpen mode but getImageMeta was never
 			// called then the streams were never initialized and there is nothing
 			// to shut down or destroy, otherwise we need to close down all the
 			// resources in use.
 			log.debug("Attempting to close ExifTool daemon process, issuing '-stay_open\\nFalse\\n' command...");
-			process.write("-stay_open\nFalse\n");
-			process.flush();
-			process.close();
+			try {
+				current.write("-stay_open\nFalse\n");
+				current.flush();
+			}
+			finally {
+				// Always close streams, even if process cannot be stopped gracefully (for instance, if it is already stopped).
+				current.close();
+			}
+
 			log.debug("ExifTool daemon process successfully closed");
 		}
 		catch (Exception ex) {
@@ -181,9 +206,19 @@ public class StayOpenStrategy implements ExecutionStrategy {
 			// Re-throw the error, this will let the caller do what he wants with the exception.
 			throw ex;
 		}
-		finally {
-			// Dot not forget to set it to null.
-			process = null;
+	}
+
+	/// Close ExifTool process, if it is started, without propagating exceptions.
+	private synchronized void safeCloseProcess() {
+		if (process == null) {
+			return;
+		}
+
+		try {
+			closeProcess();
+		}
+		catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
 		}
 	}
 
@@ -198,6 +233,72 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		}
 		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
+		}
+	}
+
+	private static String stripLineTerminator(String rawLine) {
+		int end = rawLine.length();
+		if (end > 0 && rawLine.charAt(end - 1) == '\n') {
+			end--;
+		}
+		if (end > 0 && rawLine.charAt(end - 1) == '\r') {
+			end--;
+		}
+
+		return rawLine.substring(0, end);
+	}
+
+	/// Handler reading output of a command until `{ready}`, forwarding lines (including `{ready}`) to a delegate
+	/// handler until it returns `false` once.
+	///
+	/// Output is read until `{ready}`, even if the delegate handler stops reading output before: remaining output
+	/// of the command is never read as the output of the next command.
+	private static final class ReadyHandler implements OutputHandler {
+
+		/// The delegate handler.
+		private final OutputHandler delegate;
+
+		/// Flag indicating if the delegate handler still accepts lines.
+		private boolean open;
+
+		/// Flag indicating if `{ready}` has been read.
+		private boolean complete;
+
+		private ReadyHandler(OutputHandler delegate) {
+			this.delegate = delegate;
+			this.open = true;
+			this.complete = false;
+		}
+
+		@Override
+		public boolean readLine(String line) {
+			if (open) {
+				open = delegate.readLine(line);
+			}
+
+			return next(line);
+		}
+
+		@Override
+		public boolean readRawLine(String rawLine) {
+			if (open) {
+				open = delegate.readRawLine(rawLine);
+			}
+
+			return next(rawLine == null ? null : stripLineTerminator(rawLine));
+		}
+
+		/// Check if next line should be read, given the current line (without its line terminator).
+		///
+		/// @param line The current line, `null` if the end of the stream has been reached.
+		/// @return `true` if next line should be read.
+		private boolean next(String line) {
+			complete = READY.equals(line);
+			return line != null && !complete;
+		}
+
+		private boolean isComplete() {
+			return complete;
 		}
 	}
 }
