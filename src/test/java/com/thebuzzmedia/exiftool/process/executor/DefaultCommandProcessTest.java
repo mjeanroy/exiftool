@@ -17,6 +17,7 @@
 
 package com.thebuzzmedia.exiftool.process.executor;
 
+import com.thebuzzmedia.exiftool.core.handlers.VerbatimOutputHandler;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -241,6 +243,7 @@ class DefaultCommandProcessTest {
 		InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
 
 		OutputHandler handler = mock(OutputHandler.class);
+		doCallRealMethod().when(handler).readRawLine(any());
 		when(handler.readLine(anyString())).thenAnswer((Answer<Boolean>) invocation -> {
 			String line = (String) invocation.getArguments()[0];
 			return !line.equals("{ready}");
@@ -326,5 +329,20 @@ class DefaultCommandProcessTest {
 		process.write(asList(msg1, msg2));
 
 		assertThat(os.toString()).isEqualTo(msg1 + msg2);
+	}
+
+	@Test
+	void it_should_read_raw_lines_and_keep_buffered_output_between_reads() throws Exception {
+		String output = "caf\u00e9\r\n{ready}\nlast\u2603";
+		InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
+		DefaultCommandProcess process = new DefaultCommandProcess(stream, mock(OutputStream.class), mock(InputStream.class));
+
+		VerbatimOutputHandler first = new VerbatimOutputHandler();
+		process.read(new CompositeHandler(first, line -> !"{ready}".equals(line)));
+		assertThat(first.getOutput()).isEqualTo("caf\u00e9\r\n{ready}\n");
+
+		VerbatimOutputHandler second = new VerbatimOutputHandler();
+		process.read(second);
+		assertThat(second.getOutput()).isEqualTo("last\u2603");
 	}
 }

@@ -95,6 +95,8 @@ This library is available on maven repository:
 Next version:
 - The `-sep` option is now given with each command, instead of when the `exiftool` process is started: with stay open
   enabled, it was previously applied to the first command only (list values of next commands were not split).
+- Output of the stay open process is read byte-exact (decoded as UTF-8, line terminators included), and output buffered
+  by a read is no longer lost for the next one (new `OutputHandler#readRawLine` default method, and new `VerbatimOutputHandler`).
 
 ### Examples
 

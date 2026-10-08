@@ -43,6 +43,9 @@ public interface CommandProcess extends AutoCloseable {
 	/// Since command process will not be closed, a simple string
 	/// is returned (an exit status cannot be computed).
 	///
+	/// Implementations able to preserve the exact output of the process should give
+	/// raw lines (i.e. lines including their line terminator) to [OutputHandler#readRawLine(String)].
+	///
 	/// @param handler Output handler.
 	/// @return Full output.
 	/// @throws java.io.IOException If an error occurred during operation.

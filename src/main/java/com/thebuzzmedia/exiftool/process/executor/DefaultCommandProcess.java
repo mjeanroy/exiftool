@@ -22,6 +22,8 @@ import com.thebuzzmedia.exiftool.logs.LoggerFactory;
 import com.thebuzzmedia.exiftool.process.CommandProcess;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
+import com.thebuzzmedia.exiftool.commons.io.RawLineReader;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import static com.thebuzzmedia.exiftool.commons.io.IOs.readInputStream;
+import static com.thebuzzmedia.exiftool.commons.io.IOs.closeQuietly;
 import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
 import static com.thebuzzmedia.exiftool.commons.lang.PreConditions.notEmpty;
 import static java.util.Objects.requireNonNull;
@@ -39,6 +41,10 @@ import static java.util.Objects.requireNonNull;
 /// This implementation used instance of [InputStream] to handle
 /// read operation and instance of [OutputStream] to handle write
 /// operation. These streams may come from instance of [Process] for instance.
+///
+/// Output is read with a [RawLineReader]: raw lines (i.e. lines including their
+/// line terminator) are given to [OutputHandler#readRawLine(String)], so that handlers
+/// may rebuild the exact output, decoded as UTF-8.
 ///
 /// **Note:** This implementation is not thread safe.
 public class DefaultCommandProcess implements CommandProcess {
@@ -57,10 +63,18 @@ public class DefaultCommandProcess implements CommandProcess {
 	/// Error Stream.
 	private final InputStream err;
 
+	/// The reader used to read output, kept between read operations so that
+	/// no buffered output is lost.
+	private final RawLineReader reader;
+
 	/// Flag to know if a given process has been closed.
 	private boolean close;
 
 	/// Create process.
+	///
+	/// The error stream is not read by this process (it is expected to be merged
+	/// with the input stream, see [ProcessBuilder#redirectErrorStream(boolean)]).
+	///
 	/// @param is Input stream.
 	/// @param os Output stream.
 	/// @param err Error stream.
@@ -68,6 +82,7 @@ public class DefaultCommandProcess implements CommandProcess {
 		this.is = requireNonNull(is, "Input stream should not be null");
 		this.os = requireNonNull(os, "Output stream should not be null");
 		this.err = requireNonNull(err, "Error stream should not be null");
+		this.reader = new RawLineReader(is, StandardCharsets.UTF_8);
 		this.close = false;
 	}
 
@@ -152,7 +167,24 @@ public class DefaultCommandProcess implements CommandProcess {
 		final OutputHandler handler = h == null ? out : new CompositeHandler(out, h);
 
 		// Read output stream until the end
-		readInputStream(is, handler);
+		try {
+			boolean hasNext = true;
+			while (hasNext) {
+				String rawLine = reader.readLine();
+				hasNext = handler.readRawLine(rawLine);
+				log.trace("  - Line: {}", rawLine);
+				log.trace("  - Continue: {}", hasNext);
+
+				// End of stream: the stream can be closed.
+				if (rawLine == null) {
+					closeQuietly(is);
+				}
+			}
+		}
+		catch (IOException ex) {
+			log.error(ex.getMessage(), ex);
+			throw ex;
+		}
 
 		// We can return the output
 		return out.getOutput();
