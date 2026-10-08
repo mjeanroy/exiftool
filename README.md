@@ -90,6 +90,12 @@ This library is available on maven repository:
   - Old timer implementation is still here, but this is not the default used implementation.
 - Thread Safety.
 
+### Changes
+
+Next version:
+- The `-sep` option is now given with each command, instead of when the `exiftool` process is started: with stay open
+  enabled, it was previously applied to the first command only (list values of next commands were not split).
+
 ### Examples
 
 #### Parsing tags

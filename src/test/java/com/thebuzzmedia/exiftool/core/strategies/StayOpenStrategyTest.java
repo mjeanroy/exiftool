@@ -226,8 +226,8 @@ class StayOpenStrategyTest {
 
 	private void verifyStartProcess(ArgumentCaptor<Command> cmdCaptor) {
 		Command startCmd = cmdCaptor.getValue();
-		assertThat(startCmd.getArguments()).hasSize(7).containsExactly(
-				exifTool, "-stay_open", "True", "-sep", "|>☃", "-@", "-"
+		assertThat(startCmd.getArguments()).hasSize(5).containsExactly(
+				exifTool, "-stay_open", "True", "-@", "-"
 		);
 	}
 

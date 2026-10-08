@@ -17,7 +17,6 @@
 
 package com.thebuzzmedia.exiftool.core.strategies;
 
-import com.thebuzzmedia.exiftool.Constants;
 import com.thebuzzmedia.exiftool.ExecutionStrategy;
 import com.thebuzzmedia.exiftool.Version;
 import com.thebuzzmedia.exiftool.logs.Logger;
@@ -49,8 +48,7 @@ public class DefaultStrategy implements ExecutionStrategy {
 	public void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException {
 		log.debug("Using ExifTool in non-daemon mode (-stay_open False)...");
 
-		Command cmd = CommandBuilder.builder(exifTool, arguments.size() + 2)
-				.addArgument("-sep", Constants.SEPARATOR)
+		Command cmd = CommandBuilder.builder(exifTool, arguments.size())
 				.addAll(arguments)
 				.build();
 

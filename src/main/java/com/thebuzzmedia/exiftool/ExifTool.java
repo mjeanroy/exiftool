@@ -490,8 +490,14 @@ public class ExifTool implements AutoCloseable {
 	public String getRawExifToolOutput(List<String> arguments) throws IOException {
 		requireNonNull(arguments, "Arguments cannot be null.");
 
+		// Keep the list separator used by previous versions.
+		List<String> args = new ArrayList<>(arguments.size() + 2);
+		args.add("-sep");
+		args.add(Constants.SEPARATOR);
+		args.addAll(arguments);
+
 		RawOutputHandler resultHandler = new RawOutputHandler();
-		strategy.execute(executor, path, arguments, resultHandler);
+		strategy.execute(executor, path, args, resultHandler);
 
 		return resultHandler.getOutput();
 	}
@@ -563,8 +569,12 @@ public class ExifTool implements AutoCloseable {
 
 	private List<String> toArguments(File image, ExifToolOptions options, List<String> tags) {
 		Collection<String> optionArgs = toCollection(options.serialize());
-		int expectedSize = optionArgs.size() + tags.size() + 3;
+		int expectedSize = optionArgs.size() + tags.size() + 5;
 		List<String> args = new ArrayList<>(expectedSize);
+
+		// Separator used for list values (read and write), may be overridden by options.
+		args.add("-sep");
+		args.add(Constants.SEPARATOR);
 
 		// Options.
 		addAll(args, optionArgs);
