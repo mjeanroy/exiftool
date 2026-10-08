@@ -39,6 +39,25 @@ public interface CommandExecutor {
 	/// @throws java.io.IOException If an error occurred during operation.
 	CommandResult execute(Command command, OutputHandler handler) throws IOException;
 
+	/// Execute command and build the result, reading the error stream separately from the output.
+	/// **NOTE:** Execution is synchronous.
+	///
+	/// Implementations able to preserve the exact output should give raw lines (i.e. lines including their
+	/// line terminator) to [OutputHandler#readRawLine(String)].
+	///
+	/// Default implementation delegates to [#execute(Command, OutputHandler)]: the error stream is then
+	/// handled as the executor handles it in this method (for instance, merged with the output), and
+	/// `errorHandler` is not used.
+	///
+	/// @param command Command.
+	/// @param handler Custom output handler.
+	/// @param errorHandler Custom handler for lines written to the error stream.
+	/// @return Result of execution.
+	/// @throws java.io.IOException If an error occurred during operation.
+	default CommandResult execute(Command command, OutputHandler handler, OutputHandler errorHandler) throws IOException {
+		return execute(command, handler);
+	}
+
 	/// Start command line and return associated process.
 	///
 	/// This process will be used to:
@@ -49,4 +68,17 @@ public interface CommandExecutor {
 	/// @return Process.
 	/// @throws java.io.IOException If an error occurred during operation.
 	CommandProcess start(Command command) throws IOException;
+
+	/// Start command line and return associated process, keeping the error stream of the process
+	/// separate from its output: if supported, [CommandProcess#hasErrorStream()] returns `true` and
+	/// lines written to the error stream are read using [CommandProcess#readErrorLine(long, java.util.concurrent.TimeUnit)].
+	///
+	/// Default implementation delegates to [#start(Command)].
+	///
+	/// @param command Command.
+	/// @return Process.
+	/// @throws java.io.IOException If an error occurred during operation.
+	default CommandProcess startWithErrorStream(Command command) throws IOException {
+		return start(command);
+	}
 }

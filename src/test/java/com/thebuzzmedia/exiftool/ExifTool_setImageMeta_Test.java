@@ -159,7 +159,9 @@ class ExifTool_setImageMeta_Test {
 		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
 
 		List<String> args = argsCaptor.getValue();
-		assertThat(args).hasSize(5).containsExactly(
+		assertThat(args).hasSize(7).containsExactly(
+				"-sep",
+				"|>☃",
 				"-S",
 				"-ApertureValue=foo",
 				"-Artist=bar",
@@ -184,7 +186,9 @@ class ExifTool_setImageMeta_Test {
 		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
 
 		List<String> args = argsCaptor.getValue();
-		assertThat(args).hasSize(6).containsExactly(
+		assertThat(args).hasSize(8).containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-S",
 				"-ApertureValue=foo",
@@ -209,7 +213,9 @@ class ExifTool_setImageMeta_Test {
 		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
 
 		List<String> args = argsCaptor.getValue();
-		assertThat(args).hasSize(6).containsExactly(
+		assertThat(args).hasSize(8).containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-S",
 				"-ApertureValue=foo",
@@ -235,7 +241,9 @@ class ExifTool_setImageMeta_Test {
 		verify(strategy).execute(same(executor), same(path), argsCaptor.capture(), any(OutputHandler.class));
 
 		List<String> args = argsCaptor.getValue();
-		assertThat(args).hasSize(7).containsExactly(
+		assertThat(args).hasSize(9).containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-m",
 				"-S",

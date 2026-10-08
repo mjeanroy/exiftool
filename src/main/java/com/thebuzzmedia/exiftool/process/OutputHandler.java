@@ -37,4 +37,45 @@ public interface OutputHandler extends StreamVisitor {
 	/// @param line Line output.
 	/// @return Boolean indicating if next line should be read.
 	boolean readLine(String line);
+
+	/// Read a raw line from command output, i.e a line including its line terminator.
+	///
+	/// A raw line ends with `\n` (or `\r\n`), except the last line of the output if the output
+	/// does not end with a line terminator. A `null` raw line means that no more output is available.
+	///
+	/// This method is called instead of [#readLine(String)] by processes and executors able to
+	/// preserve the exact command output: it allows handlers to rebuild the output byte per byte.
+	///
+	/// The default implementation removes the line terminator and gives the line(s) to [#readLine(String)],
+	/// splitting it the same way [java.io.BufferedReader#readLine()] does: a raw line containing
+	/// a carriage return (`\r`) not followed by `\n` is given as several lines.
+	///
+	/// @param rawLine Raw line output, including its line terminator.
+	/// @return Boolean indicating if next line should be read.
+	default boolean readRawLine(String rawLine) {
+		if (rawLine == null) {
+			return readLine(null);
+		}
+
+		int end = rawLine.length();
+		if (end > 0 && rawLine.charAt(end - 1) == '\n') {
+			end--;
+		}
+		if (end > 0 && rawLine.charAt(end - 1) == '\r') {
+			end--;
+		}
+
+		String line = rawLine.substring(0, end);
+		if (line.indexOf('\r') < 0) {
+			return readLine(line);
+		}
+
+		for (String part : line.split("\r", -1)) {
+			if (!readLine(part)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
