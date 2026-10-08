@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -48,7 +47,7 @@ import static java.util.Objects.requireNonNull;
 ///
 /// Output is read with a [RawLineReader]: raw lines (i.e. lines including their
 /// line terminator) are given to [OutputHandler#readRawLine(String)], so that handlers
-/// may rebuild the exact output, decoded as UTF-8.
+/// may rebuild the exact output, decoded as UTF-8. Inputs are written encoded as UTF-8.
 ///
 /// If the error stream is read separately (see [#DefaultCommandProcess(InputStream, OutputStream, InputStream, boolean)]),
 /// a background (daemon) thread continuously reads the error stream: this guarantees that the process will never
@@ -258,33 +257,16 @@ public class DefaultCommandProcess implements CommandProcess {
 		// Check valid input.
 		requireNonNull(input, "Write input should not be null");
 
-		// Extract the most appropriate charset, depends on the OS & the JVM.
-		Charset charset = guessCharset();
-
 		// Just log some debug information
-		log.debug("Send command input with charset {}: {}", charset, input);
+		log.debug("Send command input: {}", input);
 
 		try {
-			os.write(input.getBytes(charset));
+			os.write(input.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (IOException ex) {
 			log.error(ex.getMessage(), ex);
 			throw ex;
 		}
-	}
-
-	private Charset guessCharset() {
-		String nativeEncoding = System.getProperty("native.encoding");
-		if (nativeEncoding != null) {
-			return Charset.forName(nativeEncoding);
-		}
-
-		String fileEncoding = System.getProperty("file.encoding");
-		if (fileEncoding != null) {
-			return Charset.forName(fileEncoding);
-		}
-
-		return StandardCharsets.UTF_8;
 	}
 
 	/// Read error stream until its end, and push each raw line to a queue.

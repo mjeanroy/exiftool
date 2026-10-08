@@ -125,14 +125,14 @@ class DefaultCommandExecutorTest {
 		try {
 			assertThat(process.hasErrorStream()).isTrue();
 
-			process.write("foo\n");
+			process.write("caf\u00e9\n");
 			process.flush();
 
 			VerbatimOutputHandler out = new VerbatimOutputHandler();
 			process.read(out);
 
-			assertThat(out.getOutput()).isEqualTo("out foo\n");
-			assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("err foo\n");
+			assertThat(out.getOutput()).isEqualTo("out caf\u00e9\n");
+			assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("err caf\u00e9\n");
 			assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isNull();
 		}
 		finally {

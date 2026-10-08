@@ -32,6 +32,7 @@ import com.thebuzzmedia.exiftool.process.command.CommandBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -65,6 +66,9 @@ import java.util.stream.Collectors;
 ///
 /// `NUM` is incremented for each command, starting with a random number when the process is started.
 ///
+/// On Windows, `-charset filename=utf8` is also added to each framed command (with ExifTool 9.79 or later), since
+/// arguments are always written encoded as UTF-8.
+///
 /// Otherwise (older version, custom executor, or arguments not ending with `-execute`), arguments are written as-is and
 /// output is read until `{ready}`.
 ///
@@ -79,6 +83,9 @@ public class StayOpenStrategy implements ExecutionStrategy {
 
 	/// Minimum version of `exiftool` supporting `-echo4` option, used to frame the error stream of commands.
 	private static final Version V9_15 = new Version("9.15");
+
+	/// Minimum version of `exiftool` supporting `-charset filename=...` option.
+	private static final Version V9_79 = new Version("9.79");
 
 	/// Argument terminating a command.
 	private static final String EXECUTE = "-execute";
@@ -101,6 +108,9 @@ public class StayOpenStrategy implements ExecutionStrategy {
 	/// then it will be set to `null`.
 	private final Scheduler scheduler;
 
+	/// Flag indicating if the current operating system is Windows.
+	private final boolean windows;
+
 	/// Process opened when the first execution is called.
 	/// This process will remain open until a call to [#close] is made.
 	private CommandProcess process;
@@ -111,6 +121,9 @@ public class StayOpenStrategy implements ExecutionStrategy {
 	/// Flag indicating if commands sent to current process are framed.
 	private boolean framed;
 
+	/// Flag indicating if `-charset filename=utf8` should be added to framed commands.
+	private boolean utf8FileNames;
+
 	/// The identifier of the last framed command sent to current process.
 	private long lastCommandId;
 
@@ -119,7 +132,16 @@ public class StayOpenStrategy implements ExecutionStrategy {
 	///
 	/// @param scheduler Delay between automatic cleanup.
 	public StayOpenStrategy(Scheduler scheduler) {
+		this(scheduler, isWindows());
+	}
+
+	/// Create strategy.
+	///
+	/// @param scheduler Delay between automatic cleanup.
+	/// @param windows Flag indicating if the current operating system is Windows.
+	StayOpenStrategy(Scheduler scheduler, boolean windows) {
 		this.scheduler = scheduler;
+		this.windows = windows;
 	}
 
 	@Override
@@ -191,6 +213,7 @@ public class StayOpenStrategy implements ExecutionStrategy {
 			process = executor.startWithErrorStream(command);
 			processVersion = null;
 			framed = false;
+			utf8FileNames = false;
 			lastCommandId = ThreadLocalRandom.current().nextInt(1, 1000000000);
 
 			if (process.hasErrorStream()) {
@@ -205,6 +228,7 @@ public class StayOpenStrategy implements ExecutionStrategy {
 
 				if (processVersion.compareTo(V9_15) >= 0) {
 					framed = true;
+					utf8FileNames = windows && processVersion.compareTo(V9_79) >= 0;
 				}
 				else {
 					// Errors cannot be framed: restore previous behavior (errors merged with output).
@@ -282,6 +306,10 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		List<String> newArgs = new ArrayList<>(arguments.size() + 4);
 		newArgs.add("-echo4" + Constants.BR);
 		newArgs.add(marker + Constants.BR);
+		if (utf8FileNames) {
+			newArgs.add("-charset" + Constants.BR);
+			newArgs.add("filename=utf8" + Constants.BR);
+		}
 		for (String argument : arguments.subList(0, arguments.size() - 1)) {
 			newArgs.add(argument + Constants.BR);
 		}
@@ -470,6 +498,11 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		}
 
 		return rawLine.substring(0, end);
+	}
+
+	private static boolean isWindows() {
+		String os = System.getProperty("os.name");
+		return os != null && os.toLowerCase(Locale.ROOT).startsWith("windows");
 	}
 
 	/// Handler reading output of a command until `{ready}`, forwarding lines (including `{ready}`) to a delegate

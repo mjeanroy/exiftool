@@ -68,7 +68,7 @@ class StayOpenStrategyFramingTest {
 		when(executor.startWithErrorStream(any(Command.class))).thenAnswer(invocation -> newDaemon(true));
 		when(executor.start(any(Command.class))).thenAnswer(invocation -> newDaemon(false));
 
-		strategy = new StayOpenStrategy(scheduler);
+		strategy = new StayOpenStrategy(scheduler, false);
 	}
 
 	@AfterEach
@@ -291,6 +291,40 @@ class StayOpenStrategyFramingTest {
 		// Output of the last command will be read by next execution: this is the legacy behavior.
 		assertThat(singleDaemon().requests.get(1).args).containsExactly("-S", "-execute");
 		assertThat(lines).containsExactly("foo", "{ready}");
+	}
+
+	@Test
+	void it_should_add_charset_on_windows_with_9_79() throws Exception {
+		strategy = new StayOpenStrategy(scheduler, true);
+		version = "9.79";
+
+		strategy.execute(executor, "exiftool", asList("-json", "C:\\caf\u00e9.jpg", "-execute"), new VerbatimOutputHandler());
+
+		Request request = singleDaemon().requests.get(1);
+		assertThat(request.args).containsExactly(
+				"-echo4", request.marker(), "-charset", "filename=utf8", "-json", "C:\\caf\u00e9.jpg", "-execute" + request.id
+		);
+	}
+
+	@Test
+	void it_should_not_add_charset_on_windows_before_9_79() throws Exception {
+		strategy = new StayOpenStrategy(scheduler, true);
+		version = "9.78";
+
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+
+		Request request = singleDaemon().requests.get(1);
+		assertThat(request.args).containsExactly("-echo4", request.marker(), "-json", "-execute" + request.id);
+	}
+
+	@Test
+	void it_should_not_add_charset_if_not_on_windows() throws Exception {
+		version = "13.55";
+
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+
+		Request request = singleDaemon().requests.get(1);
+		assertThat(request.args).containsExactly("-echo4", request.marker(), "-json", "-execute" + request.id);
 	}
 
 	private FakeDaemon singleDaemon() {

@@ -351,6 +351,16 @@ class DefaultCommandProcessTest {
 	}
 
 	@Test
+	void it_should_write_inputs_encoded_as_utf8() throws Exception {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), os, mock(InputStream.class));
+
+		process.write("/tmp/caf\u00e9 \u2603.jpg", "\u65e5\u672c");
+
+		assertThat(os.toByteArray()).isEqualTo("/tmp/caf\u00e9 \u2603.jpg\u65e5\u672c".getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
 	void it_should_not_read_error_stream_by_default() {
 		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), mock(OutputStream.class), mock(InputStream.class));
 

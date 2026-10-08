@@ -97,6 +97,8 @@ Next version:
   enabled, it was previously applied to the first command only (list values of next commands were not split).
 - Output of the stay open process is read byte-exact (decoded as UTF-8, line terminators included), and output buffered
   by a read is no longer lost for the next one (new `OutputHandler#readRawLine` default method, and new `VerbatimOutputHandler`).
+- Arguments are written to the `exiftool` process using UTF-8, whatever the default charset of the JVM (on Windows,
+  `-charset filename=utf8` is added to commands with `exiftool` 9.79 or later, when stay open is enabled).
 - With stay open enabled:
   - Error output is now read: each command is framed using `-echo4 {readyN}` and `-executeN`, so that the output
     and the errors of a command cannot be mixed with the ones of another command.
