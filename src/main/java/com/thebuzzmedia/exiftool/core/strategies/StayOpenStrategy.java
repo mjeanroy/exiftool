@@ -61,8 +61,9 @@ import java.util.stream.Collectors;
 /// the error stream of the command (`-echo4` writes its argument to the error stream once the command has been processed,
 /// even if an option of the command is invalid). This allows to:
 /// - Read exactly the output of the command, including an unterminated last line.
-/// - Read exactly the errors of the command: errors cannot be mixed between commands. Errors are given to the handler
-///   after the output (as if the error stream was merged with the output).
+/// - Read exactly the errors of the command (see [#execute(CommandExecutor, String, List, OutputHandler, OutputHandler)]):
+///   errors cannot be mixed between commands. With [#execute(CommandExecutor, String, List, OutputHandler)],
+///   errors are given to the handler after the output (as if the error stream was merged with the output).
 ///
 /// `NUM` is incremented for each command, starting with a random number when the process is started.
 ///
@@ -86,6 +87,9 @@ public class StayOpenStrategy implements ExecutionStrategy {
 
 	/// Minimum version of `exiftool` supporting `-charset filename=...` option.
 	private static final Version V9_79 = new Version("9.79");
+
+	/// Minimum version of `exiftool` printing `{readyNUM}` even with `-q` or `-T` options.
+	private static final Version V12_10 = new Version("12.10");
 
 	/// Argument terminating a command.
 	private static final String EXECUTE = "-execute";
@@ -163,6 +167,46 @@ public class StayOpenStrategy implements ExecutionStrategy {
 				ReadyHandler output = new ReadyHandler(handler);
 				executeLegacy(arguments, output, output::isComplete);
 			}
+		}
+	}
+
+	/// Execute exiftool command, reading the error stream separately from the output.
+	///
+	/// If commands sent to the process are framed (see class documentation), and arguments end with `-execute`, the exact
+	/// output and the exact errors of the command are given to the handlers, as raw lines (see [OutputHandler#readRawLine(String)]).
+	/// Otherwise, errors cannot be read separately: they are given to `outputHandler` if they are merged with the output of the
+	/// process, `errorHandler` is not used.
+	///
+	/// @param executor ExifTool withExecutor.
+	/// @param exifTool ExifTool withPath.
+	/// @param arguments Command line arguments.
+	/// @param outputHandler Handler to read command output.
+	/// @param errorHandler Handler to read lines written to the error stream.
+	/// @return Always `null`: the exit code of a command cannot be known in daemon mode.
+	/// @throws IOException If an error occurred during execution.
+	/// @throws IllegalArgumentException If arguments contains `-q` or `-T` (or their long forms), and the running `exiftool`
+	///                                  would not print the end-of-output marker (i.e, ExifTool before 12.10, or commands that are not framed).
+	@Override
+	public Integer execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler outputHandler, OutputHandler errorHandler) throws IOException {
+		log.debug("Using ExifTool in daemon mode (-stay_open True)...");
+
+		synchronized (this) {
+			start(executor, exifTool);
+
+			boolean frame = framed && endsWithExecute(arguments);
+			if (!frame || processVersion.compareTo(V12_10) < 0) {
+				checkReadyIsPrinted(arguments);
+			}
+
+			if (frame) {
+				executeFramed(arguments, new Gate(outputHandler), new Gate(errorHandler));
+			}
+			else {
+				FramedOutputHandler output = new FramedOutputHandler(READY, new Gate(outputHandler));
+				executeLegacy(arguments, output, output::isComplete);
+			}
+
+			return null;
 		}
 	}
 
@@ -482,6 +526,41 @@ public class StayOpenStrategy implements ExecutionStrategy {
 		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 		}
+	}
+
+	/// Check that `exiftool` will print the end-of-output marker for given arguments: `-q` and `-T` (and their
+	/// long forms) suppress it.
+	///
+	/// @param arguments Command line arguments.
+	/// @throws IllegalArgumentException If arguments contains `-q` or `-T`.
+	private static void checkReadyIsPrinted(List<String> arguments) {
+		for (String argument : arguments) {
+			String option = optionName(argument);
+			if (option == null) {
+				continue;
+			}
+
+			String lower = option.toLowerCase(Locale.ROOT);
+			if (lower.equals("q") || lower.equals("quiet") || option.equals("T") || lower.equals("table")) {
+				throw new IllegalArgumentException(String.format(
+						"Argument %s cannot be used with this version of ExifTool in daemon mode (-stay_open True), since it prevents to detect the end of the output", argument
+				));
+			}
+		}
+	}
+
+	/// Get the name of the option given as argument, as parsed by `exiftool` when read from an argfile: leading
+	/// white spaces are ignored, and an option starts with `-` (or the unicode minus sign `U+2212`).
+	///
+	/// @param argument The argument.
+	/// @return The name of the option (without the leading `-`), `null` if argument is not an option.
+	private static String optionName(String argument) {
+		String arg = argument.replaceFirst("^\\s+", "");
+		if (arg.startsWith("-") || arg.startsWith("\u2212")) {
+			return arg.substring(1);
+		}
+
+		return null;
 	}
 
 	private static boolean endsWithExecute(List<String> arguments) {

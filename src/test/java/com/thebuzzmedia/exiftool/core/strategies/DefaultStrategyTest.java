@@ -20,6 +20,7 @@ package com.thebuzzmedia.exiftool.core.strategies;
 import com.thebuzzmedia.exiftool.process.Command;
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
+import com.thebuzzmedia.exiftool.process.executor.DefaultCommandResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -28,9 +29,11 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("resource")
 class DefaultStrategyTest {
@@ -70,5 +73,24 @@ class DefaultStrategyTest {
 	@Test
 	void it_should_do_nothing_on_shutdown() {
 		new DefaultStrategy().shutdown();
+	}
+
+	@Test
+	void it_should_execute_command_and_read_errors_separately() throws Exception {
+		String exifTool = "exiftool";
+		List<String> args = asList("-json", "/tmp/foo.png", "-execute");
+		CommandExecutor executor = mock(CommandExecutor.class);
+		OutputHandler handler = mock(OutputHandler.class);
+		OutputHandler errorHandler = mock(OutputHandler.class);
+		when(executor.execute(any(Command.class), same(handler), same(errorHandler))).thenReturn(new DefaultCommandResult(1, ""));
+
+		DefaultStrategy strategy = new DefaultStrategy();
+		Integer exitCode = strategy.execute(executor, exifTool, args, handler, errorHandler);
+
+		assertThat(exitCode).isEqualTo(1);
+
+		ArgumentCaptor<Command> cmdCaptor = ArgumentCaptor.forClass(Command.class);
+		verify(executor).execute(cmdCaptor.capture(), same(handler), same(errorHandler));
+		assertThat(cmdCaptor.getValue().getArguments()).containsExactly(exifTool, "-json", "/tmp/foo.png", "-execute");
 	}
 }

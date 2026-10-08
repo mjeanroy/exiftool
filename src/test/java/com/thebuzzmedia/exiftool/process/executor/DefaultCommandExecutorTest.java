@@ -116,6 +116,39 @@ class DefaultCommandExecutorTest {
 	}
 
 	@Test
+	void it_should_execute_command_line_and_read_errors_separately() throws Exception {
+		assumeFalse(IS_WINDOWS);
+
+		Command command = createShellCommand("printf 'out 1\\r\\nout 2'; printf 'err 1\\nerr 2' >&2; exit 3");
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+
+		CommandExecutor executor = new DefaultCommandExecutor();
+		CommandResult result = executor.execute(command, out, err);
+
+		assertThat(result.getExitStatus()).isEqualTo(3);
+		assertThat(out.getOutput()).isEqualTo("out 1\r\nout 2");
+		assertThat(err.getOutput()).isEqualTo("err 1\nerr 2");
+	}
+
+	@Test
+	void it_should_not_block_if_process_writes_a_lot_of_errors() throws Exception {
+		assumeFalse(IS_WINDOWS);
+
+		Command command = createShellCommand(
+				"i=0; while [ $i -lt 5000 ]; do echo \"error line $i ................................................\" >&2; i=$((i+1)); done; echo done"
+		);
+
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		CommandResult result = new DefaultCommandExecutor().execute(command, out, err);
+
+		assertThat(result.getExitStatus()).isZero();
+		assertThat(out.getOutput()).isEqualTo("done\n");
+		assertThat(err.getOutput().split("\n")).hasSize(5000);
+	}
+
+	@Test
 	void it_should_start_command_line_and_read_errors_separately() throws Exception {
 		assumeFalse(IS_WINDOWS);
 

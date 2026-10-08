@@ -81,9 +81,12 @@ class StayOpenStrategyFramingTest {
 		responder = request -> new Reply("line 1\nline 2\n", "Warning: foo\n");
 
 		VerbatimOutputHandler out = new VerbatimOutputHandler();
-		strategy.execute(executor, "exiftool", asList("-json", "/tmp/foo.png", "-execute"), out);
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		Integer exitCode = strategy.execute(executor, "exiftool", asList("-json", "/tmp/foo.png", "-execute"), out, err);
 
-		assertThat(out.getOutput()).isEqualTo("line 1\nline 2\nWarning: foo\n{ready}\n");
+		assertThat(exitCode).isNull();
+		assertThat(out.getOutput()).isEqualTo("line 1\nline 2\n");
+		assertThat(err.getOutput()).isEqualTo("Warning: foo\n");
 
 		FakeDaemon daemon = singleDaemon();
 		assertThat(daemon.requests).hasSize(2);
@@ -99,8 +102,8 @@ class StayOpenStrategyFramingTest {
 
 	@Test
 	void it_should_increment_command_identifier() throws Exception {
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), mock(OutputHandler.class));
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), mock(OutputHandler.class));
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 		strategy.execute(executor, "exiftool", asList("-S", "-execute"), mock(OutputHandler.class));
 
 		FakeDaemon daemon = singleDaemon();
@@ -116,15 +119,12 @@ class StayOpenStrategyFramingTest {
 	void it_should_read_output_not_terminated_by_a_new_line() throws Exception {
 		responder = request -> new Reply("{\"a\": 1}", "Error: bar");
 
-		List<String> lines = new ArrayList<>();
-		OutputHandler handler = line -> {
-			lines.add(line);
-			return line != null && !line.equals("{ready}");
-		};
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out, err);
 
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), handler);
-
-		assertThat(lines).containsExactly("{\"a\": 1}", "Error: bar", "{ready}");
+		assertThat(out.getOutput()).isEqualTo("{\"a\": 1}");
+		assertThat(err.getOutput()).isEqualTo("Error: bar");
 	}
 
 	@Test
@@ -133,9 +133,11 @@ class StayOpenStrategyFramingTest {
 		responder = request -> new Reply(output, "");
 
 		VerbatimOutputHandler out = new VerbatimOutputHandler();
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out);
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out, err);
 
-		assertThat(out.getOutput()).isEqualTo(output + "{ready}\n");
+		assertThat(out.getOutput()).isEqualTo(output);
+		assertThat(err.getOutput()).isEmpty();
 	}
 
 	@Test
@@ -173,7 +175,9 @@ class StayOpenStrategyFramingTest {
 
 	@Test
 	void it_should_discard_stale_errors() throws Exception {
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out, err);
 
 		FakeDaemon daemon = singleDaemon();
 		daemon.stderr.add("unexpected\n");
@@ -184,20 +188,22 @@ class StayOpenStrategyFramingTest {
 			return new Reply("ok\n", "{ready1}\nWarning: foo\n");
 		};
 
-		VerbatimOutputHandler out = new VerbatimOutputHandler();
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out);
+		out = new VerbatimOutputHandler();
+		err = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out, err);
 
-		assertThat(out.getOutput()).isEqualTo("ok\nWarning: foo\n{ready}\n");
+		assertThat(out.getOutput()).isEqualTo("ok\n");
+		assertThat(err.getOutput()).isEqualTo("Warning: foo\n");
 	}
 
 	@Test
 	void it_should_close_process_if_output_ends_before_marker_and_restart_it() throws Exception {
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		responder = request -> Reply.crash("partial output\n");
 
 		VerbatimOutputHandler out = new VerbatimOutputHandler();
-		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), out))
+		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), out, new VerbatimOutputHandler()))
 				.isInstanceOf(IOException.class)
 				.hasMessage("ExifTool daemon process stopped before the end of the command output");
 
@@ -208,21 +214,21 @@ class StayOpenStrategyFramingTest {
 
 		responder = request -> new Reply("ok\n", "");
 		VerbatimOutputHandler out2 = new VerbatimOutputHandler();
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out2);
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), out2, new VerbatimOutputHandler());
 
-		assertThat(out2.getOutput()).isEqualTo("ok\n{ready}\n");
+		assertThat(out2.getOutput()).isEqualTo("ok\n");
 		assertThat(daemons).hasSize(2);
 		verify(executor, times(2)).startWithErrorStream(any(Command.class));
 	}
 
 	@Test
 	void it_should_close_process_if_end_of_errors_is_not_printed() throws Exception {
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		FakeDaemon daemon = singleDaemon();
 		daemon.printErrorMarker = false;
 
-		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler()))
+		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler()))
 				.isInstanceOf(IOException.class)
 				.hasMessage("ExifTool daemon process did not print the end of the command errors");
 
@@ -234,7 +240,7 @@ class StayOpenStrategyFramingTest {
 	void it_should_close_process_if_version_cannot_be_read() {
 		responder = request -> Reply.crash("");
 
-		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler()))
+		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler()))
 				.isInstanceOf(IOException.class)
 				.hasMessage("Unable to read the version of the ExifTool daemon process");
 
@@ -243,12 +249,45 @@ class StayOpenStrategyFramingTest {
 	}
 
 	@Test
+	void it_should_reject_quiet_option_before_12_10() {
+		for (String arg : asList("-q", "-Q", "-quiet", " -QUIET", "-T", "-table", "\u2212q")) {
+			assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", arg, "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler()))
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining(arg);
+		}
+
+		// The process is still usable.
+		assertThat(singleDaemon().closed).isFalse();
+	}
+
+	@Test
+	void it_should_not_reject_options_similar_to_quiet() throws Exception {
+		for (String arg : asList("-t", "--q", "-qq", "-TAG", "q", "T")) {
+			strategy.execute(executor, "exiftool", asList("-json", arg, "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
+		}
+
+		assertThat(singleDaemon().requests).hasSize(7);
+	}
+
+	@Test
+	void it_should_allow_quiet_option_with_12_10() throws Exception {
+		version = "13.55";
+		responder = request -> new Reply("[{}]\n", "");
+
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-json", "-q", "-execute"), out, new VerbatimOutputHandler());
+
+		assertThat(out.getOutput()).isEqualTo("[{}]\n");
+	}
+
+	@Test
 	void it_should_restart_process_with_merged_errors_before_9_15() throws Exception {
 		version = "9.14";
 		responder = request -> new Reply("Artist: foo\nWarning: bar\n", "");
 
 		VerbatimOutputHandler out = new VerbatimOutputHandler();
-		strategy.execute(executor, "exiftool", asList("-S", "-Artist", "-execute"), out);
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		strategy.execute(executor, "exiftool", asList("-S", "-Artist", "-execute"), out, err);
 
 		assertThat(daemons).hasSize(2);
 		assertThat(daemons.get(0).closed).isTrue();
@@ -257,7 +296,8 @@ class StayOpenStrategyFramingTest {
 		assertThat(legacy.requests).hasSize(1);
 		assertThat(legacy.requests.get(0).args).containsExactly("-S", "-Artist", "-execute");
 
-		assertThat(out.getOutput()).isEqualTo("Artist: foo\nWarning: bar\n{ready}\n");
+		assertThat(out.getOutput()).isEqualTo("Artist: foo\nWarning: bar\n");
+		assertThat(err.getOutput()).isEmpty();
 
 		verify(executor).startWithErrorStream(any(Command.class));
 		verify(executor).start(any(Command.class));
@@ -266,14 +306,22 @@ class StayOpenStrategyFramingTest {
 	@Test
 	void it_should_close_process_if_legacy_output_ends_before_ready() throws Exception {
 		version = "9.14";
-		strategy.execute(executor, "exiftool", asList("-S", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-S", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		responder = request -> Reply.crash("partial\n");
-		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-S", "-execute"), new VerbatimOutputHandler()))
+		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-S", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler()))
 				.isInstanceOf(IOException.class)
 				.hasMessage("ExifTool daemon process stopped before the end of the command output");
 
 		assertThat(daemons.get(1).closed).isTrue();
+	}
+
+	@Test
+	void it_should_reject_quiet_option_without_framing() {
+		version = "9.14";
+
+		assertThatThrownBy(() -> strategy.execute(executor, "exiftool", asList("-json", "-q", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler()))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
@@ -298,7 +346,7 @@ class StayOpenStrategyFramingTest {
 		strategy = new StayOpenStrategy(scheduler, true);
 		version = "9.79";
 
-		strategy.execute(executor, "exiftool", asList("-json", "C:\\caf\u00e9.jpg", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "C:\\caf\u00e9.jpg", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		Request request = singleDaemon().requests.get(1);
 		assertThat(request.args).containsExactly(
@@ -311,7 +359,7 @@ class StayOpenStrategyFramingTest {
 		strategy = new StayOpenStrategy(scheduler, true);
 		version = "9.78";
 
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		Request request = singleDaemon().requests.get(1);
 		assertThat(request.args).containsExactly("-echo4", request.marker(), "-json", "-execute" + request.id);
@@ -321,7 +369,7 @@ class StayOpenStrategyFramingTest {
 	void it_should_not_add_charset_if_not_on_windows() throws Exception {
 		version = "13.55";
 
-		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler());
+		strategy.execute(executor, "exiftool", asList("-json", "-execute"), new VerbatimOutputHandler(), new VerbatimOutputHandler());
 
 		Request request = singleDaemon().requests.get(1);
 		assertThat(request.args).containsExactly("-echo4", request.marker(), "-json", "-execute" + request.id);

@@ -39,6 +39,25 @@ public interface CommandExecutor {
 	/// @throws java.io.IOException If an error occurred during operation.
 	CommandResult execute(Command command, OutputHandler handler) throws IOException;
 
+	/// Execute command and build the result, reading the error stream separately from the output.
+	/// **NOTE:** Execution is synchronous.
+	///
+	/// Implementations able to preserve the exact output should give raw lines (i.e. lines including their
+	/// line terminator) to [OutputHandler#readRawLine(String)].
+	///
+	/// Default implementation delegates to [#execute(Command, OutputHandler)]: the error stream is then
+	/// handled as the executor handles it in this method (for instance, merged with the output), and
+	/// `errorHandler` is not used.
+	///
+	/// @param command Command.
+	/// @param handler Custom output handler.
+	/// @param errorHandler Custom handler for lines written to the error stream.
+	/// @return Result of execution.
+	/// @throws java.io.IOException If an error occurred during operation.
+	default CommandResult execute(Command command, OutputHandler handler, OutputHandler errorHandler) throws IOException {
+		return execute(command, handler);
+	}
+
 	/// Start command line and return associated process.
 	///
 	/// This process will be used to:

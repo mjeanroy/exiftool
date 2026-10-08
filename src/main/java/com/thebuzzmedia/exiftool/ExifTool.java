@@ -27,6 +27,7 @@ import com.thebuzzmedia.exiftool.core.handlers.AllTagHandler;
 import com.thebuzzmedia.exiftool.core.handlers.RawOutputHandler;
 import com.thebuzzmedia.exiftool.core.handlers.StandardTagHandler;
 import com.thebuzzmedia.exiftool.core.handlers.TagHandler;
+import com.thebuzzmedia.exiftool.core.handlers.VerbatimOutputHandler;
 import com.thebuzzmedia.exiftool.exceptions.UnsupportedFeatureException;
 import com.thebuzzmedia.exiftool.logs.Logger;
 import com.thebuzzmedia.exiftool.logs.LoggerFactory;
@@ -280,6 +281,15 @@ public class ExifTool implements AutoCloseable {
 	/// - Value is the associated version.
 	private static final VersionCache cache = VersionCacheFactory.newCache();
 
+	/// Leading white spaces of an argument, ignored by `exiftool` when it is read from an argfile.
+	private static final Pattern LEADING_SPACES = Pattern.compile("^\\s+");
+
+	/// Prefix of an argument read as a C string by `exiftool` when it is read from an argfile.
+	private static final String C_STRING = "#[CSTR]";
+
+	/// Options (without leading `-`) controlling the execution protocol, that cannot be used with [#execute(File, List)].
+	private static final Pattern RESERVED_OPTIONS = Pattern.compile("stay_open|@|execute\\d*|echo[34]", Pattern.CASE_INSENSITIVE);
+
 	/// Command Executor.
 	/// This executor will be used to execute exiftool process and commands.
 	private final CommandExecutor executor;
@@ -502,6 +512,70 @@ public class ExifTool implements AutoCloseable {
 		return resultHandler.getOutput();
 	}
 
+	/// Run `exiftool` with given arguments on given file, and return its output exactly as
+	/// printed by `exiftool`.
+	///
+	/// For instance, to read all metadata as JSON (with numeric values):
+	///
+	/// ```java
+	/// ExifToolResult result = exifTool.execute(file, Arrays.asList("-json", "-n"));
+	/// String json = result.getOutput();
+	/// ```
+	///
+	/// Arguments are given to `exiftool` as-is, followed by the absolute path of the file: no option,
+	/// tag, or [ExifToolOptions] is added. The output is exactly the output of `exiftool <arguments> <file>`
+	/// run in a one-shot process, whatever the execution strategy (in daemon mode, the end-of-output
+	/// marker is removed). Errors and warnings printed on the error stream are returned separately (see [ExifToolResult#getErrors()]).
+	///
+	/// **Note:** a long-running `exiftool` process (daemon mode, or pool) may print some tags (for instance, composite tags) in
+	/// a different order than a one-shot process, depending on the files it processed before: tags and values are the same,
+	/// only their order may differ. Use `-sort` to get an output that does not depend on previously processed files.
+	///
+	/// Since arguments are sent line by line to `exiftool` in daemon mode, some arguments are rejected:
+	/// - Arguments containing a line break (`\n` or `\r`).
+	/// - Arguments controlling the execution protocol: `-stay_open`, `-@`, `-execute` (and `-executeNUM`),
+	///   `-echo3`, `-echo4` (whatever the case) and `--` (end of options).
+	///
+	/// In daemon mode, with ExifTool before 12.10, `-q` (`-quiet`) and `-T` (`-table`) are also rejected, since
+	/// they prevent detecting the end of the output.
+	///
+	/// @param file The file.
+	/// @param arguments Arguments, given to `exiftool` before the file.
+	/// @return The result of the command.
+	/// @throws IOException If something bad happen during I/O operations.
+	/// @throws NullPointerException If one parameter is null, or if arguments contains a `null` value.
+	/// @throws IllegalArgumentException If an argument is not supported.
+	/// @throws com.thebuzzmedia.exiftool.exceptions.UnreadableFileException If file cannot be read.
+	public ExifToolResult execute(File file, List<String> arguments) throws IOException {
+		requireNonNull(file, "File cannot be null.");
+		requireNonNull(arguments, "Arguments cannot be null.");
+		isReadable(file, String.format("Unable to read the given image [%s], ensure that the image exists at the given withPath and that the executing Java process has permissions to read it.", file));
+
+		for (String argument : arguments) {
+			checkArgument(argument);
+		}
+
+		String filePath = file.getAbsolutePath();
+		if (hasLineBreak(filePath)) {
+			throw new IllegalArgumentException(String.format("File path cannot contain a line break: %s", filePath));
+		}
+
+		List<String> args = new ArrayList<>(arguments.size() + 2);
+		args.addAll(arguments);
+		args.add(filePath);
+
+		// This argument will only be used by exiftool if stay_open flag has been set.
+		args.add("-execute");
+
+		VerbatimOutputHandler output = new VerbatimOutputHandler();
+		VerbatimOutputHandler errors = new VerbatimOutputHandler();
+		Integer exitCode = strategy.execute(executor, path, args, output, errors);
+
+		log.debug("Command executed on file {} (exit code: {})", file, exitCode);
+
+		return new ExifToolResult(output.getOutput(), errors.getOutput(), exitCode);
+	}
+
 	/// Write image metadata.
 	/// Default format is numeric.
 	///
@@ -593,6 +667,41 @@ public class ExifTool implements AutoCloseable {
 		args.add("-execute");
 
 		return new ArrayList<>(args);
+	}
+
+	/// Check that given argument can be given to [#execute(File, List)].
+	///
+	/// Arguments are checked as they would be parsed by `exiftool` when read from an argfile: leading white spaces
+	/// are ignored, an argument starting with `#[CSTR]` is a C string, and an option starts with `-` (or the unicode
+	/// minus sign `U+2212`).
+	///
+	/// @param argument The argument.
+	/// @throws NullPointerException If argument is `null`.
+	/// @throws IllegalArgumentException If argument is not supported.
+	private static void checkArgument(String argument) {
+		requireNonNull(argument, "Arguments cannot contain null.");
+
+		if (hasLineBreak(argument)) {
+			throw new IllegalArgumentException(String.format("Argument cannot contain a line break: %s", argument));
+		}
+
+		String arg = LEADING_SPACES.matcher(argument).replaceFirst("");
+		if (arg.startsWith(C_STRING)) {
+			arg = arg.substring(C_STRING.length());
+		}
+
+		if (!arg.startsWith("-") && !arg.startsWith("\u2212")) {
+			return;
+		}
+
+		String option = arg.substring(1);
+		if (option.equals("-") || RESERVED_OPTIONS.matcher(option).matches()) {
+			throw new IllegalArgumentException(String.format("Argument is reserved and cannot be used: %s", argument));
+		}
+	}
+
+	private static boolean hasLineBreak(String value) {
+		return value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0;
 	}
 
 	private static final class FinalizerTask implements Runnable {

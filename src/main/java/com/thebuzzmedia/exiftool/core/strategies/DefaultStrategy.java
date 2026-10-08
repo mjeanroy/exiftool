@@ -23,6 +23,7 @@ import com.thebuzzmedia.exiftool.logs.Logger;
 import com.thebuzzmedia.exiftool.logs.LoggerFactory;
 import com.thebuzzmedia.exiftool.process.Command;
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
+import com.thebuzzmedia.exiftool.process.CommandResult;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 import com.thebuzzmedia.exiftool.process.command.CommandBuilder;
 
@@ -53,6 +54,27 @@ public class DefaultStrategy implements ExecutionStrategy {
 				.build();
 
 		executor.execute(cmd, handler);
+	}
+
+	/// Execute exiftool command in a one-shot process, reading the error stream separately from the output.
+	///
+	/// @param executor ExifTool withExecutor.
+	/// @param exifTool ExifTool withPath.
+	/// @param arguments Command line arguments.
+	/// @param outputHandler Handler to read command output.
+	/// @param errorHandler Handler to read lines written to the error stream.
+	/// @return The exit code of the process, `null` if the executor does not return a result.
+	/// @throws IOException If an error occurred during execution.
+	@Override
+	public Integer execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler outputHandler, OutputHandler errorHandler) throws IOException {
+		log.debug("Using ExifTool in non-daemon mode (-stay_open False)...");
+
+		Command cmd = CommandBuilder.builder(exifTool, arguments.size())
+				.addAll(arguments)
+				.build();
+
+		CommandResult result = executor.execute(cmd, outputHandler, errorHandler);
+		return result == null ? null : result.getExitStatus();
 	}
 
 	@Override

@@ -93,6 +93,7 @@ This library is available on maven repository:
 ### Changes
 
 Next version:
+- New `ExifTool#execute(File, List<String>)` method, returning the raw output of `exiftool` (see [Raw output](#raw-output-json-xml-csv)).
 - The `-sep` option is now given with each command, instead of when the `exiftool` process is started: with stay open
   enabled, it was previously applied to the first command only (list values of next commands were not split).
 - Output of the stay open process is read byte-exact (decoded as UTF-8, line terminators included), and output buffered
@@ -108,7 +109,8 @@ Next version:
   - If the process stops before the end of a command (or does not print the end of its errors), it is closed (and restarted
     on the next command) instead of being reused.
 - New methods are added to existing interfaces as default methods (`CommandProcess#hasErrorStream`,
-  `CommandExecutor#startWithErrorStream`...): existing implementations still compile.
+  `CommandExecutor#startWithErrorStream`, `ExecutionStrategy#execute` with an error handler...): existing implementations
+  still compile.
 
 ### Examples
 
@@ -275,6 +277,78 @@ public class ExifParser {
       }
     } finally {
       executor.shutdown();
+      exifTool.close();
+    }
+  }
+}
+
+```
+
+#### Raw output (JSON, XML, CSV...)
+
+If you need the output of `exiftool` as is (for instance, to store the JSON output), use the `execute` method:
+the given arguments are passed to `exiftool`, followed by the file path, and the output is returned verbatim.
+
+```java
+ExifTool exifTool = new ExifToolBuilder()
+    .withPoolSize(4)
+    .enableStayOpen()
+    .build();
+
+ExifToolResult result = exifTool.execute(file, List.of("-json", "-n"));
+String json = result.getOutput();        // Standard output, verbatim
+String errors = result.getErrors();      // Errors and warnings printed by exiftool, empty string if none
+Integer exitCode = result.getExitCode(); // Exit code, only available without stay open (null otherwise)
+```
+
+Notes:
+- The library does not add any option (no `-S`, no tags): you get exactly what you asked for.
+- This works with every strategy (default, stay open and pool): each caller gets the output of its own command.
+- Arguments must not contain line breaks, and arguments used by the stay open protocol are rejected (`-stay_open`, `-@`, `-execute`, `-echo3`, `-echo4`): an `IllegalArgumentException` is thrown.
+- With stay open enabled and `exiftool` < 12.10, `-q` / `-T` (and their long forms) are rejected as well, since they prevent `exiftool` from printing the end of the command output.
+- An error reported by `exiftool` (for instance, a missing file) does not throw: it is available in `getErrors()`, and the process can be reused.
+- A long-running `exiftool` process may print some tags (composite tags, for instance) in a different order than a
+  one-shot process, depending on the files it processed before: values are the same, only their order may differ.
+  Add `-sort` to get an output that does not depend on previously processed files.
+- On Windows, with stay open enabled and `exiftool` >= 9.79, `-charset filename=utf8` is added so that non-ASCII file names work.
+
+```java
+// src/test/java/com/thebuzzmedia/exiftool/readme/raw/ExifParser.java
+
+package com.thebuzzmedia.exiftool.readme.raw;
+
+import com.thebuzzmedia.exiftool.ExifTool;
+import com.thebuzzmedia.exiftool.ExifToolBuilder;
+import com.thebuzzmedia.exiftool.ExifToolResult;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+
+public class ExifParser {
+
+  private static final ExifTool exifTool = new ExifToolBuilder()
+      .withPoolSize(4)  // Allow 4 process
+      .enableStayOpen()
+      .build();
+
+  public static String parse(File image) throws IOException {
+    // Output of exiftool is returned as is: no option is added by the library.
+    ExifToolResult result = exifTool.execute(image, Arrays.asList("-json", "-n"));
+
+    if (!result.getErrors().isEmpty()) {
+      System.err.println("ExifTool errors: " + result.getErrors());
+    }
+
+    return result.getOutput();
+  }
+
+  public static void main(String[] args) throws Exception {
+    try {
+      for (String image : args) {
+        System.out.println(ExifParser.parse(new File(image)));
+      }
+    } finally {
       exifTool.close();
     }
   }
