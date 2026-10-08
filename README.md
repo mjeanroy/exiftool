@@ -97,8 +97,16 @@ Next version:
   enabled, it was previously applied to the first command only (list values of next commands were not split).
 - Output of the stay open process is read byte-exact (decoded as UTF-8, line terminators included), and output buffered
   by a read is no longer lost for the next one (new `OutputHandler#readRawLine` default method, and new `VerbatimOutputHandler`).
-- With stay open enabled, if the process stops before the end of a command, it is closed (and restarted on the next
-  command) instead of being reused in an unknown state.
+- With stay open enabled:
+  - Error output is now read: each command is framed using `-echo4 {readyN}` and `-executeN`, so that the output
+    and the errors of a command cannot be mixed with the ones of another command.
+  - When the process is started, its version is read (`-ver`) to choose the framing; with `exiftool` < 9.15 (no `-echo4`),
+    the process is restarted with error output merged into standard output (previous behavior).
+  - With `getImageMeta`, errors printed by `exiftool` are given to the output handler after the command output, instead of being interleaved.
+  - If the process stops before the end of a command (or does not print the end of its errors), it is closed (and restarted
+    on the next command) instead of being reused.
+- New methods are added to existing interfaces as default methods (`CommandProcess#hasErrorStream`,
+  `CommandExecutor#startWithErrorStream`...): existing implementations still compile.
 
 ### Examples
 

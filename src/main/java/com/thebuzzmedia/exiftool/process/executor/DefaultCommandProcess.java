@@ -27,9 +27,13 @@ import com.thebuzzmedia.exiftool.commons.io.RawLineReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static com.thebuzzmedia.exiftool.commons.io.IOs.closeQuietly;
 import static com.thebuzzmedia.exiftool.commons.lang.Objects.firstNonNull;
@@ -45,6 +49,11 @@ import static java.util.Objects.requireNonNull;
 /// Output is read with a [RawLineReader]: raw lines (i.e. lines including their
 /// line terminator) are given to [OutputHandler#readRawLine(String)], so that handlers
 /// may rebuild the exact output, decoded as UTF-8.
+///
+/// If the error stream is read separately (see [#DefaultCommandProcess(InputStream, OutputStream, InputStream, boolean)]),
+/// a background (daemon) thread continuously reads the error stream: this guarantees that the process will never
+/// be blocked because its error stream is full, and lines written to the error stream can be read using
+/// [#readErrorLine(long, TimeUnit)].
 ///
 /// **Note:** This implementation is not thread safe.
 public class DefaultCommandProcess implements CommandProcess {
@@ -67,6 +76,10 @@ public class DefaultCommandProcess implements CommandProcess {
 	/// no buffered output is lost.
 	private final RawLineReader reader;
 
+	/// Lines read from the error stream, not yet consumed, `null` if the error
+	/// stream is not read separately.
+	private final BlockingQueue<String> errors;
+
 	/// Flag to know if a given process has been closed.
 	private boolean close;
 
@@ -79,11 +92,29 @@ public class DefaultCommandProcess implements CommandProcess {
 	/// @param os Output stream.
 	/// @param err Error stream.
 	public DefaultCommandProcess(InputStream is, OutputStream os, InputStream err) {
+		this(is, os, err, false);
+	}
+
+	/// Create process.
+	///
+	/// @param is Input stream.
+	/// @param os Output stream.
+	/// @param err Error stream.
+	/// @param readErrorStream If `true`, the error stream is continuously read by a background thread and lines
+	///                        written to the error stream can be read using [#readErrorLine(long, TimeUnit)].
+	public DefaultCommandProcess(InputStream is, OutputStream os, InputStream err, boolean readErrorStream) {
 		this.is = requireNonNull(is, "Input stream should not be null");
 		this.os = requireNonNull(os, "Output stream should not be null");
 		this.err = requireNonNull(err, "Error stream should not be null");
 		this.reader = new RawLineReader(is, StandardCharsets.UTF_8);
+		this.errors = readErrorStream ? new LinkedBlockingQueue<String>() : null;
 		this.close = false;
+
+		if (readErrorStream) {
+			Thread thread = new Thread(new ErrorStreamReader(new RawLineReader(err, StandardCharsets.UTF_8), errors), "exiftool-stderr");
+			thread.setDaemon(true);
+			thread.start();
+		}
 	}
 
 	@Override
@@ -94,6 +125,35 @@ public class DefaultCommandProcess implements CommandProcess {
 	@Override
 	public String read(OutputHandler handler) throws IOException {
 		return doRead(requireNonNull(handler, "Handler should not be null"));
+	}
+
+	@Override
+	public boolean hasErrorStream() {
+		return errors != null;
+	}
+
+	@Override
+	public String readErrorLine(long timeout, TimeUnit unit) throws IOException {
+		if (errors == null) {
+			throw new UnsupportedOperationException("Error stream is not read separately from the output of this process");
+		}
+
+		final String line;
+		try {
+			line = errors.poll(timeout, unit);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			throw new InterruptedIOException("Interrupted while reading error stream");
+		}
+
+		if (line == ErrorStreamReader.EOF) {
+			// Keep it, so that next calls will not block.
+			errors.offer(ErrorStreamReader.EOF);
+			return null;
+		}
+
+		return line;
 	}
 
 	@Override
@@ -225,5 +285,44 @@ public class DefaultCommandProcess implements CommandProcess {
 		}
 
 		return StandardCharsets.UTF_8;
+	}
+
+	/// Read error stream until its end, and push each raw line to a queue.
+	/// Once the end of the stream is reached (or if an error occurred), [#EOF] is pushed.
+	private static final class ErrorStreamReader implements Runnable {
+
+		/// Marker pushed once the end of the stream has been reached.
+		/// Compared by reference: it cannot be confused with a line read from the stream.
+		@SuppressWarnings("StringOperationCanBeSimplified")
+		private static final String EOF = new String("<EOF>");
+
+		/// The reader.
+		private final RawLineReader reader;
+
+		/// The queue.
+		private final BlockingQueue<String> queue;
+
+		private ErrorStreamReader(RawLineReader reader, BlockingQueue<String> queue) {
+			this.reader = reader;
+			this.queue = queue;
+		}
+
+		@Override
+		public void run() {
+			try {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					log.trace("  - Error: {}", line);
+					queue.offer(line);
+				}
+			}
+			catch (IOException ex) {
+				// Expected when the process is closed while reading.
+				log.debug("Error stream cannot be read anymore: {}", ex.getMessage());
+			}
+			finally {
+				queue.offer(EOF);
+			}
+		}
 	}
 }

@@ -49,4 +49,17 @@ public interface CommandExecutor {
 	/// @return Process.
 	/// @throws java.io.IOException If an error occurred during operation.
 	CommandProcess start(Command command) throws IOException;
+
+	/// Start command line and return associated process, keeping the error stream of the process
+	/// separate from its output: if supported, [CommandProcess#hasErrorStream()] returns `true` and
+	/// lines written to the error stream are read using [CommandProcess#readErrorLine(long, java.util.concurrent.TimeUnit)].
+	///
+	/// Default implementation delegates to [#start(Command)].
+	///
+	/// @param command Command.
+	/// @return Process.
+	/// @throws java.io.IOException If an error occurred during operation.
+	default CommandProcess startWithErrorStream(Command command) throws IOException {
+		return start(command);
+	}
 }

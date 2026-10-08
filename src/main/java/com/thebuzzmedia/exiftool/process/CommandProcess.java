@@ -18,6 +18,7 @@
 package com.thebuzzmedia.exiftool.process;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /// Process interface.
 ///
@@ -50,6 +51,32 @@ public interface CommandProcess extends AutoCloseable {
 	/// @return Full output.
 	/// @throws java.io.IOException If an error occurred during operation.
 	String read(OutputHandler handler) throws IOException;
+
+	/// Check if the error stream of this process can be read separately from its
+	/// output, using [#readErrorLine(long, TimeUnit)].
+	///
+	/// Default implementation returns `false`: the error stream is merged with the output
+	/// of the process, or is not available.
+	///
+	/// @return `true` if the error stream can be read separately, `false` otherwise.
+	default boolean hasErrorStream() {
+		return false;
+	}
+
+	/// Read the next line written to the error stream of the process, including its line terminator,
+	/// waiting up to the given timeout if no line is available yet.
+	///
+	/// This operation is only supported if [#hasErrorStream()] returns `true`. Default implementation
+	/// throws [UnsupportedOperationException].
+	///
+	/// @param timeout The maximum time to wait.
+	/// @param unit The unit of the `timeout` argument.
+	/// @return The next raw line written to the error stream, `null` if no line has been written before the timeout or if the error stream has been closed.
+	/// @throws java.io.IOException If an error occurred during operation.
+	/// @throws UnsupportedOperationException If the error stream cannot be read separately.
+	default String readErrorLine(long timeout, TimeUnit unit) throws IOException {
+		throw new UnsupportedOperationException("Error stream cannot be read separately from the output of this process");
+	}
 
 	/// Write input string to the current process.
 	///

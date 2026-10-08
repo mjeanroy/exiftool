@@ -58,6 +58,18 @@ public class DefaultCommandExecutor implements CommandExecutor {
 		return new DefaultCommandProcess(proc.getInputStream(), proc.getOutputStream(), proc.getErrorStream());
 	}
 
+	/// Start command line and return associated process, the error stream being
+	/// read separately from the output (see [DefaultCommandProcess#readErrorLine(long, java.util.concurrent.TimeUnit)]).
+	///
+	/// @param command Command.
+	/// @return Process.
+	/// @throws IOException If an error occurred during operation.
+	@Override
+	public CommandProcess startWithErrorStream(Command command) throws IOException {
+		final Process proc = createProcess(command, false);
+		return new DefaultCommandProcess(proc.getInputStream(), proc.getOutputStream(), proc.getErrorStream(), true);
+	}
+
 	private CommandResult readProcessOutput(Command cmd, OutputHandler h) throws IOException {
 		final Process proc = createProcess(cmd);
 		final ResultHandler h1 = new ResultHandler();
@@ -83,9 +95,13 @@ public class DefaultCommandExecutor implements CommandExecutor {
 	}
 
 	private Process createProcess(Command command) throws IOException {
+		return createProcess(command, true);
+	}
+
+	private Process createProcess(Command command, boolean redirectErrorStream) throws IOException {
 		try {
 			List<String> args = command.getArguments();
-			ProcessBuilder builder = new ProcessBuilder(args).redirectErrorStream(true);
+			ProcessBuilder builder = new ProcessBuilder(args).redirectErrorStream(redirectErrorStream);
 			return builder.start();
 		}
 		catch (IOException ex) {

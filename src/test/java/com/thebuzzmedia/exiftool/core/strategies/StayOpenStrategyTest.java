@@ -69,7 +69,7 @@ class StayOpenStrategyTest {
 		exifTool = "exiftool";
 
 		// Mock withExecutor
-		when(executor.start(any(Command.class))).thenReturn(process);
+		when(executor.startWithErrorStream(any(Command.class))).thenReturn(process);
 
 		// Mock process output
 		when(process.read(any(OutputHandler.class))).thenAnswer(output("{ready}\n"));
@@ -106,7 +106,7 @@ class StayOpenStrategyTest {
 		ArgumentCaptor<Command> cmdCaptor = ArgumentCaptor.forClass(Command.class);
 		ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
 		InOrder inOrder = inOrder(scheduler, executor, process);
-		inOrder.verify(executor).start(cmdCaptor.capture());
+		inOrder.verify(executor).startWithErrorStream(cmdCaptor.capture());
 		inOrder.verify(scheduler).stop();
 		inOrder.verify(scheduler).start(any(Runnable.class));
 		inOrder.verify(process).write(argsCaptor.capture());
@@ -131,6 +131,7 @@ class StayOpenStrategyTest {
 		strategy.execute(executor, exifTool, args, outputHandler);
 
 		// Executor should not have been started
+		verify(executor, never()).startWithErrorStream(any(Command.class));
 		verify(executor, never()).start(any(Command.class));
 
 		ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
@@ -160,7 +161,7 @@ class StayOpenStrategyTest {
 		ArgumentCaptor<List<String>> argsCaptor = ArgumentCaptor.forClass(List.class);
 		InOrder inOrder = inOrder(scheduler, process, executor);
 		inOrder.verify(process).isClosed();
-		inOrder.verify(executor).start(cmdCaptor.capture());
+		inOrder.verify(executor).startWithErrorStream(cmdCaptor.capture());
 		inOrder.verify(scheduler).stop();
 		inOrder.verify(scheduler).start(any(Runnable.class));
 		inOrder.verify(process).write(argsCaptor.capture());
@@ -252,11 +253,11 @@ class StayOpenStrategyTest {
 
 		CommandProcess next = mock(CommandProcess.class);
 		when(next.read(any(OutputHandler.class))).thenAnswer(output("{ready}\n"));
-		when(executor.start(any(Command.class))).thenReturn(next);
+		when(executor.startWithErrorStream(any(Command.class))).thenReturn(next);
 
 		strategy.execute(executor, exifTool, args, outputHandler);
 
-		verify(executor, times(2)).start(any(Command.class));
+		verify(executor, times(2)).startWithErrorStream(any(Command.class));
 		assertThat(strategy).extracting("process").isSameAs(next);
 	}
 
