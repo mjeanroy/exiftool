@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +37,7 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -405,5 +407,81 @@ class PoolStrategyTest {
 
 	private interface TaskFactory {
 		Runnable create(PoolStrategy pool);
+	}
+
+	@Test
+	void it_should_execute_a_strategy_and_read_errors_separately() throws Exception {
+		ExecutionStrategy s1 = mock(ExecutionStrategy.class);
+		ExecutionStrategy s2 = mock(ExecutionStrategy.class);
+		OutputHandler errorHandler = mock(OutputHandler.class);
+		when(s1.execute(executor, exifTool, arguments, handler, errorHandler)).thenReturn(2);
+
+		pool = new PoolStrategy(asList(s1, s2));
+		Integer exitCode = pool.execute(executor, exifTool, arguments, handler, errorHandler);
+
+		assertThat(exitCode).isEqualTo(2);
+		verify(s1).execute(executor, exifTool, arguments, handler, errorHandler);
+		verify(s2, never()).execute(executor, exifTool, arguments, handler, errorHandler);
+
+		// Strategy is released.
+		pool.execute(executor, exifTool, arguments, handler, errorHandler);
+		verify(s2).execute(executor, exifTool, arguments, handler, errorHandler);
+		pool.execute(executor, exifTool, arguments, handler, errorHandler);
+		verify(s1, times(2)).execute(executor, exifTool, arguments, handler, errorHandler);
+	}
+
+	@Test
+	void it_should_release_strategy_if_execution_fails() throws Exception {
+		ExecutionStrategy s1 = mock(ExecutionStrategy.class);
+		OutputHandler errorHandler = mock(OutputHandler.class);
+		when(s1.execute(executor, exifTool, arguments, handler, errorHandler)).thenThrow(new IOException("fail")).thenReturn(null);
+
+		pool = new PoolStrategy(singletonList(s1));
+
+		assertThatThrownBy(() -> pool.execute(executor, exifTool, arguments, handler, errorHandler))
+				.isInstanceOf(IOException.class)
+				.hasMessage("fail");
+
+		assertThat(pool.execute(executor, exifTool, arguments, handler, errorHandler)).isNull();
+	}
+
+	@Test
+	void it_should_fail_if_interrupted_while_waiting_for_a_strategy() throws Exception {
+		CountDownLatch started = new CountDownLatch(1);
+		CountDownLatch release = new CountDownLatch(1);
+		ExecutionStrategy s1 = mock(ExecutionStrategy.class);
+		OutputHandler errorHandler = mock(OutputHandler.class);
+		when(s1.execute(executor, exifTool, arguments, handler, errorHandler)).thenAnswer(invocation -> {
+			started.countDown();
+			release.await();
+			return null;
+		});
+
+		pool = new PoolStrategy(singletonList(s1));
+
+		// Use the only strategy of the pool.
+		Thread thread = new Thread(() -> {
+			try {
+				pool.execute(executor, exifTool, arguments, handler, errorHandler);
+			}
+			catch (IOException ex) {
+				throw new AssertionError(ex);
+			}
+		});
+		thread.start();
+		started.await();
+
+		Thread.currentThread().interrupt();
+		try {
+			assertThatThrownBy(() -> pool.execute(executor, exifTool, arguments, handler, errorHandler))
+					.isInstanceOf(InterruptedIOException.class)
+					.hasMessage("Interrupted while waiting for an available strategy");
+			assertThat(Thread.currentThread().isInterrupted()).isTrue();
+		}
+		finally {
+			Thread.interrupted();
+			release.countDown();
+			thread.join();
+		}
 	}
 }

@@ -49,6 +49,29 @@ public interface ExecutionStrategy extends AutoCloseable {
 	/// @throws IOException If an error occurred during execution.
 	void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException;
 
+	/// Execute exiftool command, reading the error stream separately from the output.
+	///
+	/// Arguments are given to exiftool as-is: implementations should not add any argument changing the output
+	/// of the command (they may add arguments required by the execution protocol). Strategies able to preserve
+	/// the exact output should give raw lines (i.e. lines including their line terminator) to
+	/// [OutputHandler#readRawLine(String)].
+	///
+	/// Default implementation delegates to [#execute(CommandExecutor, String, List, OutputHandler)]: errors are
+	/// then handled as this method handles them (for instance, merged with the output), `errorHandler` is not used,
+	/// and the exit code is not known.
+	///
+	/// @param executor ExifTool withExecutor.
+	/// @param exifTool ExifTool withPath.
+	/// @param arguments Command line arguments.
+	/// @param outputHandler Handler to read command output.
+	/// @param errorHandler Handler to read lines written to the error stream.
+	/// @return The exit code of the command, `null` if it is not known (for instance, when a process is re-used for several commands).
+	/// @throws IOException If an error occurred during execution.
+	default Integer execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler outputHandler, OutputHandler errorHandler) throws IOException {
+		execute(executor, exifTool, arguments, outputHandler);
+		return null;
+	}
+
 	/// Check if exiftool process is currently running.
 	/// This method is important especially if `stay_open` flag has been enabled.
 	///

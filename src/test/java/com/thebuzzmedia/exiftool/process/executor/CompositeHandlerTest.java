@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,5 +73,26 @@ class CompositeHandlerTest {
 		assertThat(r2).isFalse();
 		verify(h1).readLine(end);
 		verify(h2).readLine(end);
+	}
+
+	@Test
+	void it_should_read_raw_line() {
+		String rawLine = "foo\r\n";
+
+		OutputHandler h1 = mock(OutputHandler.class);
+		OutputHandler h2 = mock(OutputHandler.class);
+
+		when(h1.readRawLine(rawLine)).thenReturn(true);
+		when(h2.readRawLine(rawLine)).thenReturn(false);
+
+		CompositeHandler handler = new CompositeHandler(h1, h2);
+
+		boolean result = handler.readRawLine(rawLine);
+
+		assertThat(result).isFalse();
+		verify(h1).readRawLine(rawLine);
+		verify(h2).readRawLine(rawLine);
+		verify(h1, never()).readLine(anyString());
+		verify(h2, never()).readLine(anyString());
 	}
 }

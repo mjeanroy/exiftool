@@ -167,6 +167,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-S",
 				"-Artist",
 				"-XPComment",
@@ -200,6 +202,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-S",
 				"-Artist",
@@ -232,6 +236,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-S",
 				"-Artist",
@@ -269,6 +275,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-S",
 				"-All",
 				"/tmp/foo.png",
@@ -303,6 +311,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-S",
 				"-All",
@@ -336,6 +346,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-m",
 				"-S",
@@ -374,6 +386,8 @@ class ExifTool_getImageMeta_Test {
 
 		List<String> args = argsCaptor.getValue();
 		assertThat(args).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-n",
 				"-m",
 				"-S",
