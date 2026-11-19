@@ -1,9 +1,5 @@
 ## ExifTool - Enhanced Java Integration for Phil Harvey's ExifTool.
 
-[![Build Status](https://travis-ci.org/mjeanroy/exiftool.svg?branch=master)](https://travis-ci.org/mjeanroy/exiftool)
-
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mjeanroy/exiftool-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mjeanroy/exiftool-lib)
-
 ### Description
 
 *The goal and main features of this fork did not changed, so this description is the same as the original library*
