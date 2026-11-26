@@ -26,6 +26,7 @@ import com.thebuzzmedia.exiftool.process.CommandExecutor;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -68,19 +69,47 @@ public class PoolStrategy implements ExecutionStrategy {
 
 	@Override
 	public void execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler handler) throws IOException {
-		ExecutionStrategy strategy = null;
 		try {
-			strategy = this.pool.take();
-			strategy.execute(executor, exifTool, arguments, handler);
+			withStrategy(strategy -> {
+				strategy.execute(executor, exifTool, arguments, handler);
+				return null;
+			});
 		}
 		catch (InterruptedException ex) {
 			log.warn(ex.getMessage());
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	@Override
+	public Integer execute(CommandExecutor executor, String exifTool, List<String> arguments, OutputHandler outputHandler, OutputHandler errorHandler) throws IOException {
+		try {
+			return withStrategy(strategy ->
+				strategy.execute(executor, exifTool, arguments, outputHandler, errorHandler)
+			);
+		}
+		catch (InterruptedException ex) {
+			log.warn(ex.getMessage());
+			Thread.currentThread().interrupt();
+			throw new InterruptedIOException("Interrupted while waiting for an available strategy");
+		}
+	}
+
+	/// Pick a strategy from the pool (waiting for an available one if necessary), apply given function, and
+	/// put the strategy back in the pool.
+	///
+	/// @param function The function.
+	/// @param <T> Type of result.
+	/// @return The result of the function.
+	/// @throws IOException If the function fails.
+	/// @throws InterruptedException If interrupted while waiting for an available strategy.
+	private <T> T withStrategy(ExecutionFunction<T> function) throws IOException, InterruptedException {
+		ExecutionStrategy strategy = this.pool.take();
+		try {
+			return function.apply(strategy);
+		}
 		finally {
-			if (strategy != null) {
-				this.pool.offer(strategy);
-			}
+			this.pool.offer(strategy);
 		}
 	}
 
@@ -159,6 +188,10 @@ public class PoolStrategy implements ExecutionStrategy {
 		if (thrownEx.size() > 0) {
 			throw new PoolIOException("Some strategies in the pool failed to close properly", thrownEx);
 		}
+	}
+
+	private interface ExecutionFunction<T> {
+		T apply(ExecutionStrategy strategy) throws IOException;
 	}
 
 	private interface ExecutionStrategyFunction {

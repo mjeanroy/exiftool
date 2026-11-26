@@ -17,6 +17,7 @@
 
 package com.thebuzzmedia.exiftool.process.executor;
 
+import com.thebuzzmedia.exiftool.core.handlers.VerbatimOutputHandler;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
@@ -25,9 +26,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.thebuzzmedia.exiftool.tests.TestConstants.BR;
 import static java.util.Arrays.asList;
@@ -37,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -241,6 +247,7 @@ class DefaultCommandProcessTest {
 		InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
 
 		OutputHandler handler = mock(OutputHandler.class);
+		doCallRealMethod().when(handler).readRawLine(any());
 		when(handler.readLine(anyString())).thenAnswer((Answer<Boolean>) invocation -> {
 			String line = (String) invocation.getArguments()[0];
 			return !line.equals("{ready}");
@@ -326,5 +333,86 @@ class DefaultCommandProcessTest {
 		process.write(asList(msg1, msg2));
 
 		assertThat(os.toString()).isEqualTo(msg1 + msg2);
+	}
+
+	@Test
+	void it_should_read_raw_lines_and_keep_buffered_output_between_reads() throws Exception {
+		String output = "caf\u00e9\r\n{ready}\nlast\u2603";
+		InputStream stream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
+		DefaultCommandProcess process = new DefaultCommandProcess(stream, mock(OutputStream.class), mock(InputStream.class));
+
+		VerbatimOutputHandler first = new VerbatimOutputHandler();
+		process.read(new CompositeHandler(first, line -> !"{ready}".equals(line)));
+		assertThat(first.getOutput()).isEqualTo("caf\u00e9\r\n{ready}\n");
+
+		VerbatimOutputHandler second = new VerbatimOutputHandler();
+		process.read(second);
+		assertThat(second.getOutput()).isEqualTo("last\u2603");
+	}
+
+	@Test
+	void it_should_write_inputs_encoded_as_utf8() throws Exception {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), os, mock(InputStream.class));
+
+		process.write("/tmp/caf\u00e9 \u2603.jpg", "\u65e5\u672c");
+
+		assertThat(os.toByteArray()).isEqualTo("/tmp/caf\u00e9 \u2603.jpg\u65e5\u672c".getBytes(StandardCharsets.UTF_8));
+	}
+
+	@Test
+	void it_should_not_read_error_stream_by_default() {
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), mock(OutputStream.class), mock(InputStream.class));
+
+		assertThat(process.hasErrorStream()).isFalse();
+		assertThatThrownBy(() -> process.readErrorLine(1, TimeUnit.MILLISECONDS))
+				.isInstanceOf(UnsupportedOperationException.class);
+	}
+
+	@Test
+	void it_should_read_error_lines() throws Exception {
+		InputStream err = new ByteArrayInputStream("Warning: caf\u00e9\r\nError: foo".getBytes(StandardCharsets.UTF_8));
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), mock(OutputStream.class), err, true);
+
+		assertThat(process.hasErrorStream()).isTrue();
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("Warning: caf\u00e9\r\n");
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("Error: foo");
+
+		// End of stream.
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isNull();
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isNull();
+	}
+
+	@Test
+	void it_should_wait_for_error_lines() throws Exception {
+		PipedOutputStream pipe = new PipedOutputStream();
+		InputStream err = new PipedInputStream(pipe);
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), mock(OutputStream.class), err, true);
+
+		assertThat(process.readErrorLine(0, TimeUnit.MILLISECONDS)).isNull();
+		assertThat(process.readErrorLine(50, TimeUnit.MILLISECONDS)).isNull();
+
+		pipe.write("{ready1}\n".getBytes(StandardCharsets.UTF_8));
+		pipe.flush();
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("{ready1}\n");
+
+		pipe.close();
+		assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isNull();
+	}
+
+	@Test
+	void it_should_fail_to_read_error_line_if_interrupted() throws Exception {
+		PipedOutputStream pipe = new PipedOutputStream();
+		DefaultCommandProcess process = new DefaultCommandProcess(mock(InputStream.class), mock(OutputStream.class), new PipedInputStream(pipe), true);
+
+		Thread.currentThread().interrupt();
+		try {
+			assertThatThrownBy(() -> process.readErrorLine(5, TimeUnit.SECONDS)).isInstanceOf(InterruptedIOException.class);
+			assertThat(Thread.currentThread().isInterrupted()).isTrue();
+		}
+		finally {
+			Thread.interrupted();
+			pipe.close();
+		}
 	}
 }

@@ -85,6 +85,8 @@ public class ExifTool_getRawExifToolOutput_Test {
 
 		List<String> arguments = argsCaptor.getValue();
 		assertThat(arguments).isNotEmpty().containsExactly(
+				"-sep",
+				"|>☃",
 				"-a",
 				"-u",
 				"-g1",

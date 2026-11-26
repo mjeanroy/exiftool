@@ -17,6 +17,7 @@
 
 package com.thebuzzmedia.exiftool.process.executor;
 
+import com.thebuzzmedia.exiftool.core.handlers.VerbatimOutputHandler;
 import com.thebuzzmedia.exiftool.process.Command;
 import com.thebuzzmedia.exiftool.process.CommandExecutor;
 import com.thebuzzmedia.exiftool.process.CommandProcess;
@@ -25,6 +26,7 @@ import com.thebuzzmedia.exiftool.process.OutputHandler;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import static com.thebuzzmedia.exiftool.tests.TestConstants.IS_WINDOWS;
 import static java.util.Arrays.asList;
@@ -110,6 +112,70 @@ class DefaultCommandExecutorTest {
 	private static Command createWindowsCommand(String script) {
 		Command command = mock(Command.class);
 		when(command.getArguments()).thenReturn(asList("cmd", "/C", script));
+		return command;
+	}
+
+	@Test
+	void it_should_execute_command_line_and_read_errors_separately() throws Exception {
+		assumeFalse(IS_WINDOWS);
+
+		Command command = createShellCommand("printf 'out 1\\r\\nout 2'; printf 'err 1\\nerr 2' >&2; exit 3");
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+
+		CommandExecutor executor = new DefaultCommandExecutor();
+		CommandResult result = executor.execute(command, out, err);
+
+		assertThat(result.getExitStatus()).isEqualTo(3);
+		assertThat(out.getOutput()).isEqualTo("out 1\r\nout 2");
+		assertThat(err.getOutput()).isEqualTo("err 1\nerr 2");
+	}
+
+	@Test
+	void it_should_not_block_if_process_writes_a_lot_of_errors() throws Exception {
+		assumeFalse(IS_WINDOWS);
+
+		Command command = createShellCommand(
+				"i=0; while [ $i -lt 5000 ]; do echo \"error line $i ................................................\" >&2; i=$((i+1)); done; echo done"
+		);
+
+		VerbatimOutputHandler out = new VerbatimOutputHandler();
+		VerbatimOutputHandler err = new VerbatimOutputHandler();
+		CommandResult result = new DefaultCommandExecutor().execute(command, out, err);
+
+		assertThat(result.getExitStatus()).isZero();
+		assertThat(out.getOutput()).isEqualTo("done\n");
+		assertThat(err.getOutput().split("\n")).hasSize(5000);
+	}
+
+	@Test
+	void it_should_start_command_line_and_read_errors_separately() throws Exception {
+		assumeFalse(IS_WINDOWS);
+
+		Command command = createShellCommand("read x; echo \"out $x\"; echo \"err $x\" >&2");
+		CommandProcess process = new DefaultCommandExecutor().startWithErrorStream(command);
+
+		try {
+			assertThat(process.hasErrorStream()).isTrue();
+
+			process.write("caf\u00e9\n");
+			process.flush();
+
+			VerbatimOutputHandler out = new VerbatimOutputHandler();
+			process.read(out);
+
+			assertThat(out.getOutput()).isEqualTo("out caf\u00e9\n");
+			assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isEqualTo("err caf\u00e9\n");
+			assertThat(process.readErrorLine(5, TimeUnit.SECONDS)).isNull();
+		}
+		finally {
+			process.close();
+		}
+	}
+
+	private static Command createShellCommand(String script) {
+		Command command = mock(Command.class);
+		when(command.getArguments()).thenReturn(asList("/bin/sh", "-c", script));
 		return command;
 	}
 }

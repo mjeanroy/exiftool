@@ -25,8 +25,14 @@ import com.thebuzzmedia.exiftool.process.CommandProcess;
 import com.thebuzzmedia.exiftool.process.CommandResult;
 import com.thebuzzmedia.exiftool.process.OutputHandler;
 
+import com.thebuzzmedia.exiftool.commons.io.RawLineReader;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.thebuzzmedia.exiftool.commons.io.IOs.closeQuietly;
 import static com.thebuzzmedia.exiftool.commons.io.IOs.readInputStream;
@@ -52,10 +58,108 @@ public class DefaultCommandExecutor implements CommandExecutor {
 		return readProcessOutput(command, requireNonNull(handler, "Handler should not be null"));
 	}
 
+	/// Execute command and build the result, reading the error stream separately from the output.
+	///
+	/// The output is read in the current thread, while the error stream is read in a background
+	/// thread (so that the process can never be blocked because one of these streams is full). The input
+	/// stream of the process is closed immediately.
+	///
+	/// Raw lines are given to [OutputHandler#readRawLine(String)]. Once a handler returns `false`, remaining
+	/// lines are read but ignored, until the end of the process.
+	///
+	/// @param command Command.
+	/// @param handler Custom output handler.
+	/// @param errorHandler Custom handler for lines written to the error stream.
+	/// @return Result of execution.
+	/// @throws IOException If an error occurred during operation.
+	@Override
+	public CommandResult execute(Command command, OutputHandler handler, OutputHandler errorHandler) throws IOException {
+		requireNonNull(handler, "Handler should not be null");
+		requireNonNull(errorHandler, "Error handler should not be null");
+
+		final Process proc = createProcess(command, false);
+		final ResultHandler out = new ResultHandler();
+		final AtomicReference<IOException> errorFailure = new AtomicReference<>();
+		final Thread errorReader = new Thread(() -> {
+			try {
+				readRawLines(proc.getErrorStream(), errorHandler);
+			}
+			catch (IOException ex) {
+				errorFailure.set(ex);
+			}
+		}, "exiftool-stderr");
+
+		boolean completed = false;
+
+		try {
+			errorReader.setDaemon(true);
+			errorReader.start();
+
+			// Nothing will be written: let the process know.
+			closeQuietly(proc.getOutputStream());
+
+			readRawLines(proc.getInputStream(), new CompositeHandler(handler, out));
+
+			errorReader.join();
+			int exitStatus = proc.waitFor();
+			completed = true;
+
+			if (errorFailure.get() != null) {
+				throw errorFailure.get();
+			}
+
+			return new DefaultCommandResult(exitStatus, out.getOutput());
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			throw new InterruptedIOException("Interrupted while waiting for the end of the process");
+		}
+		finally {
+			if (!completed) {
+				proc.destroy();
+			}
+
+			// Close streams.
+			closeQuietly(proc.getInputStream());
+			closeQuietly(proc.getOutputStream());
+			closeQuietly(proc.getErrorStream());
+		}
+	}
+
 	@Override
 	public CommandProcess start(Command command) throws IOException {
 		final Process proc = createProcess(command);
 		return new DefaultCommandProcess(proc.getInputStream(), proc.getOutputStream(), proc.getErrorStream());
+	}
+
+	/// Start command line and return associated process, the error stream being
+	/// read separately from the output (see [DefaultCommandProcess#readErrorLine(long, java.util.concurrent.TimeUnit)]).
+	///
+	/// @param command Command.
+	/// @return Process.
+	/// @throws IOException If an error occurred during operation.
+	@Override
+	public CommandProcess startWithErrorStream(Command command) throws IOException {
+		final Process proc = createProcess(command, false);
+		return new DefaultCommandProcess(proc.getInputStream(), proc.getOutputStream(), proc.getErrorStream(), true);
+	}
+
+	/// Read all raw lines of given stream until its end, giving them to handler until it returns `false`.
+	///
+	/// @param is The stream.
+	/// @param handler The handler.
+	/// @throws IOException If an error occurred while reading the stream.
+	private static void readRawLines(InputStream is, OutputHandler handler) throws IOException {
+		RawLineReader reader = new RawLineReader(is, StandardCharsets.UTF_8);
+		boolean hasNext = true;
+		String rawLine;
+		do {
+			rawLine = reader.readLine();
+			if (hasNext) {
+				hasNext = handler.readRawLine(rawLine);
+			}
+		}
+		while (rawLine != null);
 	}
 
 	private CommandResult readProcessOutput(Command cmd, OutputHandler h) throws IOException {
@@ -83,9 +187,13 @@ public class DefaultCommandExecutor implements CommandExecutor {
 	}
 
 	private Process createProcess(Command command) throws IOException {
+		return createProcess(command, true);
+	}
+
+	private Process createProcess(Command command, boolean redirectErrorStream) throws IOException {
 		try {
 			List<String> args = command.getArguments();
-			ProcessBuilder builder = new ProcessBuilder(args).redirectErrorStream(true);
+			ProcessBuilder builder = new ProcessBuilder(args).redirectErrorStream(redirectErrorStream);
 			return builder.start();
 		}
 		catch (IOException ex) {

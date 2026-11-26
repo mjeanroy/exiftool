@@ -66,4 +66,16 @@ class CompositeHandler implements OutputHandler {
 
 		return hasNext;
 	}
+
+	@Override
+	public boolean readRawLine(String rawLine) {
+		boolean hasNext = true;
+		for (OutputHandler handler : handlers) {
+			if (!handler.readRawLine(rawLine)) {
+				hasNext = false;
+			}
+		}
+
+		return hasNext;
+	}
 }
